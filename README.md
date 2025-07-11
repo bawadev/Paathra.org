@@ -1,36 +1,111 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Dhaana - Food Donation Platform
+
+A web application for connecting food donors with monasteries to facilitate meaningful food donations.
+
+## Features
+
+- **User Authentication**: Secure user registration and login with Supabase Auth
+- **Monastery Management**: Browse monasteries and their specific dietary requirements
+- **Donation Scheduling**: Interactive calendar to book donation time slots
+- **Booking Management**: Track donation history and manage bookings
+- **Role-based Access**: Support for donors and monastery administrators
+
+## Technology Stack
+
+- **Frontend**: Next.js 15, React 19, TypeScript
+- **UI Components**: shadcn/ui with Tailwind CSS
+- **Backend**: Supabase (Database, Authentication, Real-time)
+- **Calendar**: Custom calendar component with date-fns
+- **Forms**: React Hook Form with Zod validation
 
 ## Getting Started
 
-First, run the development server:
+1. **Install Dependencies**
+   ```bash
+   npm install
+   ```
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+2. **Environment Setup**
+   Create a `.env.local` file with your Supabase credentials:
+   ```
+   NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+   NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+   ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+3. **Database Setup**
+   The database schema includes:
+   - User profiles with role management
+   - Monasteries with dietary requirements
+   - Donation slots with availability tracking
+   - Booking system with status management
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+4. **Run Development Server**
+   ```bash
+   npm run dev
+   ```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Application Structure
 
-## Learn More
+### Core Pages
+- **Home (`/`)**: Landing page with navigation to key features
+- **Donate (`/donate`)**: Calendar view for booking donation slots
+- **My Donations (`/my-donations`)**: Personal donation history and management
+- **Monasteries (`/monasteries`)**: Browse available monasteries
 
-To learn more about Next.js, take a look at the following resources:
+### User Roles
+- **Donor**: Can browse monasteries, book donation slots, manage their bookings
+- **Monastery Admin**: Can manage monastery information, donation slots, and view bookings
+- **Super Admin**: Full system access
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Key Components
+- **DonationCalendar**: Interactive calendar for slot selection
+- **DonationBookingForm**: Form for creating donation bookings
+- **Navigation**: Role-based navigation with user profile integration
+- **AuthForm**: Unified login/registration component
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Database Schema
 
-## Deploy on Vercel
+### Tables
+1. **user_profiles**: Extended user information with roles
+2. **monasteries**: Monastery details and preferences
+3. **donation_slots**: Available time slots for donations
+4. **donation_bookings**: Individual donation bookings
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### Row Level Security
+- Users can only access their own data
+- Monastery admins can manage their monastery's data
+- Public read access for monastery information
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Features in Detail
+
+### Donation Booking Flow
+1. User selects a date on the calendar
+2. Available time slots are displayed for that date
+3. User clicks on a slot to see monastery details
+4. User fills out donation form with food type and details
+5. Booking is created with "pending" status
+6. Monastery admin can confirm or modify the booking
+
+### Calendar Integration
+- Visual calendar with disabled dates for unavailable slots
+- Real-time availability updates
+- Filtering by monastery and dietary requirements
+- Time slot management with capacity limits
+
+### User Management
+- Secure authentication with email verification
+- Profile management with contact information
+- Role-based access control
+- Password reset functionality
+
+## Deployment
+
+The application is designed to be deployed on Vercel with Supabase as the backend service.
+
+1. Connect your GitHub repository to Vercel
+2. Configure environment variables
+3. Deploy automatically on push to main branch
+
+## License
+
+This project is licensed under the MIT License.
