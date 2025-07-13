@@ -11,6 +11,7 @@ import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { supabase, DonationBooking, Monastery } from '@/lib/supabase'
 import { format, parseISO } from 'date-fns'
+import { hasRole } from '@/types/auth'
 import { 
   Calendar, 
   Clock, 
@@ -35,7 +36,7 @@ export default function ManageBookingsPage() {
   const [statusFilter, setStatusFilter] = useState('all')
 
   useEffect(() => {
-    if (user && profile?.user_type === 'monastery_admin') {
+    if (user && hasRole(profile, 'monastery_admin')) {
       fetchData()
     }
   }, [user, profile])
@@ -148,7 +149,7 @@ export default function ManageBookingsPage() {
     )
   }
 
-  if (!user || profile?.user_type !== 'monastery_admin') {
+  if (!user || !hasRole(profile, 'monastery_admin')) {
     return <AuthForm />
   }
 

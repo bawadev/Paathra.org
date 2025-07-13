@@ -13,6 +13,7 @@ import { Calendar } from '@/components/ui/calendar'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { supabase, DonationSlot, Monastery } from '@/lib/supabase'
 import { format, parseISO, addDays, isBefore, startOfDay } from 'date-fns'
+import { hasRole } from '@/types/auth'
 import { 
   Calendar as CalendarIcon, 
   Clock, 
@@ -40,7 +41,7 @@ export default function ManageSlotsPage() {
   })
 
   useEffect(() => {
-    if (user && profile?.user_type === 'monastery_admin') {
+    if (user && hasRole(profile, 'monastery_admin')) {
       fetchData()
     }
   }, [user, profile])
@@ -181,7 +182,7 @@ export default function ManageSlotsPage() {
     )
   }
 
-  if (!user || profile?.user_type !== 'monastery_admin') {
+  if (!user || !hasRole(profile, 'monastery_admin')) {
     return <AuthForm />
   }
 

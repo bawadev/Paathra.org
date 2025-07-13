@@ -7,6 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
 import { Calendar, Heart, Users, Building } from 'lucide-react'
+import { hasRole } from '@/types/auth'
 
 export default function HomePage() {
   const { user, profile, loading } = useAuth()
@@ -40,7 +41,7 @@ export default function HomePage() {
         </div>
 
         {/* Quick Actions */}
-        <div className={`grid ${profile?.user_type === 'monastery_admin' ? 'md:grid-cols-3' : 'md:grid-cols-4'} gap-6 mb-12`}>
+        <div className={`grid ${hasRole(profile, 'monastery_admin') ? 'md:grid-cols-3' : 'md:grid-cols-4'} gap-6 mb-12`}>
           <Card className="text-center hover:shadow-lg transition-shadow">
             <CardHeader>
               <Calendar className="w-12 h-12 text-orange-600 mx-auto mb-4" />
@@ -86,7 +87,7 @@ export default function HomePage() {
             </CardContent>
           </Card>
 
-          {profile?.user_type !== 'monastery_admin' && (
+          {!hasRole(profile, 'monastery_admin') && (
             <Card className="text-center hover:shadow-lg transition-shadow border-blue-200">
               <CardHeader>
                 <Building className="w-12 h-12 text-blue-600 mx-auto mb-4" />

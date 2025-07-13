@@ -80,15 +80,20 @@ export default function Analytics() {
       // Fetch total counts
       const [
         { count: totalUsers },
-        { count: totalDonors },
         { count: totalMonasteries },
         { count: totalBookings }
       ] = await Promise.all([
         supabase.from('user_profiles').select('*', { count: 'exact', head: true }),
-        supabase.from('user_profiles').select('*', { count: 'exact', head: true }).eq('user_type', 'donor'),
         supabase.from('monasteries').select('*', { count: 'exact', head: true }),
         supabase.from('donation_bookings').select('*', { count: 'exact', head: true })
       ])
+
+      // Get donor count separately since we need to check array contains
+      const { data: allUsers } = await supabase
+        .from('user_profiles')
+        .select('user_types')
+      
+      const totalDonors = allUsers?.filter(u => u.user_types?.includes('donor')).length || 0
 
       // Fetch growth data
       const [
@@ -124,12 +129,12 @@ export default function Analytics() {
       // Fetch user type distribution
       const { data: userTypes } = await supabase
         .from('user_profiles')
-        .select('user_type')
+        .select('user_types')
 
       const userTypeDistribution = {
-        donors: userTypes?.filter(u => u.user_type === 'donor').length || 0,
-        monasteryAdmins: userTypes?.filter(u => u.user_type === 'monastery_admin').length || 0,
-        superAdmins: userTypes?.filter(u => u.user_type === 'super_admin').length || 0
+        donors: userTypes?.filter(u => u.user_types?.includes('donor')).length || 0,
+        monasteryAdmins: userTypes?.filter(u => u.user_types?.includes('monastery_admin')).length || 0,
+        superAdmins: userTypes?.filter(u => u.user_types?.includes('super_admin')).length || 0
       }
 
       // Fetch booking status distribution

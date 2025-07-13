@@ -34,6 +34,7 @@ import { supabase, UserProfile } from '@/lib/supabase'
 import { LoadingSpinner } from '@/components/loading'
 import { Search, Edit, Trash2, UserPlus, Filter } from 'lucide-react'
 import { toast } from 'sonner'
+import { UserType, hasRole, getUserTypeDisplayName } from '@/types/auth'
 
 export default function UserManagement() {
   const [users, setUsers] = useState<UserProfile[]>([])
@@ -43,6 +44,18 @@ export default function UserManagement() {
   const [filterType, setFilterType] = useState<string>('all')
   const [selectedUser, setSelectedUser] = useState<UserProfile | null>(null)
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
+
+  // Helper function to get the primary user type (highest priority)
+  const getPrimaryUserType = (user: UserProfile): UserType => {
+    if (hasRole(user, 'super_admin')) return 'super_admin'
+    if (hasRole(user, 'monastery_admin')) return 'monastery_admin'
+    return 'donor'
+  }
+
+  // Helper function to get all user types as a comma-separated string
+  const getUserTypesString = (user: UserProfile): string => {
+    return user.user_types.map(type => getUserTypeDisplayName(type)).join(', ')
+  }
 
   useEffect(() => {
     fetchUsers()
@@ -82,23 +95,25 @@ export default function UserManagement() {
 
     // Filter by user type
     if (filterType !== 'all') {
-      filtered = filtered.filter(user => user.user_type === filterType)
+      filtered = filtered.filter(user => hasRole(user, filterType as UserType))
     }
 
     setFilteredUsers(filtered)
   }
 
-  const updateUserType = async (userId: string, newUserType: string) => {
+  const updateUserType = async (userId: string, newUserType: UserType) => {
     try {
+      // For now, we'll replace the user_types array with just the selected type
+      // In a more sophisticated system, you might want to add/remove roles individually
       const { error } = await supabase
         .from('user_profiles')
-        .update({ user_type: newUserType })
+        .update({ user_types: [newUserType] })
         .eq('id', userId)
 
       if (error) throw error
 
       setUsers(users.map(user => 
-        user.id === userId ? { ...user, user_type: newUserType as any } : user
+        user.id === userId ? { ...user, user_types: [newUserType] } : user
       ))
 
       toast.success("User type updated successfully")
@@ -129,7 +144,7 @@ export default function UserManagement() {
     }
   }
 
-  const getUserTypeBadgeVariant = (userType: string) => {
+  const getUserTypeBadgeVariant = (userType: UserType) => {
     switch (userType) {
       case 'super_admin':
         return 'destructive'
@@ -139,19 +154,6 @@ export default function UserManagement() {
         return 'default'
       default:
         return 'outline'
-    }
-  }
-
-  const getUserTypeLabel = (userType: string) => {
-    switch (userType) {
-      case 'super_admin':
-        return 'Platform Admin'
-      case 'monastery_admin':
-        return 'Monastery Admin'
-      case 'donor':
-        return 'Donor'
-      default:
-        return userType
     }
   }
 
@@ -185,7 +187,7 @@ export default function UserManagement() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {users.filter(u => u.user_type === 'donor').length}
+              {users.filter(u => hasRole(u, 'donor')).length}
             </div>
           </CardContent>
         </Card>
@@ -195,7 +197,7 @@ export default function UserManagement() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {users.filter(u => u.user_type === 'monastery_admin').length}
+              {users.filter(u => hasRole(u, 'monastery_admin')).length}
             </div>
           </CardContent>
         </Card>
@@ -205,7 +207,7 @@ export default function UserManagement() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {users.filter(u => u.user_type === 'super_admin').length}
+              {users.filter(u => hasRole(u, 'super_admin')).length}
             </div>
           </CardContent>
         </Card>
@@ -266,8 +268,8 @@ export default function UserManagement() {
                     </TableCell>
                     <TableCell>{user.email}</TableCell>
                     <TableCell>
-                      <Badge variant={getUserTypeBadgeVariant(user.user_type)}>
-                        {getUserTypeLabel(user.user_type)}
+                      <Badge variant={getUserTypeBadgeVariant(getPrimaryUserType(user))}>
+                        {getUserTypeDisplayName(getPrimaryUserType(user))}
                       </Badge>
                     </TableCell>
                     <TableCell>{user.phone || 'Not provided'}</TableCell>
@@ -293,14 +295,14 @@ export default function UserManagement() {
                               <div>
                                 <Label>Current Type</Label>
                                 <p className="text-sm text-muted-foreground">
-                                  {getUserTypeLabel(user.user_type)}
+                                  {getUserTypesString(user)}
                                 </p>
                               </div>
                               <div>
                                 <Label>New Type</Label>
                                 <Select 
-                                  defaultValue={user.user_type}
-                                  onValueChange={(value) => updateUserType(user.id, value)}
+                                  defaultValue={getPrimaryUserType(user)}
+                                  onValueChange={(value) => updateUserType(user.id, value as UserType)}
                                 >
                                   <SelectTrigger>
                                     <SelectValue />
@@ -320,7 +322,7 @@ export default function UserManagement() {
                           variant="outline" 
                           size="sm"
                           onClick={() => deleteUser(user.id)}
-                          disabled={user.user_type === 'super_admin' && users.filter(u => u.user_type === 'super_admin').length === 1}
+                          disabled={hasRole(user, 'super_admin') && users.filter(u => hasRole(u, 'super_admin')).length === 1}
                         >
                           <Trash2 className="h-4 w-4" />
                         </Button>

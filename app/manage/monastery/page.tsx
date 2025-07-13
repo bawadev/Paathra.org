@@ -13,6 +13,7 @@ import { Badge } from '@/components/ui/badge'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { supabase, Monastery } from '@/lib/supabase'
 import { Building, Phone, Mail, Globe, MapPin, Users, CheckCircle, X } from 'lucide-react'
+import { hasRole } from '@/types/auth'
 
 const DIETARY_REQUIREMENTS = [
   'vegetarian',
@@ -120,10 +121,22 @@ export default function ManageMonasteryPage() {
         if (monasteryError) {
           setError(monasteryError.message)
         } else {
-          // Update user profile to monastery_admin
+          // Update user profile to add monastery_admin role
+          // First get current user types, then add monastery_admin if not already present
+          const { data: currentProfile } = await supabase
+            .from('user_profiles')
+            .select('user_types')
+            .eq('id', user.id)
+            .single()
+
+          const currentUserTypes = currentProfile?.user_types || ['donor']
+          const updatedUserTypes = currentUserTypes.includes('monastery_admin') 
+            ? currentUserTypes 
+            : [...currentUserTypes, 'monastery_admin']
+
           const { error: profileError } = await supabase
             .from('user_profiles')
-            .update({ user_type: 'monastery_admin' })
+            .update({ user_types: updatedUserTypes })
             .eq('id', user.id)
 
           if (profileError) {
@@ -168,9 +181,9 @@ export default function ManageMonasteryPage() {
   }
 
   // Allow access for monastery admins and users who want to create a monastery
-  const canAccess = profile?.user_type === 'monastery_admin' || !monastery
+  const canAccess = hasRole(profile, 'monastery_admin') || !monastery
 
-  if (!canAccess && profile?.user_type !== 'monastery_admin') {
+  if (!canAccess && !hasRole(profile, 'monastery_admin')) {
     return (
       <div className="min-h-screen bg-gray-50">
         <Navigation />

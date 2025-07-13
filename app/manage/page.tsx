@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { supabase, DonationBooking, DonationSlot, Monastery } from '@/lib/supabase'
 import { format, parseISO, isToday, isFuture } from 'date-fns'
+import { hasRole } from '@/types/auth'
 import { 
   Calendar, 
   Clock, 
@@ -42,7 +43,7 @@ export default function MonasteryDashboard() {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    if (user && profile?.user_type === 'monastery_admin') {
+    if (user && hasRole(profile, 'monastery_admin')) {
       fetchMonasteryData()
     }
   }, [user, profile])
@@ -141,7 +142,7 @@ export default function MonasteryDashboard() {
     return <AuthForm />
   }
 
-  if (profile?.user_type !== 'monastery_admin') {
+  if (!hasRole(profile, 'monastery_admin')) {
     return (
       <div className="min-h-screen bg-gray-50">
         <Navigation />

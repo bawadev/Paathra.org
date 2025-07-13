@@ -16,6 +16,7 @@ import {
   Clock,
   PieChart
 } from 'lucide-react'
+import { getUserTypeDisplayName } from '@/types/auth'
 
 interface DashboardStats {
   totalUsers: number
@@ -43,11 +44,12 @@ export default function AdminDashboard() {
         .from('user_profiles')
         .select('*', { count: 'exact', head: true })
 
-      // Fetch total donors
-      const { count: totalDonors } = await supabase
+      // Fetch all users first to count donors properly
+      const { data: allUsers } = await supabase
         .from('user_profiles')
-        .select('*', { count: 'exact', head: true })
-        .eq('user_type', 'donor')
+        .select('user_types')
+      
+      const totalDonors = allUsers?.filter(u => u.user_types?.includes('donor')).length || 0
 
       // Fetch total monasteries
       const { count: totalMonasteries } = await supabase
@@ -76,7 +78,7 @@ export default function AdminDashboard() {
       // Fetch recent users
       const { data: recentUsers } = await supabase
         .from('user_profiles')
-        .select('full_name, user_type, created_at')
+        .select('full_name, user_types, created_at')
         .order('created_at', { ascending: false })
         .limit(5)
 
@@ -208,8 +210,9 @@ export default function AdminDashboard() {
                       {new Date(user.created_at).toLocaleDateString()}
                     </p>
                   </div>
-                  <Badge variant={user.user_type === 'donor' ? 'default' : 'secondary'}>
-                    {user.user_type === 'donor' ? 'Donor' : 'Monastery Admin'}
+                  <Badge variant={user.user_types?.includes('donor') ? 'default' : 'secondary'}>
+                    {user.user_types?.includes('super_admin') ? 'Platform Admin' :
+                     user.user_types?.includes('monastery_admin') ? 'Monastery Admin' : 'Donor'}
                   </Badge>
                 </div>
               ))}
