@@ -1,14 +1,15 @@
 'use client'
 
 import { useState } from 'react'
+import { useForm, FormProvider } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
 import { useAuth } from '@/lib/auth-context'
 import { supabase, DonationSlot } from '@/lib/supabase'
+import { donationBookingSchema, type DonationBookingInput } from '@/lib/schemas'
 import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Textarea } from '@/components/ui/textarea'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Alert, AlertDescription } from '@/components/ui/alert'
+import { TextField, TextareaField } from '@/components/forms/FormFields'
 import { format, parseISO } from 'date-fns'
 import { Clock, MapPin, Users } from 'lucide-react'
 
@@ -22,15 +23,18 @@ export function DonationBookingForm({ slot, onSuccess, onCancel }: DonationBooki
   const { user } = useAuth()
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
-  const [formData, setFormData] = useState({
-    food_type: '',
-    estimated_servings: '',
-    special_notes: '',
-    contact_phone: '',
+
+  const form = useForm<DonationBookingInput>({
+    resolver: zodResolver(donationBookingSchema),
+    defaultValues: {
+      food_type: '',
+      estimated_servings: '',
+      special_notes: '',
+      contact_phone: '',
+    },
   })
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
+  const handleSubmit = async (data: DonationBookingInput) => {
     if (!user) return
 
     setLoading(true)
@@ -42,10 +46,10 @@ export function DonationBookingForm({ slot, onSuccess, onCancel }: DonationBooki
         .insert({
           donation_slot_id: slot.id,
           donor_id: user.id,
-          food_type: formData.food_type,
-          estimated_servings: parseInt(formData.estimated_servings),
-          special_notes: formData.special_notes || null,
-          contact_phone: formData.contact_phone || null,
+          food_type: data.food_type,
+          estimated_servings: parseInt(data.estimated_servings),
+          special_notes: data.special_notes || null,
+          contact_phone: data.contact_phone || null,
         })
 
       if (bookingError) {
@@ -58,10 +62,6 @@ export function DonationBookingForm({ slot, onSuccess, onCancel }: DonationBooki
     } finally {
       setLoading(false)
     }
-  }
-
-  const handleInputChange = (field: string, value: string) => {
-    setFormData(prev => ({ ...prev, [field]: value }))
   }
 
   return (
@@ -105,70 +105,54 @@ export function DonationBookingForm({ slot, onSuccess, onCancel }: DonationBooki
         </div>
 
         {/* Booking Form */}
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="food_type">Type of Food *</Label>
-              <Input
-                id="food_type"
-                value={formData.food_type}
-                onChange={(e) => handleInputChange('food_type', e.target.value)}
+        <FormProvider {...form}>
+          <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <TextField
+                name="food_type"
+                label="Type of Food"
                 placeholder="e.g., Rice and curry, Noodles, Sandwiches"
                 required
               />
-            </div>
-            
-            <div className="space-y-2">
-              <Label htmlFor="estimated_servings">Estimated Servings *</Label>
-              <Input
-                id="estimated_servings"
-                type="number"
-                min="1"
-                value={formData.estimated_servings}
-                onChange={(e) => handleInputChange('estimated_servings', e.target.value)}
+              
+              <TextField
+                name="estimated_servings"
+                label="Estimated Servings"
                 placeholder="Number of people this will serve"
                 required
               />
             </div>
-          </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="contact_phone">Contact Phone</Label>
-            <Input
-              id="contact_phone"
+            <TextField
+              name="contact_phone"
+              label="Contact Phone"
               type="tel"
-              value={formData.contact_phone}
-              onChange={(e) => handleInputChange('contact_phone', e.target.value)}
               placeholder="Your phone number for coordination"
             />
-          </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="special_notes">Special Notes</Label>
-            <Textarea
-              id="special_notes"
-              value={formData.special_notes}
-              onChange={(e) => handleInputChange('special_notes', e.target.value)}
+            <TextareaField
+              name="special_notes"
+              label="Special Notes"
               placeholder="Any additional information about your donation (ingredients, allergies, etc.)"
               rows={3}
             />
-          </div>
 
-          {error && (
-            <Alert variant="destructive">
-              <AlertDescription>{error}</AlertDescription>
-            </Alert>
-          )}
+            {error && (
+              <Alert variant="destructive">
+                <AlertDescription>{error}</AlertDescription>
+              </Alert>
+            )}
 
-          <div className="flex space-x-4 pt-4">
-            <Button type="submit" disabled={loading} className="flex-1">
-              {loading ? 'Booking...' : 'Confirm Booking'}
-            </Button>
-            <Button type="button" variant="outline" onClick={onCancel}>
-              Cancel
-            </Button>
-          </div>
-        </form>
+            <div className="flex space-x-4 pt-4">
+              <Button type="submit" disabled={loading} className="flex-1">
+                {loading ? 'Booking...' : 'Confirm Booking'}
+              </Button>
+              <Button type="button" variant="outline" onClick={onCancel}>
+                Cancel
+              </Button>
+            </div>
+          </form>
+        </FormProvider>
       </CardContent>
     </Card>
   )

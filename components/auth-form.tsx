@@ -1,49 +1,152 @@
 'use client'
 
 import { useState } from 'react'
+import { useForm, FormProvider } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
 import { useAuth } from '@/lib/auth-context'
+import { signInSchema, signUpSchema, type SignInInput, type SignUpInput } from '@/lib/schemas'
 import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Alert, AlertDescription } from '@/components/ui/alert'
+import { TextField } from '@/components/forms/FormFields'
 
-export function AuthForm() {
-  const [isLogin, setIsLogin] = useState(true)
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [fullName, setFullName] = useState('')
+function SignInForm({ onSuccess, onError }: { onSuccess: () => void; onError: (error: string) => void }) {
   const [loading, setLoading] = useState(false)
-  const [error, setError] = useState('')
-  const [message, setMessage] = useState('')
+  const { signIn } = useAuth()
 
-  const { signIn, signUp } = useAuth()
+  const form = useForm<SignInInput>({
+    resolver: zodResolver(signInSchema),
+    defaultValues: {
+      email: '',
+      password: '',
+    },
+  })
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
+  const handleSubmit = async (data: SignInInput) => {
     setLoading(true)
-    setError('')
-    setMessage('')
-
     try {
-      if (isLogin) {
-        const { error } = await signIn(email, password)
-        if (error) {
-          setError(error.message)
-        }
+      const { error } = await signIn(data.email, data.password)
+      if (error) {
+        onError(error.message)
       } else {
-        const { error } = await signUp(email, password, fullName)
-        if (error) {
-          setError(error.message)
-        } else {
-          setMessage('Check your email for the confirmation link!')
-        }
+        onSuccess()
       }
     } catch (err) {
-      setError('An unexpected error occurred')
+      onError('An unexpected error occurred')
     } finally {
       setLoading(false)
     }
+  }
+
+  return (
+    <FormProvider {...form}>
+      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
+        <TextField
+          name="email"
+          label="Email"
+          type="email"
+          placeholder="Enter your email"
+          required
+        />
+        
+        <TextField
+          name="password"
+          label="Password"
+          type="password"
+          placeholder="Enter your password"
+          required
+        />
+
+        <Button type="submit" className="w-full" disabled={loading}>
+          {loading ? 'Signing in...' : 'Sign In'}
+        </Button>
+      </form>
+    </FormProvider>
+  )
+}
+
+function SignUpForm({ onSuccess, onError }: { onSuccess: (message: string) => void; onError: (error: string) => void }) {
+  const [loading, setLoading] = useState(false)
+  const { signUp } = useAuth()
+
+  const form = useForm<SignUpInput>({
+    resolver: zodResolver(signUpSchema),
+    defaultValues: {
+      email: '',
+      password: '',
+      fullName: '',
+    },
+  })
+
+  const handleSubmit = async (data: SignUpInput) => {
+    setLoading(true)
+    try {
+      const { error } = await signUp(data.email, data.password, data.fullName)
+      if (error) {
+        onError(error.message)
+      } else {
+        onSuccess('Check your email for the confirmation link!')
+      }
+    } catch (err) {
+      onError('An unexpected error occurred')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  return (
+    <FormProvider {...form}>
+      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
+        <TextField
+          name="fullName"
+          label="Full Name"
+          placeholder="Enter your full name"
+          required
+        />
+        
+        <TextField
+          name="email"
+          label="Email"
+          type="email"
+          placeholder="Enter your email"
+          required
+        />
+        
+        <TextField
+          name="password"
+          label="Password"
+          type="password"
+          placeholder="Enter your password"
+          required
+        />
+
+        <Button type="submit" className="w-full" disabled={loading}>
+          {loading ? 'Creating account...' : 'Sign Up'}
+        </Button>
+      </form>
+    </FormProvider>
+  )
+}
+
+export function AuthForm() {
+  const [isLogin, setIsLogin] = useState(true)
+  const [error, setError] = useState('')
+  const [message, setMessage] = useState('')
+
+  const handleSuccess = (msg?: string) => {
+    setError('')
+    if (msg) setMessage(msg)
+  }
+
+  const handleError = (err: string) => {
+    setError(err)
+    setMessage('')
+  }
+
+  const switchMode = () => {
+    setIsLogin(!isLogin)
+    setError('')
+    setMessage('')
   }
 
   return (
@@ -59,75 +162,36 @@ export function AuthForm() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            {!isLogin && (
-              <div className="space-y-2">
-                <Label htmlFor="fullName">Full Name</Label>
-                <Input
-                  id="fullName"
-                  type="text"
-                  value={fullName}
-                  onChange={(e) => setFullName(e.target.value)}
-                  required
-                  placeholder="Enter your full name"
-                />
-              </div>
-            )}
-            
-            <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                placeholder="Enter your email"
-              />
-            </div>
-            
-            <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
-              <Input
-                id="password"
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                placeholder="Enter your password"
-                minLength={6}
-              />
-            </div>
+          {isLogin ? (
+            <SignInForm onSuccess={handleSuccess} onError={handleError} />
+          ) : (
+            <SignUpForm onSuccess={handleSuccess} onError={handleError} />
+          )}
 
-            {error && (
-              <Alert variant="destructive">
-                <AlertDescription>{error}</AlertDescription>
-              </Alert>
-            )}
+          {error && (
+            <Alert variant="destructive" className="mt-4">
+              <AlertDescription>{error}</AlertDescription>
+            </Alert>
+          )}
 
-            {message && (
-              <Alert>
-                <AlertDescription>{message}</AlertDescription>
-              </Alert>
-            )}
+          {message && (
+            <Alert className="mt-4">
+              <AlertDescription>{message}</AlertDescription>
+            </Alert>
+          )}
 
-            <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? 'Loading...' : (isLogin ? 'Sign In' : 'Sign Up')}
-            </Button>
-
-            <div className="text-center">
-              <button
-                type="button"
-                onClick={() => setIsLogin(!isLogin)}
-                className="text-sm text-blue-600 hover:underline"
-              >
-                {isLogin 
-                  ? "Don't have an account? Sign up" 
-                  : 'Already have an account? Sign in'
-                }
-              </button>
-            </div>
-          </form>
+          <div className="text-center mt-4">
+            <button
+              type="button"
+              onClick={switchMode}
+              className="text-sm text-blue-600 hover:underline"
+            >
+              {isLogin 
+                ? "Don't have an account? Sign up" 
+                : 'Already have an account? Sign in'
+              }
+            </button>
+          </div>
         </CardContent>
       </Card>
     </div>
