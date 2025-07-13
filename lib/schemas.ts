@@ -1,4 +1,5 @@
 import { z } from 'zod'
+import { CONTACT_PHONE_REGEX, USER_ROLES, MEAL_TIMES, MAX_DONATION_SLOTS, MIN_DONATION_SERVINGS } from './constants'
 
 // Auth schemas
 export const signInSchema = z.object({
@@ -22,7 +23,7 @@ export const donationBookingSchema = z.object({
     }),
   special_notes: z.string().optional(),
   contact_phone: z.string()
-    .regex(/^\+?[\d\s\-\(\)]+$/, 'Please enter a valid phone number')
+    .regex(CONTACT_PHONE_REGEX, 'Please enter a valid phone number')
     .optional()
     .or(z.literal('')),
 })
@@ -32,7 +33,7 @@ export const monasterySchema = z.object({
   name: z.string().min(2, 'Monastery name must be at least 2 characters'),
   address: z.string().min(5, 'Please enter a complete address'),
   contact_phone: z.string()
-    .regex(/^\+?[\d\s\-\(\)]+$/, 'Please enter a valid phone number'),
+    .regex(CONTACT_PHONE_REGEX, 'Please enter a valid phone number'),
   description: z.string().min(10, 'Description must be at least 10 characters'),
   dietary_requirements: z.string().optional(),
   preferred_meal_times: z.array(z.string()).min(1, 'Please select at least one meal time'),
@@ -42,18 +43,18 @@ export const monasterySchema = z.object({
 export const donationSlotSchema = z.object({
   date: z.string().min(1, 'Please select a date'),
   time_slot: z.string().min(1, 'Please select a time slot'),
-  max_donors: z.number().min(1, 'Maximum donors must be at least 1').max(20, 'Maximum donors cannot exceed 20'),
+  max_donors: z.number().min(MIN_DONATION_SERVINGS, 'Maximum donors must be at least 1').max(MAX_DONATION_SLOTS, 'Maximum donors cannot exceed 20'),
   special_requirements: z.string().optional(),
 })
 
 // User types enum for reuse
-export const userTypeEnum = z.enum(['donor', 'monastery_admin', 'super_admin'])
+export const userTypeEnum = z.enum([USER_ROLES.DONOR, USER_ROLES.MONASTERY_ADMIN, USER_ROLES.SUPER_ADMIN])
 
 // User profile schema
 export const userProfileSchema = z.object({
   full_name: z.string().min(2, 'Full name must be at least 2 characters'),
   phone: z.string()
-    .regex(/^\+?[\d\s\-\(\)]+$/, 'Please enter a valid phone number')
+    .regex(CONTACT_PHONE_REGEX, 'Please enter a valid phone number')
     .optional()
     .or(z.literal('')),
   address: z.string().optional(),
