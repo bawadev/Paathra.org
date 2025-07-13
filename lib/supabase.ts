@@ -63,7 +63,7 @@ export interface UserProfile {
   full_name: string
   email: string
   phone?: string
-  user_type: 'donor' | 'monastery_admin' | 'super_admin'
+  user_types: ('donor' | 'monastery_admin' | 'super_admin')[]
   avatar_url?: string
   address?: string
   created_at: string
@@ -83,6 +83,7 @@ export interface Monastery {
   capacity: number
   dietary_requirements: string[]
   preferred_donation_times?: string
+  status?: 'pending' | 'approved' | 'rejected'
   created_at: string
   updated_at: string
 }

@@ -46,6 +46,9 @@ export const donationSlotSchema = z.object({
   special_requirements: z.string().optional(),
 })
 
+// User types enum for reuse
+export const userTypeEnum = z.enum(['donor', 'monastery_admin', 'super_admin'])
+
 // User profile schema
 export const userProfileSchema = z.object({
   full_name: z.string().min(2, 'Full name must be at least 2 characters'),
@@ -54,9 +57,7 @@ export const userProfileSchema = z.object({
     .optional()
     .or(z.literal('')),
   address: z.string().optional(),
-  user_type: z.enum(['donor', 'monastery_admin'], {
-    message: 'Please select a user type',
-  }),
+  user_types: z.array(userTypeEnum).min(1, 'Please select at least one user type').default(['donor', 'monastery_admin', 'super_admin']),
 })
 
 // Export types from schemas

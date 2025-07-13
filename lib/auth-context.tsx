@@ -3,6 +3,7 @@
 import { createContext, useContext, useEffect, useState } from 'react'
 import { User, Session } from '@supabase/supabase-js'
 import { supabase, UserProfile } from '@/lib/supabase'
+import { hasRole, isAdmin, isSuperAdmin, UserType } from '@/types/auth'
 
 interface AuthContextType {
   user: User | null
