@@ -1,8 +1,8 @@
 'use client'
 
 import { useAuth } from '@/lib/auth-context'
-import { AuthForm } from '@/components/auth/auth-form'
-import { Navigation } from '@/components/layout/navigation'
+import { AuthForm } from '@/components/auth-form'
+import { Navigation } from '@/components/navigation'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
