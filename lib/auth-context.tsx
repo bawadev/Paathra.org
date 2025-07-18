@@ -10,10 +10,12 @@ interface AuthContextType {
   profile: UserProfile | null
   session: Session | null
   loading: boolean
+  error: string | null
   signIn: (email: string, password: string) => Promise<any>
   signUp: (email: string, password: string, fullName: string) => Promise<any>
   signOut: () => Promise<void>
   updateProfile: (updates: Partial<UserProfile>) => Promise<void>
+  clearError: () => void
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
@@ -23,35 +25,116 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [profile, setProfile] = useState<UserProfile | null>(null)
   const [session, setSession] = useState<Session | null>(null)
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
+    let mounted = true
+
     // Get initial session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session)
-      setUser(session?.user ?? null)
-      if (session?.user) {
-        fetchProfile(session.user.id)
-      } else {
-        setLoading(false)
+    const getInitialSession = async () => {
+      try {
+        const { data: { session }, error } = await supabase.auth.getSession()
+        
+        if (error) {
+          console.error('Error getting session:', error)
+          if (error.message.includes('refresh') || error.message.includes('token')) {
+            // Clear invalid session
+            await supabase.auth.signOut()
+            setError('Your session has expired. Please sign in again.')
+          } else {
+            setError('Authentication error. Please try again.')
+          }
+          if (mounted) {
+            setSession(null)
+            setUser(null)
+            setProfile(null)
+            setLoading(false)
+          }
+          return
+        }
+
+        if (mounted) {
+          setSession(session)
+          setUser(session?.user ?? null)
+          if (session?.user) {
+            await fetchProfile(session.user.id)
+          } else {
+            setLoading(false)
+          }
+        }
+      } catch (err) {
+        console.error('Unexpected auth error:', err)
+        if (mounted) {
+          setError('Authentication system error. Please refresh and try again.')
+          setLoading(false)
+        }
       }
-    })
+    }
+
+    getInitialSession()
 
     // Listen for auth changes
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (event, session) => {
-      setSession(session)
-      setUser(session?.user ?? null)
+      console.log('Auth state change:', event, session?.user?.id)
       
-      if (session?.user) {
-        await fetchProfile(session.user.id)
-      } else {
-        setProfile(null)
+      if (!mounted) return
+
+      try {
+        switch (event) {
+          case 'SIGNED_IN':
+            setError(null)
+            setSession(session)
+            setUser(session?.user ?? null)
+            if (session?.user) {
+              await fetchProfile(session.user.id)
+            }
+            break
+            
+          case 'SIGNED_OUT':
+            setSession(null)
+            setUser(null)
+            setProfile(null)
+            setLoading(false)
+            setError(null)
+            break
+            
+          case 'TOKEN_REFRESHED':
+            setError(null)
+            setSession(session)
+            setUser(session?.user ?? null)
+            break
+            
+          case 'USER_UPDATED':
+            setSession(session)
+            setUser(session?.user ?? null)
+            if (session?.user) {
+              await fetchProfile(session.user.id)
+            }
+            break
+            
+          default:
+            setSession(session)
+            setUser(session?.user ?? null)
+            if (session?.user) {
+              await fetchProfile(session.user.id)
+            } else {
+              setProfile(null)
+              setLoading(false)
+            }
+        }
+      } catch (err) {
+        console.error('Error handling auth state change:', err)
+        setError('Authentication error occurred. Please refresh the page.')
         setLoading(false)
       }
     })
 
-    return () => subscription.unsubscribe()
+    return () => {
+      mounted = false
+      subscription.unsubscribe()
+    }
   }, [])
 
   const fetchProfile = async (userId: string) => {
@@ -79,6 +162,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       email,
       password,
     })
+    if (error) {
+      setError(error.message)
+    } else {
+      setError(null)
+    }
     return { data, error }
   }
 
@@ -92,6 +180,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         },
       },
     })
+    if (error) {
+      setError(error.message)
+    } else {
+      setError(null)
+    }
     return { data, error }
   }
 
@@ -112,15 +205,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }
 
+  const clearError = () => {
+    setError(null)
+  }
+
   const value = {
     user,
     profile,
     session,
     loading,
+    error,
     signIn,
     signUp,
     signOut,
     updateProfile,
+    clearError,
   }
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

@@ -236,14 +236,9 @@ export function AuthForm() {
   const [isSignUp, setIsSignUp] = useState(false)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
-  const { error: authError, clearError } = useAuth()
-
-  // Show auth context errors
-  const displayError = error || authError
 
   const handleSuccess = (message?: string) => {
     setError('')
-    clearError()
     if (message) {
       setSuccess(message)
     }
@@ -252,13 +247,6 @@ export function AuthForm() {
   const handleError = (error: string) => {
     setSuccess('')
     setError(error)
-  }
-
-  const handleModeSwitch = () => {
-    setIsSignUp(!isSignUp)
-    setError('')
-    setSuccess('')
-    clearError()
   }
 
   return (
@@ -311,9 +299,9 @@ export function AuthForm() {
             </CardHeader>
             
             <CardContent className="space-y-6">
-              {displayError && (
+              {error && (
                 <Alert className="border-red-200 bg-red-50">
-                  <AlertDescription className="text-red-600">{displayError}</AlertDescription>
+                  <AlertDescription className="text-red-600">{error}</AlertDescription>
                 </Alert>
               )}
               
@@ -335,7 +323,11 @@ export function AuthForm() {
                 </span>
                 <button
                   type="button"
-                  onClick={handleModeSwitch}
+                  onClick={() => {
+                    setIsSignUp(!isSignUp)
+                    setError('')
+                    setSuccess('')
+                  }}
                   className="ml-1 text-[var(--primary-color)] hover:underline font-medium"
                 >
                   {isSignUp ? 'Sign In' : 'Sign Up'}
