@@ -1,9 +1,11 @@
 ---
 applyTo: '**'
 ---
-- Always utilize available MCP servers as much as possible.
-- Before moving into a new task, make sure to test and verify the current task is working
+- Always utilize available MCP servers (sequential thinking, context7 ect) as much as possible.
+- Always use ShadCN components where applicable.
+- Use Context7 MCP Tool to find applicable components and packages if you don't know about one. You can also use this to know about a library or a package.
+- You can also use Serper and Fetch MCP Tools for something that Context7 can't satisfy.
+- If the user provides a URL for a component or package then use the fetch tool to scrape it and use that.
+- Maintain a list of used ShadCN components in ShadCN-context.md (make one if it doesn't exist). It should contain all the components used and reference this to check if you need to install a ShadCN component from scratch with the CLI tool or not
+- Before moving into a new devlopment task, make sure to test and verify the current task is working
 - Ask for help if you are stuck or unsure about something.
-- Use sequential thinking mcp server to plan and follow up the implementation
-- Use context7 mcp for the latest documentations
-- Use shadcn for all UI the components

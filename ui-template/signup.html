@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up - Dana</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="auth.css">
+</head>
+<body>
+    <div class="auth-container">
+        <div class="auth-left">
+            <div class="auth-logo">
+                <div class="lotus-icon"></div>
+                <span>Dana</span>
+            </div>
+            <div class="auth-hero">
+                <h1>Join Our Community</h1>
+                <p>Start your journey of giving and make a difference</p>
+                <div class="floating-elements">
+                    <div class="float-element float-1"></div>
+                    <div class="float-element float-2"></div>
+                    <div class="float-element float-3"></div>
+                </div>
+            </div>
+        </div>
+        <div class="auth-right">
+            <div class="auth-form-container">
+                <h2>Create Account</h2>
+                <p class="auth-subtitle">Fill in your details to get started</p>
+                
+                <form class="auth-form">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="firstName">First Name</label>
+                            <input type="text" id="firstName" name="firstName" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="lastName">Last Name</label>
+                            <input type="text" id="lastName" name="lastName" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="email">Email Address</label>
+                        <input type="email" id="email" name="email" required>
+                        <span class="input-icon">@</span>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <input type="password" id="password" name="password" required>
+                        <span class="input-icon">🔒</span>
+                        <div class="password-strength">
+                            <div class="strength-bar"></div>
+                        </div>
+                        <p class="password-hint">Use 8+ characters with uppercase, lowercase & numbers</p>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="userType">I am a...</label>
+                        <div class="radio-group">
+                            <label class="radio-container">
+                                <input type="radio" name="userType" value="donor" checked>
+                                <span class="radio-checkmark"></span>
+                                Donor
+                            </label>
+                            <label class="radio-container">
+                                <input type="radio" name="userType" value="monastery">
+                                <span class="radio-checkmark"></span>
+                                Monastery Representative
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <label class="checkbox-container">
+                        <input type="checkbox" name="terms" required>
+                        <span class="checkmark"></span>
+                        I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>
+                    </label>
+                    
+                    <button type="submit" class="btn-primary full-width">Create Account</button>
+                    
+                    <div class="divider">
+                        <span>or sign up with</span>
+                    </div>
+                    
+                    <div class="social-auth">
+                        <button type="button" class="social-btn google">
+                            <span class="social-icon">G</span>
+                            Google
+                        </button>
+                        <button type="button" class="social-btn facebook">
+                            <span class="social-icon">f</span>
+                            Facebook
+                        </button>
+                    </div>
+                </form>
+                
+                <p class="auth-footer">
+                    Already have an account? <a href="login.html">Sign In</a>
+                </p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
