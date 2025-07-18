@@ -6,7 +6,7 @@ import { Navigation } from '@/components/navigation'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
-import { Calendar, Heart, Users, Building } from 'lucide-react'
+import { Calendar, Heart, Users, Building, ArrowRight } from 'lucide-react'
 import { hasRole } from '@/types/auth'
 
 export default function HomePage() {
@@ -14,8 +14,8 @@ export default function HomePage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="text-lg">Loading...</div>
+      <div className="flex items-center justify-center min-h-screen bg-[var(--bg-light)]">
+        <div className="text-lg text-[var(--text-light)]">Loading...</div>
       </div>
     )
   }
@@ -25,115 +25,166 @@ export default function HomePage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-[var(--bg-light)]">
       <Navigation />
       
-      <main className="container mx-auto px-4 py-8">
-        {/* Hero Section */}
-        <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">
-            Welcome to <span className="text-orange-600">Dhaana</span>
-          </h1>
-          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-            Connect with monasteries and make meaningful food donations. 
-            Schedule your contributions and support spiritual communities.
-          </p>
-        </div>
+      {/* Hero Section */}
+      <section className="pt-32 pb-20 px-5 min-h-screen flex items-center">
+        <div className="container-dana">
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            {/* Hero Content */}
+            <div className="space-y-8">
+              <h1 className="text-5xl lg:text-6xl font-bold leading-tight">
+                <span className="block gradient-text fade-in-1">Nourish</span>
+                <span className="block gradient-text fade-in-2">Compassion</span>
+              </h1>
+              <p className="text-xl text-[var(--text-light)] leading-relaxed fade-in-3">
+                Support Buddhist monasteries through food donations and help sustain their spiritual practice
+              </p>
+              <div className="flex flex-wrap gap-4 fade-in-4">
+                <Link href="/monasteries">
+                  <Button className="btn-dana-primary large inline-flex items-center gap-2 text-white">
+                    Start Donating
+                    <ArrowRight className="w-5 h-5" />
+                  </Button>
+                </Link>
+                <Button variant="outline" className="btn-dana-secondary large">
+                  Learn More
+                </Button>
+              </div>
+            </div>
 
+            {/* Hero Image */}
+            <div className="flex justify-center items-center relative">
+              <div className="floating-bowl"></div>
+              <div className="particle particle-1"></div>
+              <div className="particle particle-2"></div>
+              <div className="particle particle-3"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Main Content */}
+      <main className="container-dana px-5 pb-20">
         {/* Quick Actions */}
         <div className={`grid ${hasRole(profile, 'monastery_admin') ? 'md:grid-cols-3' : 'md:grid-cols-4'} gap-6 mb-12`}>
-          <Card className="text-center hover:shadow-lg transition-shadow">
+          <Card className="card-dana text-center group">
             <CardHeader>
-              <Calendar className="w-12 h-12 text-orange-600 mx-auto mb-4" />
-              <CardTitle>Make a Donation</CardTitle>
-              <CardDescription>
+              <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-r from-[var(--primary-color)] to-[var(--accent-color)] rounded-2xl flex items-center justify-center transform group-hover:scale-110 transition-transform">
+                <Calendar className="w-8 h-8 text-white" />
+              </div>
+              <CardTitle className="text-[var(--text-dark)]">Make a Donation</CardTitle>
+              <CardDescription className="text-[var(--text-light)]">
                 Browse available time slots and book your food donation
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <Button asChild className="w-full">
-                <Link href="/donate">Start Donating</Link>
-              </Button>
+              <Link href="/monasteries">
+                <Button className="w-full btn-dana-primary">Book Donation</Button>
+              </Link>
             </CardContent>
           </Card>
 
-          <Card className="text-center hover:shadow-lg transition-shadow">
+          <Card className="card-dana text-center group">
             <CardHeader>
-              <Users className="w-12 h-12 text-orange-600 mx-auto mb-4" />
-              <CardTitle>View Monasteries</CardTitle>
-              <CardDescription>
-                Explore monasteries in your area and learn about their needs
+              <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-r from-[var(--secondary-color)] to-[var(--primary-color)] rounded-2xl flex items-center justify-center transform group-hover:scale-110 transition-transform">
+                <Heart className="w-8 h-8 text-white" />
+              </div>
+              <CardTitle className="text-[var(--text-dark)]">My Donations</CardTitle>
+              <CardDescription className="text-[var(--text-light)]">
+                View your donation history and upcoming bookings
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <Button variant="outline" asChild className="w-full">
-                <Link href="/monasteries">Browse Monasteries</Link>
-              </Button>
+              <Link href="/my-donations">
+                <Button variant="outline" className="w-full btn-dana-secondary">View History</Button>
+              </Link>
             </CardContent>
           </Card>
 
-          <Card className="text-center hover:shadow-lg transition-shadow">
+          <Card className="card-dana text-center group">
             <CardHeader>
-              <Heart className="w-12 h-12 text-orange-600 mx-auto mb-4" />
-              <CardTitle>My Donations</CardTitle>
-              <CardDescription>
-                Track your donation history and upcoming bookings
+              <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-r from-[var(--accent-color)] to-[var(--primary-color)] rounded-2xl flex items-center justify-center transform group-hover:scale-110 transition-transform">
+                <Building className="w-8 h-8 text-white" />
+              </div>
+              <CardTitle className="text-[var(--text-dark)]">Monasteries</CardTitle>
+              <CardDescription className="text-[var(--text-light)]">
+                Explore monasteries and learn about their communities
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <Button variant="outline" asChild className="w-full">
-                <Link href="/my-donations">View My Donations</Link>
-              </Button>
+              <Link href="/monasteries">
+                <Button variant="outline" className="w-full btn-dana-secondary">Explore</Button>
+              </Link>
             </CardContent>
           </Card>
 
-          {!hasRole(profile, 'monastery_admin') && (
-            <Card className="text-center hover:shadow-lg transition-shadow border-blue-200">
+          {hasRole(profile, 'monastery_admin') && (
+            <Card className="card-dana text-center group">
               <CardHeader>
-                <Building className="w-12 h-12 text-blue-600 mx-auto mb-4" />
-                <CardTitle className="text-blue-800">Create Monastery</CardTitle>
-                <CardDescription>
-                  Register your monastery and start receiving donations
+                <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-r from-[var(--primary-color)] to-[var(--secondary-color)] rounded-2xl flex items-center justify-center transform group-hover:scale-110 transition-transform">
+                  <Users className="w-8 h-8 text-white" />
+                </div>
+                <CardTitle className="text-[var(--text-dark)]">Manage Monastery</CardTitle>
+                <CardDescription className="text-[var(--text-light)]">
+                  Manage your monastery's donation slots and settings
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <Button variant="outline" asChild className="w-full border-blue-200 text-blue-600 hover:bg-blue-50">
-                  <Link href="/manage/monastery">Register Monastery</Link>
-                </Button>
+                <Link href="/manage">
+                  <Button className="w-full btn-dana-primary">Manage</Button>
+                </Link>
+              </CardContent>
+            </Card>
+          )}
+
+          {!hasRole(profile, 'monastery_admin') && (
+            <Card className="card-dana text-center group">
+              <CardHeader>
+                <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-r from-[var(--text-light)] to-[var(--text-dark)] rounded-2xl flex items-center justify-center transform group-hover:scale-110 transition-transform">
+                  <Users className="w-8 h-8 text-white" />
+                </div>
+                <CardTitle className="text-[var(--text-dark)]">Join Community</CardTitle>
+                <CardDescription className="text-[var(--text-light)]">
+                  Connect with other donors and share experiences
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <Button variant="outline" className="w-full btn-dana-secondary">Coming Soon</Button>
               </CardContent>
             </Card>
           )}
         </div>
 
-        {/* Features Section */}
-        <div className="bg-white rounded-lg p-8 shadow-sm">
-          <h2 className="text-2xl font-bold text-center mb-8">How Dhaana Works</h2>
-          <div className="grid md:grid-cols-3 gap-8">
-            <div className="text-center">
-              <div className="bg-orange-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                <span className="text-2xl font-bold text-orange-600">1</span>
+        {/* Welcome Message */}
+        <Card className="card-dana gradient-primary text-white">
+          <CardHeader>
+            <CardTitle className="text-2xl flex items-center gap-3">
+              <span>🙏</span>
+              Welcome to Dana, {profile?.full_name || 'Friend'}!
+            </CardTitle>
+            <CardDescription className="text-white/90 text-lg">
+              Your journey of compassion starts here. Every donation you make helps sustain spiritual communities and their practice.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid md:grid-cols-3 gap-6 text-center">
+              <div>
+                <div className="text-3xl font-bold mb-2">1,247</div>
+                <div className="text-white/80">Meals Donated</div>
               </div>
-              <h3 className="font-semibold mb-2">Choose a Monastery</h3>
-              <p className="text-gray-600">Browse local monasteries and their specific needs</p>
-            </div>
-            
-            <div className="text-center">
-              <div className="bg-orange-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                <span className="text-2xl font-bold text-orange-600">2</span>
+              <div>
+                <div className="text-3xl font-bold mb-2">89</div>
+                <div className="text-white/80">Monasteries Supported</div>
               </div>
-              <h3 className="font-semibold mb-2">Book a Time Slot</h3>
-              <p className="text-gray-600">Select an available donation time that works for you</p>
-            </div>
-            
-            <div className="text-center">
-              <div className="bg-orange-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                <span className="text-2xl font-bold text-orange-600">3</span>
+              <div>
+                <div className="text-3xl font-bold mb-2">5,692</div>
+                <div className="text-white/80">Happy Donors</div>
               </div>
-              <h3 className="font-semibold mb-2">Make Your Donation</h3>
-              <p className="text-gray-600">Prepare and deliver your food donation at the scheduled time</p>
             </div>
-          </div>
-        </div>
+          </CardContent>
+        </Card>
       </main>
     </div>
   )

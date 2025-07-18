@@ -39,8 +39,8 @@ export default function MonasteriesPage() {
 
   if (authLoading) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-[var(--bg-light)]">
-        <div className="text-lg text-[var(--text-light)]">Loading...</div>
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-lg">Loading...</div>
       </div>
     )
   }
@@ -76,7 +76,15 @@ export default function MonasteriesPage() {
                   <div className="w-full h-32 bg-gradient-to-r from-[var(--primary-color)] to-[var(--accent-color)] rounded-lg mb-4 flex items-center justify-center">
                     <span className="text-4xl">🏛️</span>
                   </div>
-                  
+                  {monastery.image_url && (
+                    <div className="aspect-video bg-gray-200 rounded-md mb-4">
+                      <img
+                        src={monastery.image_url}
+                        alt={monastery.name}
+                        className="w-full h-full object-cover rounded-md"
+                      />
+                    </div>
+                  )}
                   <CardTitle className="text-[var(--text-dark)] group-hover:text-[var(--primary-color)] transition-colors">
                     {monastery.name}
                   </CardTitle>
@@ -86,7 +94,6 @@ export default function MonasteriesPage() {
                     </CardDescription>
                   )}
                 </CardHeader>
-                
                 <CardContent>
                   <div className="space-y-3 mb-6">
                     <div className="flex items-start text-sm text-[var(--text-light)]">
@@ -124,8 +131,8 @@ export default function MonasteriesPage() {
 
                     <div className="flex items-center justify-between pt-2 border-t border-gray-100">
                       <Badge
-                        variant={monastery.status === 'approved' ? 'default' : 'secondary'}
-                        className={monastery.status === 'approved' ? 'bg-green-100 text-green-800' : ''}
+                        variant={monastery.status === 'active' ? 'default' : 'secondary'}
+                        className={monastery.status === 'active' ? 'bg-green-100 text-green-800' : ''}
                       >
                         {monastery.status}
                       </Badge>
@@ -148,22 +155,65 @@ export default function MonasteriesPage() {
                       View Details
                     </Button>
                   </div>
+                      <div className="flex items-center text-sm text-gray-600">
+                        <Phone className="w-4 h-4 mr-2" />
+                        <span>{monastery.phone}</span>
+                      </div>
+                    )}
+
+                    {monastery.email && (
+                      <div className="flex items-center text-sm text-gray-600">
+                        <Mail className="w-4 h-4 mr-2" />
+                        <span>{monastery.email}</span>
+                      </div>
+                    )}
+
+                    {monastery.website && (
+                      <div className="flex items-center text-sm text-gray-600">
+                        <Globe className="w-4 h-4 mr-2" />
+                        <a 
+                          href={monastery.website} 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          className="hover:underline text-blue-600"
+                        >
+                          Visit Website
+                        </a>
+                      </div>
+                    )}
+
+                    <div className="flex items-center text-sm text-gray-600">
+                      <Users className="w-4 h-4 mr-2" />
+                      <span>Capacity: {monastery.capacity} people</span>
+                    </div>
+                  </div>
+
+                  {monastery.dietary_requirements.length > 0 && (
+                    <div className="mb-4">
+                      <h4 className="text-sm font-medium mb-2">Dietary Requirements:</h4>
+                      <div className="flex flex-wrap gap-1">
+                        {monastery.dietary_requirements.map((req) => (
+                          <Badge key={req} variant="secondary" className="text-xs">
+                            {req.replace('_', ' ')}
+                          </Badge>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {monastery.preferred_donation_times && (
+                    <div className="mb-4">
+                      <h4 className="text-sm font-medium mb-1">Preferred Donation Times:</h4>
+                      <p className="text-sm text-gray-600">{monastery.preferred_donation_times}</p>
+                    </div>
+                  )}
+
+                  <Button asChild className="w-full">
+                    <Link href="/donate">Make Donation</Link>
+                  </Button>
                 </CardContent>
               </Card>
             ))}
-          </div>
-        )}
-
-        {!loading && monasteries.length === 0 && (
-          <div className="text-center py-12">
-            <div className="text-6xl mb-4">🏛️</div>
-            <h3 className="text-xl font-semibold text-[var(--text-dark)] mb-2">No Monasteries Found</h3>
-            <p className="text-[var(--text-light)] mb-6">
-              There are currently no monasteries available in your area.
-            </p>
-            <Button className="btn-dana-secondary">
-              Request New Monastery
-            </Button>
           </div>
         )}
       </main>

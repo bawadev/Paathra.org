@@ -48,58 +48,57 @@ export default function AdminDashboard() {
       const { data: allUsers } = await supabase
         .from('user_profiles')
         .select('user_types')
-      
-      const totalDonors = allUsers?.filter(u => u.user_types?.includes('donor')).length || 0
+
+      // Count donors (users with donor type)
+      const totalDonors = allUsers?.filter(user => 
+        user.user_types?.includes('donor')
+      ).length || 0
 
       // Fetch total monasteries
       const { count: totalMonasteries } = await supabase
         .from('monasteries')
         .select('*', { count: 'exact', head: true })
 
-      // Fetch total bookings
-      const { count: totalBookings } = await supabase
-        .from('donation_bookings')
-        .select('*', { count: 'exact', head: true })
-
-      // Fetch pending monasteries (assuming there's a status field)
+      // Fetch pending monasteries
       const { count: pendingMonasteries } = await supabase
         .from('monasteries')
         .select('*', { count: 'exact', head: true })
         .eq('status', 'pending')
+
+      // Fetch total bookings
+      const { count: totalBookings } = await supabase
+        .from('donation_bookings')
+        .select('*', { count: 'exact', head: true })
 
       // Fetch today's bookings
       const today = new Date().toISOString().split('T')[0]
       const { count: todayBookings } = await supabase
         .from('donation_bookings')
         .select('*', { count: 'exact', head: true })
-        .gte('created_at', `${today}T00:00:00.000Z`)
-        .lt('created_at', `${today}T23:59:59.999Z`)
+        .gte('donation_date', today)
+        .lt('donation_date', `${today}T23:59:59`)
 
-      // Fetch recent users
+      // Fetch recent users (last 10)
       const { data: recentUsers } = await supabase
         .from('user_profiles')
-        .select('full_name, user_types, created_at')
+        .select('*')
         .order('created_at', { ascending: false })
-        .limit(5)
+        .limit(10)
 
-      // Fetch recent bookings
+      // Fetch recent bookings (last 10)
       const { data: recentBookings } = await supabase
         .from('donation_bookings')
         .select(`
           *,
-          donor:user_profiles!donation_bookings_donor_id_fkey(full_name),
-          donation_slot:donation_slots!donation_bookings_donation_slot_id_fkey(
-            date,
-            time_slot,
-            monastery:monasteries!donation_slots_monastery_id_fkey(name)
-          )
+          user_profiles (full_name),
+          monasteries (name)
         `)
         .order('created_at', { ascending: false })
-        .limit(5)
+        .limit(10)
 
       setStats({
         totalUsers: totalUsers || 0,
-        totalDonors: totalDonors || 0,
+        totalDonors,
         totalMonasteries: totalMonasteries || 0,
         totalBookings: totalBookings || 0,
         pendingMonasteries: pendingMonasteries || 0,
@@ -119,177 +118,169 @@ export default function AdminDashboard() {
   }
 
   return (
-    <div className="space-y-8">
-      {/* Header */}
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight">Admin Dashboard</h1>
-        <p className="text-muted-foreground">
-          Monitor and manage the Dhaana platform
-        </p>
-      </div>
-
-      {/* Key Metrics */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Users</CardTitle>
-            <Users className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{stats?.totalUsers}</div>
-            <p className="text-xs text-muted-foreground">
-              +{stats?.recentUsers.length} new this week
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Monasteries</CardTitle>
-            <Building className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{stats?.totalMonasteries}</div>
-            {stats?.pendingMonasteries && stats.pendingMonasteries > 0 && (
-              <div className="flex items-center space-x-1">
-                <AlertCircle className="h-3 w-3 text-yellow-500" />
-                <p className="text-xs text-yellow-600">
-                  {stats.pendingMonasteries} pending approval
-                </p>
-              </div>
-            )}
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Donations</CardTitle>
-            <Calendar className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{stats?.totalBookings}</div>
-            <p className="text-xs text-muted-foreground">
-              {stats?.todayBookings} today
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Active Donors</CardTitle>
-            <TrendingUp className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{stats?.totalDonors}</div>
-            <p className="text-xs text-muted-foreground">
-              {stats?.totalUsers && stats?.totalDonors 
-                ? Math.round((stats.totalDonors / stats.totalUsers) * 100)
-                : 0}% of total users
-            </p>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Recent Activity */}
-      <div className="grid gap-4 md:grid-cols-2">
-        {/* Recent Users */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Recent Users</CardTitle>
-            <CardDescription>Latest user registrations</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {stats?.recentUsers.map((user, index) => (
-                <div key={index} className="flex items-center space-x-4">
-                  <div className="flex-1 space-y-1">
-                    <p className="text-sm font-medium leading-none">
-                      {user.full_name}
-                    </p>
-                    <p className="text-sm text-muted-foreground">
-                      {new Date(user.created_at).toLocaleDateString()}
-                    </p>
-                  </div>
-                  <Badge variant={user.user_types?.includes('donor') ? 'default' : 'secondary'}>
-                    {user.user_types?.includes('super_admin') ? 'Platform Admin' :
-                     user.user_types?.includes('monastery_admin') ? 'Monastery Admin' : 'Donor'}
-                  </Badge>
-                </div>
-              ))}
-              {(!stats?.recentUsers || stats.recentUsers.length === 0) && (
-                <p className="text-sm text-muted-foreground">No recent users</p>
-              )}
+    <div className="min-h-screen bg-[var(--bg-light)]">
+      <div className="container-dana px-5 py-8">
+        {/* Dashboard Header */}
+        <div className="card-dana gradient-primary text-white p-8 mb-8">
+          <div className="flex justify-between items-center">
+            <div>
+              <h1 className="text-3xl font-bold mb-2 flex items-center gap-3">
+                <span>🛡️</span>
+                Admin Dashboard
+              </h1>
+              <p className="text-white/90 text-lg">
+                Monitor and manage the Dana platform
+              </p>
             </div>
-          </CardContent>
-        </Card>
-
-        {/* Recent Bookings */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Recent Donations</CardTitle>
-            <CardDescription>Latest donation bookings</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {stats?.recentBookings.map((booking, index) => (
-                <div key={index} className="flex items-center space-x-4">
-                  <div className="flex-1 space-y-1">
-                    <p className="text-sm font-medium leading-none">
-                      {booking.donor?.full_name}
-                    </p>
-                    <p className="text-sm text-muted-foreground">
-                      {booking.donation_slot?.monastery?.name} • {booking.food_type}
-                    </p>
-                    <p className="text-xs text-muted-foreground">
-                      {booking.donation_slot?.date} at {booking.donation_slot?.time_slot}
-                    </p>
-                  </div>
-                  <Badge 
-                    variant={
-                      booking.status === 'confirmed' ? 'default' :
-                      booking.status === 'pending' ? 'secondary' :
-                      booking.status === 'cancelled' ? 'destructive' : 'outline'
-                    }
-                  >
-                    {booking.status}
-                  </Badge>
-                </div>
-              ))}
-              {(!stats?.recentBookings || stats.recentBookings.length === 0) && (
-                <p className="text-sm text-muted-foreground">No recent bookings</p>
-              )}
+            <div className="text-right">
+              <div className="text-2xl font-bold">{stats?.todayBookings || 0}</div>
+              <div className="text-white/80">Today's Bookings</div>
             </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Quick Actions */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Quick Actions</CardTitle>
-          <CardDescription>Common administrative tasks</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-            <Button variant="outline" className="h-20 flex-col">
-              <Users className="h-6 w-6 mb-2" />
-              <span>Manage Users</span>
-            </Button>
-            <Button variant="outline" className="h-20 flex-col">
-              <Building className="h-6 w-6 mb-2" />
-              <span>Review Monasteries</span>
-            </Button>
-            <Button variant="outline" className="h-20 flex-col">
-              <PieChart className="h-6 w-6 mb-2" />
-              <span>View Analytics</span>
-            </Button>
-            <Button variant="outline" className="h-20 flex-col">
-              <AlertCircle className="h-6 w-6 mb-2" />
-              <span>System Alerts</span>
-            </Button>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+
+        {/* Key Metrics */}
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4 mb-8">
+          <Card className="card-dana group">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium text-[var(--text-dark)]">Total Users</CardTitle>
+              <div className="w-12 h-12 bg-gradient-to-r from-[var(--primary-color)] to-[var(--accent-color)] rounded-xl flex items-center justify-center transform group-hover:scale-110 transition-transform">
+                <Users className="h-6 w-6 text-white" />
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="text-3xl font-bold text-[var(--text-dark)]">{stats?.totalUsers}</div>
+              <p className="text-sm text-[var(--text-light)]">
+                +{stats?.recentUsers.length} new this week
+              </p>
+            </CardContent>
+          </Card>
+
+          <Card className="card-dana group">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium text-[var(--text-dark)]">Monasteries</CardTitle>
+              <div className="w-12 h-12 bg-gradient-to-r from-[var(--secondary-color)] to-[var(--primary-color)] rounded-xl flex items-center justify-center transform group-hover:scale-110 transition-transform">
+                <Building className="h-6 w-6 text-white" />
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="text-3xl font-bold text-[var(--text-dark)]">{stats?.totalMonasteries}</div>
+              {stats?.pendingMonasteries && stats.pendingMonasteries > 0 && (
+                <div className="flex items-center space-x-1">
+                  <AlertCircle className="h-3 w-3 text-yellow-500" />
+                  <p className="text-sm text-yellow-600">
+                    {stats.pendingMonasteries} pending approval
+                  </p>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
+          <Card className="card-dana group">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium text-[var(--text-dark)]">Total Donations</CardTitle>
+              <div className="w-12 h-12 bg-gradient-to-r from-[var(--accent-color)] to-[var(--primary-color)] rounded-xl flex items-center justify-center transform group-hover:scale-110 transition-transform">
+                <Calendar className="h-6 w-6 text-white" />
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="text-3xl font-bold text-[var(--text-dark)]">{stats?.totalBookings}</div>
+              <p className="text-sm text-[var(--text-light)]">
+                {stats?.todayBookings} today
+              </p>
+            </CardContent>
+          </Card>
+
+          <Card className="card-dana group">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium text-[var(--text-dark)]">Active Donors</CardTitle>
+              <div className="w-12 h-12 bg-gradient-to-r from-green-500 to-[var(--primary-color)] rounded-xl flex items-center justify-center transform group-hover:scale-110 transition-transform">
+                <TrendingUp className="h-6 w-6 text-white" />
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="text-3xl font-bold text-[var(--text-dark)]">{stats?.totalDonors}</div>
+              <p className="text-sm text-[var(--text-light)]">
+                {stats?.totalUsers && stats?.totalDonors 
+                  ? Math.round((stats.totalDonors / stats.totalUsers) * 100)
+                  : 0}% of total users
+              </p>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Recent Activity */}
+        <div className="grid gap-8 md:grid-cols-2">
+          {/* Recent Users */}
+          <Card className="card-dana">
+            <CardHeader>
+              <CardTitle className="text-[var(--text-dark)] flex items-center gap-2">
+                <Users className="w-5 h-5" />
+                Recent Users
+              </CardTitle>
+              <CardDescription className="text-[var(--text-light)]">Latest user registrations</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {stats?.recentUsers.slice(0, 5).map((user) => (
+                  <div key={user.id} className="flex items-center justify-between p-3 bg-[var(--bg-light)] rounded-lg">
+                    <div>
+                      <p className="font-medium text-[var(--text-dark)]">{user.full_name}</p>
+                      <p className="text-sm text-[var(--text-light)]">{user.email}</p>
+                    </div>
+                    <div className="text-right">
+                      <Badge variant="secondary" className="mb-1">
+                        {getUserTypeDisplayName(user.user_types)}
+                      </Badge>
+                      <p className="text-xs text-[var(--text-light)]">
+                        {new Date(user.created_at).toLocaleDateString()}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Recent Bookings */}
+          <Card className="card-dana">
+            <CardHeader>
+              <CardTitle className="text-[var(--text-dark)] flex items-center gap-2">
+                <Calendar className="w-5 h-5" />
+                Recent Bookings
+              </CardTitle>
+              <CardDescription className="text-[var(--text-light)]">Latest donation bookings</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {stats?.recentBookings.slice(0, 5).map((booking) => (
+                  <div key={booking.id} className="flex items-center justify-between p-3 bg-[var(--bg-light)] rounded-lg">
+                    <div>
+                      <p className="font-medium text-[var(--text-dark)]">
+                        {booking.user_profiles?.full_name}
+                      </p>
+                      <p className="text-sm text-[var(--text-light)]">
+                        {booking.monasteries?.name}
+                      </p>
+                    </div>
+                    <div className="text-right">
+                      <Badge 
+                        variant={booking.status === 'confirmed' ? 'default' : 'secondary'}
+                        className={booking.status === 'confirmed' ? 'bg-green-100 text-green-800' : ''}
+                      >
+                        {booking.status}
+                      </Badge>
+                      <p className="text-xs text-[var(--text-light)]">
+                        {new Date(booking.donation_date).toLocaleDateString()}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
     </div>
   )
 }
