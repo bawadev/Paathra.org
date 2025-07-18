@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Donor Dashboard - Dana</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="dashboard.css">
+</head>
+<body>
+    <!-- Navigation (same as calendar.html) -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <div class="lotus-icon"></div>
+                <span>Dana</span>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="index.html" class="nav-link">Home</a></li>
+                <li><a href="dashboard.html" class="nav-link active">Dashboard</a></li>
+                <li><a href="calendar.html" class="nav-link">Calendar</a></li>
+                <li><a href="#" class="nav-link">Donations</a></li>
+                <li><a href="#" class="nav-link">Profile</a></li>
+            </ul>
+            <div class="nav-user">
+                <span class="user-name">Welcome, Sarah</span>
+                <div class="user-avatar"></div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="dashboard-main">
+        <!-- Dashboard Header -->
+        <div class="dashboard-header">
+            <div class="header-content">
+                <div class="greeting">
+                    <h1>Welcome back, Sarah! 🙏</h1>
+                    <p>Your generosity has made a real difference. Here's your impact overview.</p>
+                </div>
+                <button class="btn-primary">
+                    <span class="plus-icon">+</span>
+                    New Donation
+                </button>
+            </div>
+        </div>
+
+        <!-- Stats Overview -->
+        <div class="dashboard-stats">
+            <div class="stat-card featured">
+                <div class="stat-icon">
+                    <div class="icon-wrapper primary">
+                        <span>🍚</span>
+                    </div>
+                </div>
+                <div class="stat-content">
+                    <h3>Total Donated</h3>
+                    <p class="stat-number">$2,450</p>
+                    <span class="stat-change positive">+12% this month</span>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <div class="icon-wrapper secondary">
+                        <span>🏛️</span>
+                    </div>
+                </div>
+                <div class="stat-content">
+                    <h3>Monasteries Supported</h3>
+                    <p class="stat-number">8</p>
+                    <span class="stat-subtitle">Active connections</span>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <div class="icon-wrapper accent">
+                        <span>🥘</span>
+                    </div>
+                </div>
+                <div class="stat-content">
+                    <h3>Meals Provided</h3>
+                    <p class="stat-number">1,225</p>
+                    <span class="stat-subtitle">This year</span>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <div class="icon-wrapper success">
+                        <span>📅</span>
+                    </div>
+                </div>
+                <div class="stat-content">
+                    <h3>Next Donation</h3>
+                    <p class="stat-number">2 days</p>
+                    <span class="stat-subtitle">Bodhi Monastery</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Dashboard Content -->
+        <div class="dashboard-content">
+            <!-- Recent Donations -->
+            <div class="dashboard-section">
+                <div class="section-header">
+                    <h2>Recent Donations</h2>
+                    <a href="#" class="view-all">View All →</a>
+                </div>
+                <div class="donations-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Monastery</th>
+                                <th>Type</th>
+                                <th>Amount</th>
+                                <th>Status</th>
+                                <th>Receipt</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Jan 10, 2025</td>
+                                <td>
+                                    <div class="monastery-cell">
+                                        <div class="monastery-avatar"></div>
+                                        <span>Bodhi Monastery</span>
+                                    </div>
+                                </td>
+                                <td><span class="donation-type food">Food</span></td>
+                                <td>$50</td>
+                                <td><span class="status completed">Completed</span></td>
+                                <td><button class="btn-icon">📄</button></td>
+                            </tr>
+                            <tr>
+                                <td>Jan 3, 2025</td>
+                                <td>
+                                    <div class="monastery-cell">
+                                        <div class="monastery-avatar"></div>
+                                        <span>Dhamma Center</span>
+                                    </div>
+                                </td>
+                                <td><span class="donation-type essentials">Essentials</span></td>
+                                <td>$30</td>
+                                <td><span class="status completed">Completed</span></td>
+                                <td><button class="btn-icon">📄</button></td>
+                            </tr>
+                            <tr>
+                                <td>Dec 25, 2024</td>
+                                <td>
+                                    <div class="monastery-cell">
+                                        <div class="monastery-avatar"></div>
+                                        <span>Zen Mountain Temple</span>
+                                    </div>
+                                </td>
+                                <td><span class="donation-type monetary">Monetary</span></td>
+                                <td>$100</td>
+                                <td><span class="status completed">Completed</span></td>
+                                <td><button class="btn-icon">📄</button></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Impact Chart -->
+            <div class="dashboard-section chart-section">
+                <div class="section-header">
+                    <h2>Donation Trend</h2>
+                    <div class="chart-controls">
+                        <button class="chart-btn active">6M</button>
+                        <button class="chart-btn">1Y</button>
+                        <button class="chart-btn">All</button>
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <div class="chart">
+                        <div class="chart-bar" style="height: 60%">
+                            <span class="bar-label">Aug</span>
+                        </div>
+                        <div class="chart-bar" style="height: 75%">
+                            <span class="bar-label">Sep</span>
+                        </div>
+                        <div class="chart-bar" style="height: 85%">
+                            <span class="bar-label">Oct</span>
+                        </div>
+                        <div class="chart-bar" style="height: 70%">
+                            <span class="bar-label">Nov</span>
+                        </div>
+                        <div class="chart-bar" style="height: 90%">
+                            <span class="bar-label">Dec</span>
+                        </div>
+                        <div class="chart-bar active" style="height: 80%">
+                            <span class="bar-label">Jan</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sidebar Content -->
+        <aside class="dashboard-sidebar">
+            <!-- Favorite Monasteries -->
+            <div class="sidebar-section">
+                <h3>Favorite Monasteries</h3>
+                <div class="monastery-list">
+                    <div class="monastery-item">
+                        <div class="monastery-avatar"></div>
+                        <div class="monastery-details">
+                            <h4>Bodhi Monastery</h4>
+                            <p>Nepal · 50 monks</p>
+                            <div class="mini-progress">
+                                <div class="progress-fill" style="width: 75%"></div>
+                            </div>
+                        </div>
+                        <button class="btn-donate-mini">Donate</button>
+                    </div>
+                    <div class="monastery-item">
+                        <div class="monastery-avatar"></div>
+                        <div class="monastery-details">
+                            <h4>Dhamma Center</h4>
+                            <p>Thailand · 30 monks</p>
+                            <div class="mini-progress">
+                                <div class="progress-fill" style="width: 60%"></div>
+                            </div>
+                        </div>
+                        <button class="btn-donate-mini">Donate</button>
+                    </div>
+                    <div class="monastery-item">
+                        <div class="monastery-avatar"></div>
+                        <div class="monastery-details">
+                            <h4>Zen Mountain Temple</h4>
+                            <p>Japan · 20 monks</p>
+                            <div class="mini-progress">
+                                <div class="progress-fill" style="width: 45%"></div>
+                            </div>
+                        </div>
+                        <button class="btn-donate-mini">Donate</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Achievements -->
+            <div class="sidebar-section">
+                <h3>Your Achievements</h3>
+                <div class="achievements-grid">
+                    <div class="achievement unlocked">
+                        <span class="achievement-icon">🌱</span>
+                        <span class="achievement-name">First Steps</span>
+                    </div>
+                    <div class="achievement unlocked">
+                        <span class="achievement-icon">💝</span>
+                        <span class="achievement-name">Regular Giver</span>
+                    </div>
+                    <div class="achievement unlocked">
+                        <span class="achievement-icon">🌟</span>
+                        <span class="achievement-name">Impact Maker</span>
+                    </div>
+                    <div class="achievement">
+                        <span class="achievement-icon">🏆</span>
+                        <span class="achievement-name">Master Donor</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="sidebar-section">
+                <h3>Quick Actions</h3>
+                <div class="quick-actions">
+                    <button class="quick-action-btn">
+                        <span class="action-icon">📊</span>
+                        <span>Download Report</span>
+                    </button>
+                    <button class="quick-action-btn">
+                        <span class="action-icon">🔔</span>
+                        <span>Manage Reminders</span>
+                    </button>
+                    <button class="quick-action-btn">
+                        <span class="action-icon">💳</span>
+                        <span>Payment Methods</span>
+                    </button>
+                </div>
+            </div>
+        </aside>
+    </main>
+</body>
+</html>
