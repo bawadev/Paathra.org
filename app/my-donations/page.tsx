@@ -93,8 +93,8 @@ export default function MyDonationsPage() {
       <Navigation />
       
       {/* Hero Section */}
-      <section className="pt-32 pb-12 px-5">
-        <div className="container-dana">
+      <section className="pt-32 pb-12">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center space-y-6">
             <h1 className="text-4xl lg:text-5xl font-bold">
               <span className="gradient-text">My Donations</span>
@@ -107,8 +107,8 @@ export default function MyDonationsPage() {
       </section>
 
       {/* Main Content */}
-      <section className="px-5 pb-20">
-        <div className="container-dana">
+      <section className="pb-20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
           {loading ? (
             <div className="flex justify-center py-20">

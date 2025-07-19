@@ -6,16 +6,15 @@ import { Heart, Flower, Mail, Phone, MapPin, Facebook, Twitter, Instagram } from
 
 export function Footer() {
   return (
-    <div className="px-4 md:px-8 lg:px-12 pb-6">
-      <footer className="bg-gradient-to-br from-[var(--text-dark)] to-[var(--secondary-color)] text-white relative overflow-hidden rounded-2xl shadow-2xl">
-        {/* Background Pattern */}
-        <div className="absolute inset-0 opacity-5">
-          <div className="absolute top-0 left-0 w-full h-full bg-repeat" style={{
-            backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='20' fill='none' stroke='%23D4AF37' stroke-width='0.5'/%3E%3C/svg%3E")`
-          }}></div>
-        </div>
+    <footer className="bg-gradient-to-br from-[var(--text-dark)] to-[var(--secondary-color)] text-white relative overflow-hidden rounded-2xl shadow-2xl mx-4 sm:mx-6 lg:mx-8 mb-6">
+      {/* Background Pattern */}
+      <div className="absolute inset-0 opacity-5">
+        <div className="absolute top-0 left-0 w-full h-full bg-repeat" style={{
+          backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='20' fill='none' stroke='%23D4AF37' stroke-width='0.5'/%3E%3C/svg%3E")`
+        }}></div>
+      </div>
       
-      <div className="container-dana py-20 relative z-10">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 relative z-10">
         <div className="grid lg:grid-cols-4 md:grid-cols-2 gap-12">
           {/* Brand Section */}
           <div className="space-y-6">
@@ -145,6 +144,5 @@ export function Footer() {
         </div>
       </div>
     </footer>
-    </div>
   )
 }

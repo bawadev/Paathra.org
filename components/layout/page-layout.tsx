@@ -1,6 +1,6 @@
 /**
  * Reusable Page Layout Component
- * 
+ *
  * Provides consistent layout structure for all pages including:
  * - Navigation
  * - Footer
@@ -23,9 +23,9 @@ interface PageLayoutProps {
   loadingText?: string
 }
 
-export function PageLayout({ 
-  children, 
-  loading = false, 
+export function PageLayout({
+  children,
+  loading = false,
   className = '',
   showNavigation = true,
   showFooter = true,
@@ -58,8 +58,8 @@ export function PageLayout({
 /**
  * Main content wrapper with consistent padding and container
  */
-export function MainContent({ 
-  children, 
+export function MainContent({
+  children,
   className = '',
   pt = 32,
   pb = 20
@@ -70,8 +70,8 @@ export function MainContent({
   pb?: number
 }) {
   return (
-    <main className={`pt-${pt} pb-${pb} px-5 ${className}`}>
-      <div className="container-dana">
+    <main className={`pt-${pt} pb-${pb} ${className}`}>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {children}
       </div>
     </main>
@@ -81,9 +81,9 @@ export function MainContent({
 /**
  * Hero section with consistent styling
  */
-export function HeroSection({ 
-  title, 
-  subtitle, 
+export function HeroSection({
+  title,
+  subtitle,
   icon,
   className = ''
 }: {
@@ -93,8 +93,8 @@ export function HeroSection({
   className?: string
 }) {
   return (
-    <section className="pt-32 pb-20 px-5">
-      <div className="container-dana">
+    <section className={`pt-${32} pb-${20} ${className}`}>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
           <div className="flex items-center justify-center mb-4">
             {icon && <div className="mr-3">{icon}</div>}
