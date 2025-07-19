@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import { useAuth } from '@/lib/auth-context'
 import { Navigation } from '@/components/navigation'
+import { Footer } from '@/components/footer'
 import { AuthForm } from '@/components/auth-form'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -74,8 +75,11 @@ export default function MyDonationsPage() {
 
   if (authLoading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="text-lg">Loading...</div>
+      <div className="flex items-center justify-center min-h-screen bg-[var(--bg-light)]">
+        <div className="text-lg text-[var(--text-light)] flex items-center gap-3">
+          <div className="lotus-icon animate-spin"></div>
+          Loading your donations...
+        </div>
       </div>
     )
   }
@@ -85,118 +89,162 @@ export default function MyDonationsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-[var(--bg-light)]">
       <Navigation />
       
-      <main className="container mx-auto px-4 py-8">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">My Donations</h1>
-          <p className="text-gray-600">
-            Track your donation bookings and their status.
-          </p>
-        </div>
-
-        {loading ? (
-          <div className="text-center py-8">Loading your donations...</div>
-        ) : bookings.length === 0 ? (
-          <Card>
-            <CardContent className="text-center py-12">
-              <Calendar className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-lg font-medium mb-2">No donations yet</h3>
-              <p className="text-gray-600 mb-6">
-                You haven't made any donation bookings yet. Start by booking your first donation!
-              </p>
-              <Button asChild>
-                <a href="/donate">Make Your First Donation</a>
-              </Button>
-            </CardContent>
-          </Card>
-        ) : (
-          <div className="grid gap-6">
-            {bookings.map((booking) => (
-              <Card key={booking.id} className="hover:shadow-md transition-shadow">
-                <CardHeader>
-                  <div className="flex items-start justify-between">
-                    <div>
-                      <CardTitle>{booking.donation_slot?.monastery?.name}</CardTitle>
-                      <CardDescription className="flex items-center space-x-2 mt-1">
-                        <Calendar className="w-4 h-4" />
-                        <span>
-                          {format(parseISO(booking.donation_slot?.date || ''), 'MMMM d, yyyy')}
-                        </span>
-                        <Clock className="w-4 h-4 ml-4" />
-                        <span>
-                          {format(
-                            parseISO(`2000-01-01T${booking.donation_slot?.time_slot}`),
-                            'h:mm a'
-                          )}
-                        </span>
-                      </CardDescription>
-                    </div>
-                    <Badge className={getStatusColor(booking.status)}>
-                      {booking.status.charAt(0).toUpperCase() + booking.status.slice(1)}
-                    </Badge>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                    <div className="space-y-2">
-                      <div className="flex items-center text-sm text-gray-600">
-                        <Utensils className="w-4 h-4 mr-2" />
-                        <span><strong>Food:</strong> {booking.food_type}</span>
-                      </div>
-                      <div className="flex items-center text-sm text-gray-600">
-                        <Users className="w-4 h-4 mr-2" />
-                        <span><strong>Servings:</strong> {booking.estimated_servings}</span>
-                      </div>
-                      {booking.contact_phone && (
-                        <div className="flex items-center text-sm text-gray-600">
-                          <Phone className="w-4 h-4 mr-2" />
-                          <span><strong>Contact:</strong> {booking.contact_phone}</span>
-                        </div>
-                      )}
-                    </div>
-                    <div className="space-y-2">
-                      <div className="flex items-start text-sm text-gray-600">
-                        <MapPin className="w-4 h-4 mr-2 mt-0.5" />
-                        <span>{booking.donation_slot?.monastery?.address}</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  {booking.special_notes && (
-                    <div className="bg-gray-50 p-3 rounded-md mb-4">
-                      <strong className="text-sm">Special Notes:</strong>
-                      <p className="text-sm text-gray-600 mt-1">{booking.special_notes}</p>
-                    </div>
-                  )}
-
-                  <div className="flex space-x-2">
-                    {booking.status === 'pending' && (
-                      <Button
-                        variant="destructive"
-                        size="sm"
-                        onClick={() => updateBookingStatus(booking.id, 'cancelled')}
-                      >
-                        Cancel Booking
-                      </Button>
-                    )}
-                    {booking.status === 'confirmed' && (
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => updateBookingStatus(booking.id, 'completed')}
-                      >
-                        Mark as Completed
-                      </Button>
-                    )}
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
+      {/* Hero Section */}
+      <section className="pt-32 pb-12 px-5">
+        <div className="container-dana">
+          <div className="text-center space-y-6">
+            <h1 className="text-4xl lg:text-5xl font-bold">
+              <span className="gradient-text">My Donations</span>
+            </h1>
+            <p className="text-xl text-[var(--text-light)] max-w-2xl mx-auto">
+              Track your contributions and see the impact of your generosity
+            </p>
           </div>
-        )}
-      </main>
+        </div>
+      </section>
+
+      {/* Main Content */}
+      <section className="px-5 pb-20">
+        <div className="container-dana">
+
+          {loading ? (
+            <div className="flex justify-center py-20">
+              <div className="flex items-center gap-3 text-[var(--text-light)]">
+                <div className="lotus-icon animate-spin"></div>
+                <span className="text-lg">Loading your donations...</span>
+              </div>
+            </div>
+          ) : bookings.length === 0 ? (
+            <div className="text-center py-20">
+              <div className="card-dana max-w-2xl mx-auto p-12">
+                <Calendar className="w-16 h-16 text-[var(--primary-color)] mx-auto mb-6" />
+                <h3 className="text-2xl font-semibold text-[var(--text-dark)] mb-4">
+                  No donations yet
+                </h3>
+                <p className="text-[var(--text-light)] mb-8 text-lg">
+                  Your donation journey begins with a single act of kindness. Start by finding monasteries near you.
+                </p>
+                <Button className="btn-dana-primary large">
+                  <Calendar className="w-5 h-5 mr-2" />
+                  Make Your First Donation
+                </Button>
+              </div>
+            </div>
+          ) : (
+            <div className="space-y-6">
+              <div className="flex justify-between items-center">
+                <h2 className="text-2xl font-semibold text-[var(--text-dark)]">
+                  Your Donation History ({bookings.length})
+                </h2>
+              </div>
+              
+              <div className="grid gap-6">
+                {bookings.map((booking) => (
+                  <div key={booking.id} className="card-dana p-6 hover:shadow-lg transition-all duration-300">
+                    <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+                      {/* Booking Info */}
+                      <div className="flex-1">
+                        <div className="flex items-start gap-4">
+                          <div className="w-12 h-12 bg-gradient-to-br from-[var(--primary-color)] to-[var(--accent-color)] rounded-full flex items-center justify-center">
+                            <Utensils className="w-6 h-6 text-white" />
+                          </div>
+                          <div className="flex-1">
+                            <h3 className="font-semibold text-lg text-[var(--text-dark)] mb-2">
+                              {booking.donation_slot?.monastery?.name || 'Unknown Monastery'}
+                            </h3>
+                            <div className="grid md:grid-cols-2 gap-4 text-sm text-[var(--text-light)]">
+                              <div className="flex items-center gap-2">
+                                <Calendar className="w-4 h-4 text-[var(--primary-color)]" />
+                                <span>
+                                  {booking.donation_slot?.date
+                                    ? format(parseISO(booking.donation_slot.date), 'MMMM d, yyyy')
+                                    : 'Date not available'}
+                                </span>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                <Clock className="w-4 h-4 text-[var(--primary-color)]" />
+                                <span>
+                                  {booking.donation_slot?.time_slot || 'Time not available'}
+                                </span>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                <Users className="w-4 h-4 text-[var(--primary-color)]" />
+                                <span>{booking.donation_slot?.max_donors || 0} donors capacity</span>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                <MapPin className="w-4 h-4 text-[var(--primary-color)]" />
+                                <span>{booking.donation_slot?.monastery?.address || 'Location not available'}</span>
+                              </div>
+                            </div>
+                            {booking.special_notes && (
+                              <div className="mt-3 p-3 bg-[var(--bg-light)] rounded-lg">
+                                <p className="text-sm text-[var(--text-dark)]">
+                                  <strong>Your note:</strong> {booking.special_notes}
+                                </p>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Status & Actions */}
+                      <div className="flex flex-col items-end gap-4">
+                        <Badge 
+                          variant={
+                            booking.status === 'confirmed' ? 'default' :
+                            booking.status === 'pending' ? 'secondary' :
+                            booking.status === 'cancelled' ? 'destructive' : 'outline'
+                          }
+                          className="text-sm px-3 py-1"
+                        >
+                          {booking.status?.charAt(0).toUpperCase() + booking.status?.slice(1) || 'Unknown'}
+                        </Badge>
+                        
+                        <div className="flex gap-3">
+                          {booking.status === 'pending' && (
+                            <>
+                              <Button
+                                size="sm"
+                                onClick={() => updateBookingStatus(booking.id, 'confirmed')}
+                                className="btn-dana-primary text-sm"
+                              >
+                                Confirm
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => updateBookingStatus(booking.id, 'cancelled')}
+                                className="text-sm border-[var(--primary-color)] text-[var(--primary-color)] hover:bg-[var(--primary-color)] hover:text-white"
+                              >
+                                Cancel
+                              </Button>
+                            </>
+                          )}
+                          {booking.donation_slot?.monastery?.phone && (
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              className="text-sm border-[var(--secondary-color)] text-[var(--secondary-color)] hover:bg-[var(--secondary-color)] hover:text-white"
+                            >
+                              <Phone className="w-4 h-4 mr-1" />
+                              Contact
+                            </Button>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      </section>
+
+      <Footer />
     </div>
   )
 }

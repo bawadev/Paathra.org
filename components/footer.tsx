@@ -6,105 +6,139 @@ import { Heart, Flower, Mail, Phone, MapPin, Facebook, Twitter, Instagram } from
 
 export function Footer() {
   return (
-    <footer className="bg-[var(--text-dark)] text-white">
-      <div className="container-dana py-16">
-        <div className="grid lg:grid-cols-4 md:grid-cols-2 gap-8">
+    <footer className="bg-gradient-to-br from-[var(--text-dark)] to-[var(--secondary-color)] text-white relative overflow-hidden">
+      {/* Background Pattern */}
+      <div className="absolute inset-0 opacity-5">
+        <div className="absolute top-0 left-0 w-full h-full bg-repeat" style={{
+          backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='20' fill='none' stroke='%23D4AF37' stroke-width='0.5'/%3E%3C/svg%3E")`
+        }}></div>
+      </div>
+      
+      <div className="container-dana py-20 relative z-10">
+        <div className="grid lg:grid-cols-4 md:grid-cols-2 gap-12">
           {/* Brand Section */}
-          <div className="space-y-4">
-            <div className="flex items-center space-x-2">
-              <Flower className="w-8 h-8 text-[var(--primary-color)]" />
-              <span className="text-2xl font-bold gradient-text">Dhaana</span>
+          <div className="space-y-6">
+            <div className="flex items-center space-x-3">
+              <div className="lotus-icon"></div>
+              <span className="text-3xl font-bold bg-gradient-to-r from-[var(--primary-color)] to-[var(--accent-color)] bg-clip-text text-transparent">
+                Dhaana
+              </span>
             </div>
-            <p className="text-gray-300 leading-relaxed">
+            <p className="text-gray-300 leading-relaxed text-lg">
               Connecting generous hearts with Buddhist monasteries to support 
               spiritual practice through food donations.
             </p>
             <div className="flex space-x-4">
-              <Button variant="ghost" size="sm" className="text-gray-300 hover:text-[var(--primary-color)]">
-                <Facebook className="w-4 h-4" />
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                className="w-12 h-12 rounded-full bg-white/10 hover:bg-[var(--primary-color)] text-white hover:text-[var(--text-dark)] transition-all duration-300 hover:scale-110"
+              >
+                <Facebook className="w-5 h-5" />
               </Button>
-              <Button variant="ghost" size="sm" className="text-gray-300 hover:text-[var(--primary-color)]">
-                <Twitter className="w-4 h-4" />
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                className="w-12 h-12 rounded-full bg-white/10 hover:bg-[var(--primary-color)] text-white hover:text-[var(--text-dark)] transition-all duration-300 hover:scale-110"
+              >
+                <Twitter className="w-5 h-5" />
               </Button>
-              <Button variant="ghost" size="sm" className="text-gray-300 hover:text-[var(--primary-color)]">
-                <Instagram className="w-4 h-4" />
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                className="w-12 h-12 rounded-full bg-white/10 hover:bg-[var(--primary-color)] text-white hover:text-[var(--text-dark)] transition-all duration-300 hover:scale-110"
+              >
+                <Instagram className="w-5 h-5" />
               </Button>
             </div>
           </div>
 
           {/* Quick Links */}
-          <div className="space-y-4">
-            <h3 className="text-lg font-semibold text-[var(--primary-color)]">Quick Links</h3>
-            <nav className="space-y-2">
-              <Link href="/monasteries" className="block text-gray-300 hover:text-[var(--primary-color)] transition-colors">
+          <div className="space-y-6">
+            <h3 className="text-xl font-semibold text-[var(--primary-color)] flex items-center gap-2">
+              <Heart className="w-5 h-5" />
+              Quick Links
+            </h3>
+            <nav className="space-y-4">
+              <Link href="/monasteries" className="block text-gray-300 hover:text-[var(--primary-color)] transition-colors duration-300 text-lg">
                 Find Monasteries
               </Link>
-              <Link href="/donate" className="block text-gray-300 hover:text-[var(--primary-color)] transition-colors">
+              <Link href="/donate" className="block text-gray-300 hover:text-[var(--primary-color)] transition-colors duration-300 text-lg">
                 Make Donation
               </Link>
-              <Link href="/my-donations" className="block text-gray-300 hover:text-[var(--primary-color)] transition-colors">
+              <Link href="/my-donations" className="block text-gray-300 hover:text-[var(--primary-color)] transition-colors duration-300 text-lg">
                 My Donations
               </Link>
-              <Link href="/manage" className="block text-gray-300 hover:text-[var(--primary-color)] transition-colors">
+              <Link href="/manage" className="block text-gray-300 hover:text-[var(--primary-color)] transition-colors duration-300 text-lg">
                 Manage Monastery
               </Link>
             </nav>
           </div>
 
           {/* Support */}
-          <div className="space-y-4">
-            <h3 className="text-lg font-semibold text-[var(--primary-color)]">Support</h3>
-            <nav className="space-y-2">
-              <Link href="/about" className="block text-gray-300 hover:text-[var(--primary-color)] transition-colors">
+          <div className="space-y-6">
+            <h3 className="text-xl font-semibold text-[var(--primary-color)] flex items-center gap-2">
+              <MapPin className="w-5 h-5" />
+              Support
+            </h3>
+            <nav className="space-y-4">
+              <Link href="/help" className="block text-gray-300 hover:text-[var(--primary-color)] transition-colors duration-300 text-lg">
+                Help Center
+              </Link>
+              <Link href="/about" className="block text-gray-300 hover:text-[var(--primary-color)] transition-colors duration-300 text-lg">
                 About Us
               </Link>
-              <Link href="/how-it-works" className="block text-gray-300 hover:text-[var(--primary-color)] transition-colors">
-                How It Works
-              </Link>
-              <Link href="/faq" className="block text-gray-300 hover:text-[var(--primary-color)] transition-colors">
-                FAQ
-              </Link>
-              <Link href="/contact" className="block text-gray-300 hover:text-[var(--primary-color)] transition-colors">
+              <Link href="/contact" className="block text-gray-300 hover:text-[var(--primary-color)] transition-colors duration-300 text-lg">
                 Contact
+              </Link>
+              <Link href="/privacy" className="block text-gray-300 hover:text-[var(--primary-color)] transition-colors duration-300 text-lg">
+                Privacy Policy
               </Link>
             </nav>
           </div>
 
           {/* Contact Info */}
-          <div className="space-y-4">
-            <h3 className="text-lg font-semibold text-[var(--primary-color)]">Get in Touch</h3>
-            <div className="space-y-3">
+          <div className="space-y-6">
+            <h3 className="text-xl font-semibold text-[var(--primary-color)] flex items-center gap-2">
+              <Phone className="w-5 h-5" />
+              Connect
+            </h3>
+            <div className="space-y-4">
               <div className="flex items-center space-x-3 text-gray-300">
-                <Mail className="w-4 h-4 text-[var(--primary-color)]" />
-                <span className="text-sm">contact@dhaana.org</span>
+                <Mail className="w-5 h-5 text-[var(--primary-color)]" />
+                <span className="text-lg">hello@dhaana.org</span>
               </div>
               <div className="flex items-center space-x-3 text-gray-300">
-                <Phone className="w-4 h-4 text-[var(--primary-color)]" />
-                <span className="text-sm">+1 (555) 123-4567</span>
+                <Phone className="w-5 h-5 text-[var(--primary-color)]" />
+                <span className="text-lg">+1 (555) 123-4567</span>
               </div>
-              <div className="flex items-start space-x-3 text-gray-300">
-                <MapPin className="w-4 h-4 text-[var(--primary-color)] mt-0.5" />
-                <span className="text-sm">123 Meditation Way<br />Peaceful Valley, CA 90210</span>
+              <div className="mt-6 p-4 bg-white/5 rounded-2xl border border-white/10">
+                <p className="text-sm text-gray-300 italic">
+                  "Dana is not just giving, it's an expression of the heart's natural generosity."
+                </p>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Bottom Section */}
-        <div className="border-t border-gray-700 mt-12 pt-8">
+        {/* Footer Bottom */}
+        <div className="mt-16 pt-8 border-t border-white/10 text-center">
           <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
-            <div className="flex items-center space-x-2 text-gray-300 text-sm">
-              <Heart className="w-4 h-4 text-[var(--accent-color)]" />
-              <span>Made with compassion for the Buddhist community</span>
-            </div>
-            <div className="flex space-x-6 text-sm text-gray-300">
-              <Link href="/privacy" className="hover:text-[var(--primary-color)] transition-colors">
-                Privacy Policy
+            <p className="text-gray-400 text-lg">
+              © 2025 Dhaana. Made with{' '}
+              <Heart className="w-4 h-4 inline text-[var(--accent-color)]" />
+              {' '}for spiritual communities.
+            </p>
+            <div className="flex items-center space-x-6 text-sm text-gray-400">
+              <Link href="/terms" className="hover:text-[var(--primary-color)] transition-colors duration-300">
+                Terms
               </Link>
-              <Link href="/terms" className="hover:text-[var(--primary-color)] transition-colors">
-                Terms of Service
+              <Link href="/privacy" className="hover:text-[var(--primary-color)] transition-colors duration-300">
+                Privacy
               </Link>
-              <span>© 2025 Dhaana. All rights reserved.</span>
+              <Link href="/cookies" className="hover:text-[var(--primary-color)] transition-colors duration-300">
+                Cookies
+              </Link>
             </div>
           </div>
         </div>
