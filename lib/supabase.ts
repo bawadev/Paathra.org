@@ -111,6 +111,7 @@ export interface DonationBooking {
   estimated_servings: number
   special_notes?: string
   contact_phone?: string
+  donation_date: string
   status: 'pending' | 'confirmed' | 'cancelled' | 'completed'
   confirmed_at?: string
   created_at: string

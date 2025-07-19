@@ -91,7 +91,10 @@ export default function AdminDashboard() {
         .select(`
           *,
           user_profiles (full_name),
-          monasteries (name)
+          donation_slots (
+            date,
+            monasteries (name)
+          )
         `)
         .order('created_at', { ascending: false })
         .limit(10)
@@ -260,7 +263,7 @@ export default function AdminDashboard() {
                         {booking.user_profiles?.full_name}
                       </p>
                       <p className="text-sm text-[var(--text-light)]">
-                        {booking.monasteries?.name}
+                        {booking.donation_slots?.monasteries?.name}
                       </p>
                     </div>
                     <div className="text-right">
