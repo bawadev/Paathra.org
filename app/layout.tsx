@@ -4,6 +4,7 @@ import "./globals.css";
 import { AuthProvider } from "@/lib/auth-context";
 import { Toaster } from "@/components/ui/sonner";
 import AuthErrorBoundary from "@/components/auth-error-boundary";
+import { BaseLayout } from "@/components/layout/base-layout";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -32,8 +33,10 @@ export default function RootLayout({
       >
         <AuthErrorBoundary>
           <AuthProvider>
-            {children}
-            <Toaster />
+            <BaseLayout>
+              {children}
+            </BaseLayout>
+            <Toaster position="top-right" richColors />
           </AuthProvider>
         </AuthErrorBoundary>
       </body>

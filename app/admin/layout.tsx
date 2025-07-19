@@ -1,6 +1,7 @@
 'use client'
 
 import { useAuth } from '@/lib/auth-context'
+import { BaseLayout } from '@/components/layout/base-layout'
 import { useRouter } from 'next/navigation'
 import { useEffect } from 'react'
 import { LoadingSpinner } from '@/components/loading'
@@ -37,10 +38,10 @@ export default function AdminLayout({
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="container mx-auto px-4 py-8">
+    <BaseLayout>
+      <div className="container mx-auto px-4">
         {children}
       </div>
-    </div>
+    </BaseLayout>
   )
 }

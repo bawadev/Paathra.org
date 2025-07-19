@@ -54,24 +54,27 @@
   --text-light: #7F8C8D;
   --bg-light: #F8F9FA;
   --bg-white: #FFFFFF;
-  --shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 5px 15px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.1);
+  --shadow-glow: 0 0 20px rgba(212, 175, 55, 0.2);
   --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   
-  /* ShadCN Color Variables */
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
+  /* ShadCN Color Variables - Synchronized with Dana Colors */
+  --background: var(--bg-white);
+  --foreground: var(--text-dark);
+  --card: var(--bg-white);
+  --card-foreground: var(--text-dark);
+  --popover: var(--bg-white);
+  --popover-foreground: var(--text-dark);
+  --primary: var(--primary-color);
+  --primary-foreground: white;
+  --secondary: var(--secondary-color);
+  --secondary-foreground: white;
+  --muted: var(--bg-light);
+  --muted-foreground: var(--text-light);
+  --accent: var(--accent-color);
+  --accent-foreground: white;
   --destructive: oklch(0.577 0.245 27.325);
   --border: oklch(0.922 0 0);
   --input: oklch(0.922 0 0);
@@ -143,7 +146,7 @@ body {
   overflow-x: hidden;
 }
 
-/* Animations */
+/* Animation Library */
 @keyframes fadeInUp {
   from {
     opacity: 0;
@@ -152,6 +155,17 @@ body {
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+@keyframes fadeInRight {
+  from {
+    opacity: 0;
+    transform: translateX(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
   }
 }
 
@@ -173,11 +187,44 @@ body {
   }
 }
 
-/* Utility Classes */
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+    box-shadow: var(--shadow-md);
+  }
+  50% {
+    transform: scale(1.05);
+    box-shadow: var(--shadow-lg);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: var(--shadow-md);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -1000px 0;
+  }
+  100% {
+    background-position: 1000px 0;
+  }
+}
+
+/* Animation Utility Classes */
+.fade-in { animation: fadeInUp 0.8s ease-out; }
 .fade-in-1 { animation: fadeInUp 0.8s ease-out; }
 .fade-in-2 { animation: fadeInUp 0.8s ease-out 0.2s both; }
 .fade-in-3 { animation: fadeInUp 0.8s ease-out 0.4s both; }
 .fade-in-4 { animation: fadeInUp 0.8s ease-out 0.6s both; }
+
+.fade-right { animation: fadeInRight 0.8s ease-out; }
+.fade-right-1 { animation: fadeInRight 0.8s ease-out; }
+.fade-right-2 { animation: fadeInRight 0.8s ease-out 0.2s both; }
+.fade-right-3 { animation: fadeInRight 0.8s ease-out 0.4s both; }
+
+.float { animation: float 6s ease-in-out infinite; }
+.pulse { animation: pulse 2s ease-in-out infinite; }
 
 .gradient-primary {
   background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
@@ -269,57 +316,236 @@ body {
   animation: particle-float 12s ease-in-out infinite;
 }
 
-/* Button Enhancements */
-.btn-dana-primary {
-  background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
-  color: white;
-  border: none;
+/* Button Styles */
+.btn-dana {
+  position: relative;
   border-radius: 50px;
   padding: 1rem 2rem;
   font-weight: 600;
   cursor: pointer;
   transition: var(--transition);
-  box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
+  overflow: hidden;
+}
+
+.btn-dana::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  transition: width 0.6s ease-out, height 0.6s ease-out;
+}
+
+.btn-dana:hover::before {
+  width: 300px;
+  height: 300px;
+}
+
+.btn-dana-primary {
+  background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+  color: white;
+  border: none;
+  box-shadow: var(--shadow-sm);
 }
 
 .btn-dana-primary:hover {
   transform: translateY(-3px);
-  box-shadow: 0 8px 25px rgba(212, 175, 55, 0.4);
+  box-shadow: var(--shadow-glow), var(--shadow-md);
 }
 
 .btn-dana-secondary {
   background: transparent;
   color: var(--primary-color);
   border: 2px solid var(--primary-color);
-  border-radius: 50px;
-  padding: 1rem 2rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: var(--transition);
 }
 
 .btn-dana-secondary:hover {
   background: var(--primary-color);
   color: white;
   transform: translateY(-3px);
+  box-shadow: var(--shadow-sm);
 }
 
-/* Card Enhancements */
+/* Card Styles */
 .card-dana {
   background: white;
   border-radius: 16px;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+  box-shadow: var(--shadow-md);
+  transition: var(--transition);
+  position: relative;
+  overflow: hidden;
+}
+
+.card-dana::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.2),
+    transparent
+  );
   transition: var(--transition);
 }
 
 .card-dana:hover {
   transform: translateY(-5px);
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12);
+  box-shadow: var(--shadow-lg);
 }
 
-/* Container */
+.card-dana:hover::before {
+  left: 100%;
+  transition: 0.8s ease-out;
+}
+
+/* Loading States */
+.skeleton {
+  background: linear-gradient(90deg,
+    var(--bg-light) 25%,
+    var(--muted) 50%,
+    var(--bg-light) 75%
+  );
+  background-size: 1000px 100%;
+  animation: shimmer 2s infinite;
+}
+
+.loading-fade {
+  animation: pulse 2s ease-in-out infinite;
+}
+
+/* Layout System */
 .container-dana {
+  width: 100%;
   max-width: 1200px;
   margin: 0 auto;
-  padding: 0 20px;
+  padding: 0 var(--space-4);
+}
+
+/* Spacing System */
+:root {
+  /* Base Spacing Units */
+  --space-1: 0.25rem;  /* 4px */
+  --space-2: 0.5rem;   /* 8px */
+  --space-3: 0.75rem;  /* 12px */
+  --space-4: 1rem;     /* 16px */
+  --space-5: 1.5rem;   /* 24px */
+  --space-6: 2rem;     /* 32px */
+  --space-8: 3rem;     /* 48px */
+  --space-10: 4rem;    /* 64px */
+  --space-12: 5rem;    /* 80px */
+  
+  /* Layout Specific */
+  --header-height: 5rem;
+  --section-spacing: var(--space-10);
+  --card-spacing: var(--space-6);
+  --content-spacing: var(--space-4);
+  
+  /* Component Specific */
+  --card-padding: var(--space-4);
+  --button-padding: var(--space-4) var(--space-6);
+  --input-padding: var(--space-3) var(--space-4);
+}
+
+/* Section Layouts */
+.section-dana {
+  padding: var(--section-spacing) 0;
+}
+
+.section-dana-sm {
+  padding: var(--space-8) 0;
+}
+
+/* Grid System */
+.grid-dana {
+  display: grid;
+  gap: var(--space-6);
+}
+
+.grid-dana-sm {
+  gap: var(--space-4);
+}
+
+.grid-dana-lg {
+  gap: var(--space-8);
+}
+
+/* Responsive Design System */
+@media (max-width: 640px) {
+  :root {
+    /* Adjust spacing for mobile */
+    --section-spacing: var(--space-8);
+    --card-spacing: var(--space-4);
+    --header-height: 4rem;
+    --space-10: 3rem;
+    --space-12: 4rem;
+  }
+  
+  .container-dana {
+    padding: 0 var(--space-3);
+  }
+  
+  .grid-dana {
+    gap: var(--space-4);
+  }
+
+  .section-dana {
+    padding: var(--space-8) 0;
+  }
+
+  .section-dana-sm {
+    padding: var(--space-6) 0;
+  }
+}
+
+@media (min-width: 641px) and (max-width: 1024px) {
+  :root {
+    /* Adjust spacing for tablets */
+    --section-spacing: var(--space-10);
+    --card-spacing: var(--space-5);
+  }
+  
+  .container-dana {
+    padding: 0 var(--space-4);
+  }
+}
+
+@media (min-width: 1025px) and (max-width: 1536px) {
+  .container-dana {
+    max-width: 1200px;
+    padding: 0 var(--space-6);
+  }
+}
+
+@media (min-width: 1537px) {
+  .container-dana {
+    max-width: 1400px;
+    padding: 0 var(--space-8);
+  }
+  
+  :root {
+    /* Larger spacing for extra large screens */
+    --section-spacing: var(--space-12);
+    --card-spacing: var(--space-6);
+  }
+}
+
+/* Font Size Responsive Adjustments */
+@media (max-width: 640px) {
+  .text-4xl {
+    font-size: 2rem;
+    line-height: 2.5rem;
+  }
+  
+  .text-xl {
+    font-size: 1.125rem;
+    line-height: 1.75rem;
+  }
 }

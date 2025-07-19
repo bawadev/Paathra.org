@@ -21,9 +21,9 @@ export function Navigation() {
   if (!user) return null
 
   return (
-    <nav className="navbar-fixed glass-effect shadow-lg border-b border-white/20">
-      <div className="container-dana">
-        <div className="flex h-20 items-center justify-between">
+    <nav className="fixed top-0 left-0 right-0 z-50 h-20 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b">
+      <div className="container mx-auto px-4">
+        <div className="flex h-full items-center justify-between">
           <div className="flex items-center space-x-8">
             <Link href="/" className="flex items-center gap-3 text-xl font-bold text-[var(--primary-color)] hover:scale-105 transition-transform">
               <div className="lotus-icon"></div>

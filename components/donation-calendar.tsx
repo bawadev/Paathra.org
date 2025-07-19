@@ -76,8 +76,8 @@ export function DonationCalendar({ onSlotSelect }: DonationCalendarProps) {
   const selectedDateSlots = selectedDate ? getSlotsForDate(selectedDate) : []
 
   return (
-    <div className="grid gap-6 md:grid-cols-2">
-      <Card>
+    <div className="grid-dana grid-cols-1 md:grid-cols-2">
+      <Card className="card-dana fade-in">
         <CardHeader>
           <CardTitle>Select Date</CardTitle>
           <CardDescription>
@@ -101,12 +101,12 @@ export function DonationCalendar({ onSlotSelect }: DonationCalendarProps) {
         </CardContent>
       </Card>
 
-      <Card>
+      <Card className="card-dana fade-in-2">
         <CardHeader>
           <CardTitle>
             Available Slots
             {selectedDate && (
-              <span className="text-sm font-normal text-gray-500 ml-2">
+              <span className="text-sm font-normal text-[var(--text-light)] ml-2">
                 for {format(selectedDate, 'MMMM d, yyyy')}
               </span>
             )}
@@ -117,9 +117,12 @@ export function DonationCalendar({ onSlotSelect }: DonationCalendarProps) {
         </CardHeader>
         <CardContent>
           {loading ? (
-            <div className="text-center py-8">Loading slots...</div>
+            <div className="flex flex-col items-center space-y-4 py-8">
+              <div className="w-16 h-16 bg-gradient-to-r from-[var(--primary-color)] to-[var(--accent-color)] rounded-full pulse"></div>
+              <div className="text-lg text-[var(--text-light)] fade-in">Loading slots...</div>
+            </div>
           ) : selectedDateSlots.length === 0 ? (
-            <div className="text-center py-8 text-gray-500">
+            <div className="text-center py-8 text-[var(--text-light)] fade-in">
               {selectedDate 
                 ? 'No available slots for this date' 
                 : 'Please select a date to view available slots'
@@ -130,32 +133,32 @@ export function DonationCalendar({ onSlotSelect }: DonationCalendarProps) {
               {selectedDateSlots.map((slot) => (
                 <div
                   key={slot.id}
-                  className="border rounded-lg p-4 hover:bg-gray-50 cursor-pointer transition-colors"
+                  className="card-dana group overflow-hidden fade-in p-4 cursor-pointer"
                   onClick={() => onSlotSelect(slot)}
                 >
                   <div className="flex items-start justify-between">
                     <div className="space-y-2">
                       <h3 className="font-medium">{slot.monastery?.name}</h3>
                       
-                      <div className="flex items-center text-sm text-gray-600 space-x-4">
+                      <div className="flex items-center text-sm text-[var(--text-light)] space-x-4">
                         <div className="flex items-center space-x-1">
-                          <Clock className="w-4 h-4" />
+                          <Clock className="w-4 h-4 text-[var(--primary-color)]" />
                           <span>{format(parseISO(`2000-01-01T${slot.time_slot}`), 'h:mm a')}</span>
                         </div>
                         
                         <div className="flex items-center space-x-1">
-                          <Users className="w-4 h-4" />
+                          <Users className="w-4 h-4 text-[var(--primary-color)]" />
                           <span>{slot.current_bookings}/{slot.max_donors}</span>
                         </div>
                       </div>
 
-                      <div className="flex items-center text-sm text-gray-600">
-                        <MapPin className="w-4 h-4 mr-1" />
+                      <div className="flex items-center text-sm text-[var(--text-light)]">
+                        <MapPin className="w-4 h-4 mr-1 text-[var(--primary-color)]" />
                         <span>{slot.monastery?.address}</span>
                       </div>
 
                       {slot.special_requirements && (
-                        <div className="text-sm text-blue-600 bg-blue-50 p-2 rounded">
+                        <div className="text-sm text-[var(--primary-color)] bg-[var(--primary-color)]/5 p-2 rounded">
                           {slot.special_requirements}
                         </div>
                       )}
@@ -163,7 +166,8 @@ export function DonationCalendar({ onSlotSelect }: DonationCalendarProps) {
                       {slot.monastery?.dietary_requirements && (
                         <div className="flex flex-wrap gap-1">
                           {slot.monastery.dietary_requirements.map((req) => (
-                            <Badge key={req} variant="secondary" className="text-xs">
+                            <Badge key={req} variant="secondary"
+                                   className="text-xs bg-[var(--accent-color)]/10 text-[var(--accent-color)]">
                               {req.replace('_', ' ')}
                             </Badge>
                           ))}
@@ -171,7 +175,7 @@ export function DonationCalendar({ onSlotSelect }: DonationCalendarProps) {
                       )}
                     </div>
 
-                    <Button size="sm">
+                    <Button size="sm" className="btn-dana btn-dana-primary">
                       Book Slot
                     </Button>
                   </div>

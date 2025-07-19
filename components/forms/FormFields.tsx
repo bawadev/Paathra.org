@@ -57,6 +57,7 @@ export function TextField({
             <Input
               type={type}
               placeholder={placeholder}
+              className="transition-all duration-200 focus:border-[var(--primary-color)] hover:border-[var(--primary-color)]/50"
               {...field}
             />
           </FormControl>
@@ -145,10 +146,11 @@ export function TextareaField({
             <Textarea
               placeholder={placeholder}
               rows={rows}
+              className="transition-all duration-200 focus:border-[var(--primary-color)] hover:border-[var(--primary-color)]/50"
               {...field}
             />
           </FormControl>
-          {description && <FormDescription>{description}</FormDescription>}
+          {description && <FormDescription className="text-[var(--text-light)]">{description}</FormDescription>}
           <FormMessage />
         </FormItem>
       )}
@@ -179,15 +181,15 @@ export function SelectField({
         <FormItem>
           <FormLabel>
             {label}
-            {required && <span className="text-red-500 ml-1">*</span>}
+            {required && <span className="text-[var(--accent-color)] ml-1">*</span>}
           </FormLabel>
           <Select onValueChange={field.onChange} defaultValue={field.value}>
-            <FormControl>
-              <SelectTrigger>
+            <FormControl className="group">
+              <SelectTrigger className="transition-all duration-200 focus:border-[var(--primary-color)] hover:border-[var(--primary-color)]/50">
                 <SelectValue placeholder={placeholder} />
               </SelectTrigger>
             </FormControl>
-            <SelectContent>
+            <SelectContent className="border-[var(--primary-color)]/20">
               {options.map((option) => (
                 <SelectItem key={option.value} value={option.value}>
                   {option.label}
@@ -244,6 +246,7 @@ export function CheckboxGroupField({
                     <FormControl>
                       <Checkbox
                         checked={field.value?.includes(option.value)}
+                        className="data-[state=checked]:border-[var(--primary-color)] data-[state=checked]:bg-[var(--primary-color)]"
                         onCheckedChange={(checked: boolean) => {
                           return checked
                             ? field.onChange([...field.value, option.value])
@@ -255,7 +258,7 @@ export function CheckboxGroupField({
                         }}
                       />
                     </FormControl>
-                    <FormLabel className="font-normal">
+                    <FormLabel className="font-normal text-[var(--text-light)] group-hover:text-[var(--text-dark)] transition-colors">
                       {option.label}
                     </FormLabel>
                   </FormItem>
@@ -292,6 +295,7 @@ export function DateField({
           <FormControl>
             <Input
               type="date"
+              className="transition-all duration-200 focus:border-[var(--primary-color)] hover:border-[var(--primary-color)]/50"
               {...field}
             />
           </FormControl>
@@ -325,6 +329,7 @@ export function TimeField({
           <FormControl>
             <Input
               type="time"
+              className="transition-all duration-200 focus:border-[var(--primary-color)] hover:border-[var(--primary-color)]/50"
               {...field}
             />
           </FormControl>

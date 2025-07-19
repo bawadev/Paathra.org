@@ -65,7 +65,7 @@ export function DonationBookingForm({ slot, onSuccess, onCancel }: DonationBooki
   }
 
   return (
-    <Card className="max-w-2xl mx-auto">
+    <Card className="card-dana max-w-2xl mx-auto fade-in">
       <CardHeader>
         <CardTitle>Book Donation Slot</CardTitle>
         <CardDescription>
@@ -74,12 +74,14 @@ export function DonationBookingForm({ slot, onSuccess, onCancel }: DonationBooki
       </CardHeader>
       <CardContent>
         {/* Slot Details */}
-        <div className="bg-gray-50 p-4 rounded-lg mb-6">
-          <h3 className="font-medium mb-2">{slot.monastery?.name}</h3>
+        <div className="bg-[var(--bg-light)] p-4 rounded-lg" style={{marginBottom: 'var(--card-spacing)'}}>
+          <h3 className="font-medium text-[var(--text-dark)]" style={{marginBottom: 'var(--space-2)'}}>
+            {slot.monastery?.name}
+          </h3>
           
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm text-gray-600">
+          <div className="grid-dana grid-cols-1 md:grid-cols-3 text-sm text-[var(--text-light)]">
             <div className="flex items-center space-x-1">
-              <Clock className="w-4 h-4" />
+              <Clock className="w-4 h-4 text-[var(--primary-color)]" />
               <span>
                 {format(parseISO(slot.date), 'MMM d, yyyy')} at{' '}
                 {format(parseISO(`2000-01-01T${slot.time_slot}`), 'h:mm a')}
@@ -87,18 +89,18 @@ export function DonationBookingForm({ slot, onSuccess, onCancel }: DonationBooki
             </div>
             
             <div className="flex items-center space-x-1">
-              <Users className="w-4 h-4" />
+              <Users className="w-4 h-4 text-[var(--primary-color)]" />
               <span>{slot.current_bookings}/{slot.max_donors} booked</span>
             </div>
             
             <div className="flex items-center space-x-1">
-              <MapPin className="w-4 h-4" />
+              <MapPin className="w-4 h-4 text-[var(--primary-color)]" />
               <span>{slot.monastery?.address}</span>
             </div>
           </div>
 
           {slot.special_requirements && (
-            <div className="mt-3 text-sm text-blue-600 bg-blue-50 p-2 rounded">
+            <div className="mt-3 text-sm text-[var(--primary-color)] bg-[var(--primary-color)]/5 p-2 rounded">
               <strong>Special Requirements:</strong> {slot.special_requirements}
             </div>
           )}
@@ -106,8 +108,8 @@ export function DonationBookingForm({ slot, onSuccess, onCancel }: DonationBooki
 
         {/* Booking Form */}
         <FormProvider {...form}>
-          <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4 fade-in-2">
+            <div className="grid-dana grid-cols-1 md:grid-cols-2">
               <TextField
                 name="food_type"
                 label="Type of Food"
@@ -143,11 +145,20 @@ export function DonationBookingForm({ slot, onSuccess, onCancel }: DonationBooki
               </Alert>
             )}
 
-            <div className="flex space-x-4 pt-4">
-              <Button type="submit" disabled={loading} className="flex-1">
-                {loading ? 'Booking...' : 'Confirm Booking'}
+            <div className="flex gap-4" style={{paddingTop: 'var(--space-6)'}}>
+              <Button type="submit" disabled={loading}
+                      className="flex-1 btn-dana btn-dana-primary">
+                {loading ? (
+                  <span className="flex items-center">
+                    <div className="w-4 h-4 border-2 border-white/50 border-t-white rounded-full animate-spin mr-2"></div>
+                    Booking...
+                  </span>
+                ) : (
+                  'Confirm Booking'
+                )}
               </Button>
-              <Button type="button" variant="outline" onClick={onCancel}>
+              <Button type="button" variant="outline" onClick={onCancel}
+                      className="btn-dana btn-dana-secondary">
                 Cancel
               </Button>
             </div>
