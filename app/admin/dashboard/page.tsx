@@ -1,6 +1,8 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { Navigation } from '@/components/navigation'
+import { Footer } from '@/components/footer'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -117,12 +119,22 @@ export default function AdminDashboard() {
   }
 
   if (loading) {
-    return <LoadingSpinner />
+    return (
+      <div className="min-h-screen bg-[var(--bg-light)]">
+        <Navigation />
+        <div className="flex items-center justify-center min-h-screen">
+          <LoadingSpinner />
+        </div>
+      </div>
+    )
   }
 
   return (
     <div className="min-h-screen bg-[var(--bg-light)]">
-      <div className="container-dana px-5 py-8">
+      <Navigation />
+      
+      <main className="pt-32 pb-20 px-5">
+        <div className="container-dana">
         {/* Dashboard Header */}
         <div className="card-dana gradient-primary text-white p-8 mb-8">
           <div className="flex justify-between items-center">
@@ -283,7 +295,10 @@ export default function AdminDashboard() {
             </CardContent>
           </Card>
         </div>
-      </div>
+        </div>
+      </main>
+      
+      <Footer />
     </div>
   )
 }

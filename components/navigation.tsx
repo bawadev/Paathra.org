@@ -39,9 +39,9 @@ export function Navigation() {
                       <NavigationMenuLink asChild>
                         <Link
                           href="/donate"
-                          className="flex items-center space-x-2 p-3 rounded-md hover:bg-gray-50"
+                          className="flex flex-row items-center space-x-2 p-3 rounded-md hover:bg-gray-50"
                         >
-                          <Calendar className="w-4 h-4" />
+                          <Calendar className="w-4 h-4 flex-shrink-0" />
                           <div>
                             <div className="font-medium">Make Donation</div>
                             <div className="text-sm text-gray-500">Book a donation slot</div>
@@ -51,9 +51,9 @@ export function Navigation() {
                       <NavigationMenuLink asChild>
                         <Link
                           href="/my-donations"
-                          className="flex items-center space-x-2 p-3 rounded-md hover:bg-gray-50"
+                          className="flex flex-row items-center space-x-2 p-3 rounded-md hover:bg-gray-50"
                         >
-                          <User className="w-4 h-4" />
+                          <User className="w-4 h-4 flex-shrink-0" />
                           <div>
                             <div className="font-medium">My Donations</div>
                             <div className="text-sm text-gray-500">View your bookings</div>
@@ -90,9 +90,9 @@ export function Navigation() {
                         <NavigationMenuLink asChild>
                           <Link
                             href="/manage/slots"
-                            className="flex items-center space-x-2 p-3 rounded-md hover:bg-gray-50"
+                            className="flex flex-row items-center space-x-2 p-3 rounded-md hover:bg-gray-50"
                           >
-                            <Calendar className="w-4 h-4" />
+                            <Calendar className="w-4 h-4 flex-shrink-0" />
                             <div>
                               <div className="font-medium">Donation Slots</div>
                               <div className="text-sm text-gray-500">Manage available slots</div>
@@ -102,9 +102,9 @@ export function Navigation() {
                         <NavigationMenuLink asChild>
                           <Link
                             href="/manage/bookings"
-                            className="flex items-center space-x-2 p-3 rounded-md hover:bg-gray-50"
+                            className="flex flex-row items-center space-x-2 p-3 rounded-md hover:bg-gray-50"
                           >
-                            <Users className="w-4 h-4" />
+                            <Users className="w-4 h-4 flex-shrink-0" />
                             <div>
                               <div className="font-medium">Bookings</div>
                               <div className="text-sm text-gray-500">View and manage bookings</div>
@@ -114,9 +114,9 @@ export function Navigation() {
                         <NavigationMenuLink asChild>
                           <Link
                             href="/manage/monastery"
-                            className="flex items-center space-x-2 p-3 rounded-md hover:bg-gray-50"
+                            className="flex flex-row items-center space-x-2 p-3 rounded-md hover:bg-gray-50"
                           >
-                            <Building className="w-4 h-4" />
+                            <Building className="w-4 h-4 flex-shrink-0" />
                             <div>
                               <div className="font-medium">Monastery Info</div>
                               <div className="text-sm text-gray-500">Update monastery details</div>
@@ -136,9 +136,9 @@ export function Navigation() {
                         <NavigationMenuLink asChild>
                           <Link
                             href="/admin/dashboard"
-                            className="flex items-center space-x-2 p-3 rounded-md hover:bg-gray-50"
+                            className="flex flex-row items-center space-x-2 p-3 rounded-md hover:bg-gray-50"
                           >
-                            <BarChart3 className="w-4 h-4" />
+                            <BarChart3 className="w-4 h-4 flex-shrink-0" />
                             <div>
                               <div className="font-medium">Dashboard</div>
                               <div className="text-sm text-gray-500">System overview & analytics</div>
@@ -148,9 +148,9 @@ export function Navigation() {
                         <NavigationMenuLink asChild>
                           <Link
                             href="/admin/users"
-                            className="flex items-center space-x-2 p-3 rounded-md hover:bg-gray-50"
+                            className="flex flex-row items-center space-x-2 p-3 rounded-md hover:bg-gray-50"
                           >
-                            <Users className="w-4 h-4" />
+                            <Users className="w-4 h-4 flex-shrink-0" />
                             <div>
                               <div className="font-medium">User Management</div>
                               <div className="text-sm text-gray-500">Manage all users</div>
@@ -160,9 +160,9 @@ export function Navigation() {
                         <NavigationMenuLink asChild>
                           <Link
                             href="/admin/monasteries"
-                            className="flex items-center space-x-2 p-3 rounded-md hover:bg-gray-50"
+                            className="flex flex-row items-center space-x-2 p-3 rounded-md hover:bg-gray-50"
                           >
-                            <Building className="w-4 h-4" />
+                            <Building className="w-4 h-4 flex-shrink-0" />
                             <div>
                               <div className="font-medium">Monasteries</div>
                               <div className="text-sm text-gray-500">Approve & manage monasteries</div>
@@ -172,9 +172,9 @@ export function Navigation() {
                         <NavigationMenuLink asChild>
                           <Link
                             href="/admin/analytics"
-                            className="flex items-center space-x-2 p-3 rounded-md hover:bg-gray-50"
+                            className="flex flex-row items-center space-x-2 p-3 rounded-md hover:bg-gray-50"
                           >
-                            <BarChart3 className="w-4 h-4" />
+                            <BarChart3 className="w-4 h-4 flex-shrink-0" />
                             <div>
                               <div className="font-medium">Analytics</div>
                               <div className="text-sm text-gray-500">Detailed reports & metrics</div>
@@ -184,9 +184,9 @@ export function Navigation() {
                         <NavigationMenuLink asChild>
                           <Link
                             href="/admin/settings"
-                            className="flex items-center space-x-2 p-3 rounded-md hover:bg-gray-50"
+                            className="flex flex-row items-center space-x-2 p-3 rounded-md hover:bg-gray-50"
                           >
-                            <Shield className="w-4 h-4" />
+                            <Shield className="w-4 h-4 flex-shrink-0" />
                             <div>
                               <div className="font-medium">Settings</div>
                               <div className="text-sm text-gray-500">System configuration</div>

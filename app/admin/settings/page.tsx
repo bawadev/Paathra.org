@@ -1,6 +1,8 @@
 'use client'
 
 import { useState } from 'react'
+import { Navigation } from '@/components/navigation'
+import { Footer } from '@/components/footer'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -120,7 +122,12 @@ export default function Settings() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="min-h-screen bg-[var(--bg-light)]">
+      <Navigation />
+      
+      <main className="pt-32 pb-20 px-5">
+        <div className="container-dana">
+          <div className="space-y-6">
       {/* Header */}
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div>
@@ -404,6 +411,11 @@ export default function Settings() {
           </div>
         </CardContent>
       </Card>
+          </div>
+        </div>
+      </main>
+      
+      <Footer />
     </div>
   )
 }

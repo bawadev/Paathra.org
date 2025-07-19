@@ -1,6 +1,8 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { Navigation } from '@/components/navigation'
+import { Footer } from '@/components/footer'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -226,11 +228,23 @@ export default function Analytics() {
   }
 
   if (loading) {
-    return <LoadingSpinner />
+    return (
+      <div className="min-h-screen bg-[var(--bg-light)]">
+        <Navigation />
+        <div className="flex items-center justify-center min-h-screen">
+          <LoadingSpinner />
+        </div>
+      </div>
+    )
   }
 
   return (
-    <div className="space-y-6">
+    <div className="min-h-screen bg-[var(--bg-light)]">
+      <Navigation />
+      
+      <main className="pt-32 pb-20 px-5">
+        <div className="container-dana">
+          <div className="space-y-6">
       {/* Header */}
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div>
@@ -465,6 +479,11 @@ export default function Analytics() {
           </div>
         </CardContent>
       </Card>
+          </div>
+        </div>
+      </main>
+      
+      <Footer />
     </div>
   )
 }

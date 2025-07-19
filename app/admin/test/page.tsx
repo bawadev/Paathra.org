@@ -1,6 +1,8 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { Navigation } from '@/components/navigation'
+import { Footer } from '@/components/footer'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -12,10 +14,24 @@ export default function AdminTest() {
     setMounted(true)
   }, [])
 
-  if (!mounted) return <div>Loading...</div>
+  if (!mounted) {
+    return (
+      <div className="min-h-screen bg-[var(--bg-light)]">
+        <Navigation />
+        <div className="flex items-center justify-center min-h-screen">
+          <div>Loading...</div>
+        </div>
+      </div>
+    )
+  }
 
   return (
-    <div className="p-8 space-y-6">
+    <div className="min-h-screen bg-[var(--bg-light)]">
+      <Navigation />
+      
+      <main className="pt-32 pb-20 px-5">
+        <div className="container-dana">
+          <div className="space-y-6">
       <h1 className="text-3xl font-bold">Admin Test Page</h1>
       
       <div className="grid gap-4 md:grid-cols-3">
@@ -72,6 +88,11 @@ export default function AdminTest() {
           </div>
         </CardContent>
       </Card>
+          </div>
+        </div>
+      </main>
+      
+      <Footer />
     </div>
   )
 }

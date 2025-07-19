@@ -35,6 +35,42 @@ Based on UI templates, the project uses:
 - Background Light: #F8F9FA
 - Background White: #FFFFFF
 
+## Template Standards
+
+The project now follows standardized templates documented in `/docs/TEMPLATE_STANDARDS.md`.
+
+### Available Templates
+- **Standard Page Template** (`/templates/page-template.tsx`) - For public pages
+- **Protected Page Template** (`/templates/protected-page-template.tsx`) - For authenticated pages
+
+### Standardized Components
+- ✅ **Navigation** (components/navigation.tsx) - Consistent across all pages
+- ✅ **Auth Form** (components/auth-form.tsx) - Unified authentication
+- ✅ **Design System** - CSS custom properties and utility classes
+
+## Codebase Cleanup Completed
+
+### Removed Legacy Files
+- ❌ Removed `page_old.tsx` and `page_new.tsx` files
+- ❌ Removed `auth-form-old.tsx` and `auth-form-new.tsx` files  
+- ❌ Removed unused `/src` directory structure
+
+### Current Standardized Structure
+```
+/components/
+  /ui/           # ShadCN components
+  /forms/        # Form components
+  navigation.tsx # Global navigation
+  auth-form.tsx  # Unified auth form
+
+/templates/      # Template files for new pages
+  page-template.tsx
+  protected-page-template.tsx
+
+/docs/
+  TEMPLATE_STANDARDS.md  # Complete template documentation
+```
+
 ## Recent Updates
 
 ### Pages Updated with New Design System
@@ -43,6 +79,12 @@ Based on UI templates, the project uses:
 - ✅ **Navigation** (components/navigation.tsx) - Glassmorphism effect with lotus icon
 - ✅ **Admin Dashboard** (app/admin/dashboard/page.tsx) - Modern stats cards with gradients and hover effects
 - ✅ **Monasteries Page** (app/monasteries/page.tsx) - Beautiful monastery cards with gradient headers
+
+### Template Standardization
+- ✅ **Template Documentation** (docs/TEMPLATE_STANDARDS.md) - Comprehensive template and pattern guide
+- ✅ **Page Templates** (templates/) - Reusable templates for consistent development
+- ✅ **Codebase Cleanup** - Removed duplicate and legacy files
+- ✅ **Consistent Structure** - Unified component organization
 
 ### Authentication Improvements
 - ✅ **Enhanced Auth Context** (lib/auth-context.tsx) - Added proper error handling for refresh token failures

@@ -1,6 +1,8 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { Navigation } from '@/components/navigation'
+import { Footer } from '@/components/footer'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -138,7 +140,12 @@ export default function MonasteryManagement() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="min-h-screen bg-[var(--bg-light)]">
+      <Navigation />
+      
+      <main className="pt-32 pb-20 px-5">
+        <div className="container-dana">
+          <div className="space-y-6">
       {/* Header */}
       <div>
         <h1 className="text-3xl font-bold tracking-tight">Monastery Management</h1>
@@ -406,6 +413,11 @@ export default function MonasteryManagement() {
           </div>
         </CardContent>
       </Card>
+          </div>
+        </div>
+      </main>
+      
+      <Footer />
     </div>
   )
 }
