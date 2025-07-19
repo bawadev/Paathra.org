@@ -39,9 +39,9 @@ export function Navigation() {
                       <NavigationMenuLink asChild>
                         <Link
                           href="/donate"
-                          className="flex flex-row items-center space-x-2 p-3 rounded-md hover:bg-gray-50"
+                          className="flex flex-row items-center space-x-2 p-3 rounded-md hover:bg-[var(--primary-color)]/10 hover:text-[var(--primary-color)] transition-all duration-300"
                         >
-                          <Calendar className="w-4 h-4 flex-shrink-0" />
+                          <Calendar className="w-4 h-4 flex-shrink-0 text-[var(--primary-color)]" />
                           <div>
                             <div className="font-medium">Make Donation</div>
                             <div className="text-sm text-gray-500">Book a donation slot</div>
@@ -51,9 +51,9 @@ export function Navigation() {
                       <NavigationMenuLink asChild>
                         <Link
                           href="/my-donations"
-                          className="flex flex-row items-center space-x-2 p-3 rounded-md hover:bg-gray-50"
+                          className="flex flex-row items-center space-x-2 p-3 rounded-md hover:bg-[var(--primary-color)]/10 hover:text-[var(--primary-color)] transition-all duration-300"
                         >
-                          <User className="w-4 h-4 flex-shrink-0" />
+                          <User className="w-4 h-4 flex-shrink-0 text-[var(--primary-color)]" />
                           <div>
                             <div className="font-medium">My Donations</div>
                             <div className="text-sm text-gray-500">View your bookings</div>
@@ -66,7 +66,7 @@ export function Navigation() {
 
                 <NavigationMenuItem>
                   <NavigationMenuLink asChild>
-                    <Link href="/monasteries" className="px-3 py-2 rounded-md hover:bg-gray-100">
+                    <Link href="/monasteries" className="px-3 py-2 rounded-md hover:bg-[var(--primary-color)]/10 hover:text-[var(--primary-color)] transition-all duration-300">
                       Monasteries
                     </Link>
                   </NavigationMenuLink>
@@ -75,7 +75,7 @@ export function Navigation() {
                 {!hasRole(profile, 'monastery_admin') && (
                   <NavigationMenuItem>
                     <NavigationMenuLink asChild>
-                      <Link href="/manage/monastery" className="px-3 py-2 rounded-md hover:bg-gray-100 text-blue-600">
+                      <Link href="/manage/monastery" className="px-3 py-2 rounded-md hover:bg-[var(--primary-color)]/10 hover:text-[var(--primary-color)] text-[var(--primary-color)] transition-all duration-300">
                         Create Monastery
                       </Link>
                     </NavigationMenuLink>
@@ -90,9 +90,9 @@ export function Navigation() {
                         <NavigationMenuLink asChild>
                           <Link
                             href="/manage/slots"
-                            className="flex flex-row items-center space-x-2 p-3 rounded-md hover:bg-gray-50"
+                            className="flex flex-row items-center space-x-2 p-3 rounded-md hover:bg-[var(--primary-color)]/10 hover:text-[var(--primary-color)] transition-all duration-300"
                           >
-                            <Calendar className="w-4 h-4 flex-shrink-0" />
+                            <Calendar className="w-4 h-4 flex-shrink-0 text-[var(--primary-color)]" />
                             <div>
                               <div className="font-medium">Donation Slots</div>
                               <div className="text-sm text-gray-500">Manage available slots</div>
@@ -102,9 +102,9 @@ export function Navigation() {
                         <NavigationMenuLink asChild>
                           <Link
                             href="/manage/bookings"
-                            className="flex flex-row items-center space-x-2 p-3 rounded-md hover:bg-gray-50"
+                            className="flex flex-row items-center space-x-2 p-3 rounded-md hover:bg-[var(--primary-color)]/10 hover:text-[var(--primary-color)] transition-all duration-300"
                           >
-                            <Users className="w-4 h-4 flex-shrink-0" />
+                            <Users className="w-4 h-4 flex-shrink-0 text-[var(--primary-color)]" />
                             <div>
                               <div className="font-medium">Bookings</div>
                               <div className="text-sm text-gray-500">View and manage bookings</div>
@@ -114,9 +114,9 @@ export function Navigation() {
                         <NavigationMenuLink asChild>
                           <Link
                             href="/manage/monastery"
-                            className="flex flex-row items-center space-x-2 p-3 rounded-md hover:bg-gray-50"
+                            className="flex flex-row items-center space-x-2 p-3 rounded-md hover:bg-[var(--primary-color)]/10 hover:text-[var(--primary-color)] transition-all duration-300"
                           >
-                            <Building className="w-4 h-4 flex-shrink-0" />
+                            <Building className="w-4 h-4 flex-shrink-0 text-[var(--primary-color)]" />
                             <div>
                               <div className="font-medium">Monastery Info</div>
                               <div className="text-sm text-gray-500">Update monastery details</div>
@@ -136,9 +136,9 @@ export function Navigation() {
                         <NavigationMenuLink asChild>
                           <Link
                             href="/admin/dashboard"
-                            className="flex flex-row items-center space-x-2 p-3 rounded-md hover:bg-gray-50"
+                            className="flex flex-row items-center space-x-2 p-3 rounded-md hover:bg-[var(--primary-color)]/10 hover:text-[var(--primary-color)] transition-all duration-300"
                           >
-                            <BarChart3 className="w-4 h-4 flex-shrink-0" />
+                            <BarChart3 className="w-4 h-4 flex-shrink-0 text-[var(--primary-color)]" />
                             <div>
                               <div className="font-medium">Dashboard</div>
                               <div className="text-sm text-gray-500">System overview & analytics</div>
@@ -148,9 +148,9 @@ export function Navigation() {
                         <NavigationMenuLink asChild>
                           <Link
                             href="/admin/users"
-                            className="flex flex-row items-center space-x-2 p-3 rounded-md hover:bg-gray-50"
+                            className="flex flex-row items-center space-x-2 p-3 rounded-md hover:bg-[var(--primary-color)]/10 hover:text-[var(--primary-color)] transition-all duration-300"
                           >
-                            <Users className="w-4 h-4 flex-shrink-0" />
+                            <Users className="w-4 h-4 flex-shrink-0 text-[var(--primary-color)]" />
                             <div>
                               <div className="font-medium">User Management</div>
                               <div className="text-sm text-gray-500">Manage all users</div>
@@ -160,9 +160,9 @@ export function Navigation() {
                         <NavigationMenuLink asChild>
                           <Link
                             href="/admin/monasteries"
-                            className="flex flex-row items-center space-x-2 p-3 rounded-md hover:bg-gray-50"
+                            className="flex flex-row items-center space-x-2 p-3 rounded-md hover:bg-[var(--primary-color)]/10 hover:text-[var(--primary-color)] transition-all duration-300"
                           >
-                            <Building className="w-4 h-4 flex-shrink-0" />
+                            <Building className="w-4 h-4 flex-shrink-0 text-[var(--primary-color)]" />
                             <div>
                               <div className="font-medium">Monasteries</div>
                               <div className="text-sm text-gray-500">Approve & manage monasteries</div>
@@ -172,9 +172,9 @@ export function Navigation() {
                         <NavigationMenuLink asChild>
                           <Link
                             href="/admin/analytics"
-                            className="flex flex-row items-center space-x-2 p-3 rounded-md hover:bg-gray-50"
+                            className="flex flex-row items-center space-x-2 p-3 rounded-md hover:bg-[var(--primary-color)]/10 hover:text-[var(--primary-color)] transition-all duration-300"
                           >
-                            <BarChart3 className="w-4 h-4 flex-shrink-0" />
+                            <BarChart3 className="w-4 h-4 flex-shrink-0 text-[var(--primary-color)]" />
                             <div>
                               <div className="font-medium">Analytics</div>
                               <div className="text-sm text-gray-500">Detailed reports & metrics</div>
@@ -184,9 +184,9 @@ export function Navigation() {
                         <NavigationMenuLink asChild>
                           <Link
                             href="/admin/settings"
-                            className="flex flex-row items-center space-x-2 p-3 rounded-md hover:bg-gray-50"
+                            className="flex flex-row items-center space-x-2 p-3 rounded-md hover:bg-[var(--primary-color)]/10 hover:text-[var(--primary-color)] transition-all duration-300"
                           >
-                            <Shield className="w-4 h-4 flex-shrink-0" />
+                            <Shield className="w-4 h-4 flex-shrink-0 text-[var(--primary-color)]" />
                             <div>
                               <div className="font-medium">Settings</div>
                               <div className="text-sm text-gray-500">System configuration</div>
