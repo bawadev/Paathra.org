@@ -212,7 +212,16 @@ export function Navigation() {
               <span className="text-sm font-medium">{profile?.full_name}</span>
             </div>
             
-            <Button variant="ghost" size="sm" onClick={signOut}>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={async () => {
+                await signOut();
+                if (typeof window !== 'undefined') {
+                  window.location.href = '/';
+                }
+              }}
+            >
               <LogOut className="w-4 h-4 mr-2" />
               Sign Out
             </Button>
