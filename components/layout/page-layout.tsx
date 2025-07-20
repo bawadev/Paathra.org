@@ -3,7 +3,6 @@
  *
  * Provides consistent layout structure for all pages including:
  * - Navigation
- * - Footer
  * - Loading states
  * - Responsive containers
  */
@@ -11,7 +10,6 @@
 'use client'
 
 import { Navigation } from '@/components/navigation'
-import { Footer } from '@/components/footer'
 import { LoadingSpinner } from '@/components/loading'
 
 interface PageLayoutProps {
@@ -19,7 +17,6 @@ interface PageLayoutProps {
   loading?: boolean
   className?: string
   showNavigation?: boolean
-  showFooter?: boolean
   loadingText?: string
 }
 
@@ -28,7 +25,6 @@ export function PageLayout({
   loading = false,
   className = '',
   showNavigation = true,
-  showFooter = true,
   loadingText = 'Loading...'
 }: PageLayoutProps) {
   if (loading) {
@@ -41,7 +37,6 @@ export function PageLayout({
             <p className="text-sm text-muted-foreground">{loadingText}</p>
           </div>
         </div>
-        {showFooter && <Footer />}
       </div>
     )
   }
@@ -50,7 +45,6 @@ export function PageLayout({
     <div className={`min-h-screen bg-[var(--bg-light)] ${className}`}>
       {showNavigation && <Navigation />}
       {children}
-      {showFooter && <Footer />}
     </div>
   )
 }

@@ -2,23 +2,20 @@
 
 import { ReactNode } from 'react'
 import { Navigation } from '@/components/navigation'
-import { Footer } from '@/components/footer'
 
 interface LayoutWrapperProps {
   children: ReactNode
   showNavigation?: boolean
-  showFooter?: boolean
   className?: string
 }
 
 /**
- * Consistent layout wrapper that ensures navigation, content, and footer
- * all use the same container width and padding system.
+ * Consistent layout wrapper that ensures navigation and content
+ * use the same container width and padding system.
  */
-export function LayoutWrapper({ 
-  children, 
-  showNavigation = true, 
-  showFooter = true,
+export function LayoutWrapper({
+  children,
+  showNavigation = true,
   className = ''
 }: LayoutWrapperProps) {
   return (
@@ -27,7 +24,6 @@ export function LayoutWrapper({
       <div className="flex-1">
         {children}
       </div>
-      {showFooter && <Footer />}
     </div>
   )
 }

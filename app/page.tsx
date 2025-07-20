@@ -3,7 +3,6 @@
 import { useAuth } from '@/lib/auth-context'
 import { AuthForm } from '@/components/auth-form'
 import { Navigation } from '@/components/navigation'
-import { Footer } from '@/components/footer'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
@@ -187,8 +186,6 @@ export default function HomePage() {
           </CardContent>
         </Card>
       </main>
-      
-      <Footer />
     </div>
   )
 }

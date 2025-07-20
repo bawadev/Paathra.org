@@ -3,7 +3,6 @@
 import { useState } from 'react'
 import { useAuth } from '@/lib/auth-context'
 import { Navigation } from '@/components/navigation'
-import { Footer } from '@/components/footer'
 import { DonationCalendar } from '@/components/donation-calendar'
 import { DonationBookingForm } from '@/components/donation-booking-form'
 import { DonationSlot } from '@/lib/supabase'
@@ -73,7 +72,6 @@ export default function DonatePage() {
           <DonationCalendar onSlotSelect={handleSlotSelect} />
         )}
       </main>
-      <Footer />
     </div>
   )
 }

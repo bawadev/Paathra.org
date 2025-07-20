@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from 'react'
 import { Navigation } from '@/components/navigation'
-import { Footer } from '@/components/footer'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -482,8 +481,6 @@ export default function Analytics() {
           </div>
         </div>
       </main>
-      
-      <Footer />
     </div>
   )
 }

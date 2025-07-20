@@ -3,7 +3,6 @@
 import { useEffect, useState } from 'react'
 import { useAuth } from '@/lib/auth-context'
 import { Navigation } from '@/components/navigation'
-import { Footer } from '@/components/footer'
 import { AuthForm } from '@/components/auth-form'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -222,8 +221,6 @@ export default function DonationsPage() {
           )}
         </div>
       </section>
-
-      <Footer />
     </div>
   )
 }
