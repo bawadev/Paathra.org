@@ -115,10 +115,29 @@ export interface DonationBooking {
   special_notes?: string
   contact_phone?: string
   donation_date: string
-  status: 'pending' | 'confirmed' | 'cancelled' | 'completed'
+  status: 'pending' | 'monastery_approved' | 'confirmed' | 'delivered' | 'not_delivered' | 'cancelled'
   confirmed_at?: string
+  monastery_approved_at?: string
+  monastery_approved_by?: string
+  confirmed_5_days_at?: string
+  confirmed_1_day_at?: string
+  delivery_confirmed_at?: string
+  delivery_confirmed_by?: string
+  delivery_status?: 'received' | 'not_received'
+  delivery_notes?: string
   created_at: string
   updated_at: string
   donation_slot?: DonationSlot
   donor?: UserProfile
+}
+
+export interface BookingConfirmation {
+  id: string
+  booking_id: string
+  reminder_type: '5_day' | '1_day' | 'monastery_approval' | 'delivery'
+  sent_at: string
+  sent_by?: string
+  method?: 'email' | 'sms' | 'phone' | 'manual'
+  notes?: string
+  created_at: string
 }

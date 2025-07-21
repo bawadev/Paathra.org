@@ -9,7 +9,10 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import { Textarea } from '@/components/ui/textarea'
 import { supabase, DonationBooking, Monastery } from '@/lib/supabase'
+import { executeBookingTransition } from '@/lib/services/booking-workflow'
 import { format, parseISO } from 'date-fns'
 import { hasRole } from '@/types/auth'
 import { 
@@ -33,6 +36,16 @@ export default function ManageBookingsPage() {
   const [filteredBookings, setFilteredBookings] = useState<DonationBooking[]>([])
   const [loading, setLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState('')
+  const [receivedStatusDialog, setReceivedStatusDialog] = useState<{
+    isOpen: boolean
+    bookingId: string
+    receivedStatus: 'delivered' | 'not_delivered' | null
+  }>({
+    isOpen: false,
+    bookingId: '',
+    receivedStatus: null
+  })
+  const [monasteryNotes, setMonasteryNotes] = useState('')
   const [statusFilter, setStatusFilter] = useState('all')
 
   useEffect(() => {
@@ -97,30 +110,85 @@ export default function ManageBookingsPage() {
     setFilteredBookings(filtered)
   }
 
-  const updateBookingStatus = async (bookingId: string, status: string) => {
+  const updateBookingStatus = async (bookingId: string, action: 'approve' | 'cancel' | 'markDelivered' | 'markNotDelivered' | 'reopen') => {
+    if (!user) return
+
+    const transitionData: any = {
+      bookingId,
+      transition: action,
+      userId: user.id,
+      userRole: 'monastery_admin' as const,
+    }
+
+    if (action === 'markDelivered' || action === 'markNotDelivered') {
+      transitionData.data = { delivery_notes: monasteryNotes }
+    }
+
+    const result = await executeBookingTransition(transitionData)
+
+    if (result.success) {
+      fetchData() // Refresh data
+      if (action === 'markDelivered' || action === 'markNotDelivered') {
+        closeReceivedStatusDialog()
+      }
+    } else {
+      console.error('Failed to update booking:', result.error)
+      // You might want to show a toast error here
+    }
+  }
+
+  const openReceivedStatusDialog = (bookingId: string, receivedStatus: 'delivered' | 'not_delivered') => {
+    setReceivedStatusDialog({
+      isOpen: true,
+      bookingId,
+      receivedStatus
+    })
+    setMonasteryNotes('')
+  }
+
+  const closeReceivedStatusDialog = () => {
+    setReceivedStatusDialog({
+      isOpen: false,
+      bookingId: '',
+      receivedStatus: null
+    })
+    setMonasteryNotes('')
+  }
+
+  const updateReceivedStatus = async () => {
+    if (!receivedStatusDialog.receivedStatus || !receivedStatusDialog.bookingId) return
+
     const { error } = await supabase
       .from('donation_bookings')
       .update({ 
-        status,
-        confirmed_at: status === 'confirmed' ? new Date().toISOString() : null
+        delivery_status: receivedStatusDialog.receivedStatus === 'delivered' ? 'received' : 'not_received',
+        delivery_confirmed_at: new Date().toISOString(),
+        delivery_confirmed_by: user?.id,
+        delivery_notes: monasteryNotes || null,
+        status: receivedStatusDialog.receivedStatus
       })
-      .eq('id', bookingId)
+      .eq('id', receivedStatusDialog.bookingId)
 
     if (!error) {
       fetchData() // Refresh data
+      closeReceivedStatusDialog()
     }
   }
 
   const getStatusColor = (status: string) => {
     switch (status) {
+      case 'monastery_approved':
+        return 'bg-blue-100 text-blue-800'
       case 'confirmed':
         return 'bg-green-100 text-green-800'
       case 'pending':
         return 'bg-yellow-100 text-yellow-800'
       case 'cancelled':
         return 'bg-red-100 text-red-800'
-      case 'completed':
-        return 'bg-blue-100 text-blue-800'
+      case 'delivered':
+        return 'bg-emerald-100 text-emerald-800'
+      case 'not_delivered':
+        return 'bg-orange-100 text-orange-800'
       default:
         return 'bg-gray-100 text-gray-800'
     }
@@ -128,14 +196,18 @@ export default function ManageBookingsPage() {
 
   const getStatusIcon = (status: string) => {
     switch (status) {
+      case 'monastery_approved':
+        return <CheckCircle className="w-4 h-4" />
       case 'confirmed':
         return <CheckCircle className="w-4 h-4" />
       case 'pending':
         return <AlertCircle className="w-4 h-4" />
       case 'cancelled':
         return <XCircle className="w-4 h-4" />
-      case 'completed':
+      case 'delivered':
         return <CheckCircle className="w-4 h-4" />
+      case 'not_delivered':
+        return <XCircle className="w-4 h-4" />
       default:
         return <AlertCircle className="w-4 h-4" />
     }
@@ -193,9 +265,11 @@ export default function ManageBookingsPage() {
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="all">All Statuses</SelectItem>
-                      <SelectItem value="pending">Pending</SelectItem>
-                      <SelectItem value="confirmed">Confirmed</SelectItem>
-                      <SelectItem value="completed">Completed</SelectItem>
+                      <SelectItem value="pending">Pending Approval</SelectItem>
+                      <SelectItem value="monastery_approved">Monastery Approved</SelectItem>
+                      <SelectItem value="confirmed">Donor Confirmed</SelectItem>
+                      <SelectItem value="delivered">Delivered</SelectItem>
+                      <SelectItem value="not_delivered">Not Delivered</SelectItem>
                       <SelectItem value="cancelled">Cancelled</SelectItem>
                     </SelectContent>
                   </Select>
@@ -296,7 +370,25 @@ export default function ManageBookingsPage() {
                                   <div className="flex items-center text-sm">
                                     <CheckCircle className="w-4 h-4 mr-2 text-green-500" />
                                     <span>
-                                      <strong>Confirmed:</strong> {format(parseISO(booking.confirmed_at), 'MMM d, h:mm a')}
+                                      <strong>Donor Confirmed:</strong> {format(parseISO(booking.confirmed_at), 'MMM d, h:mm a')}
+                                    </span>
+                                  </div>
+                                )}
+
+                                {booking.monastery_approved_at && (
+                                  <div className="flex items-center text-sm">
+                                    <CheckCircle className="w-4 h-4 mr-2 text-blue-500" />
+                                    <span>
+                                      <strong>Monastery Approved:</strong> {format(parseISO(booking.monastery_approved_at), 'MMM d, h:mm a')}
+                                    </span>
+                                  </div>
+                                )}
+
+                                {booking.delivery_confirmed_at && (
+                                  <div className="flex items-center text-sm">
+                                    <CheckCircle className="w-4 h-4 mr-2 text-purple-500" />
+                                    <span>
+                                      <strong>Delivery Status:</strong> {format(parseISO(booking.delivery_confirmed_at), 'MMM d, h:mm a')}
                                     </span>
                                   </div>
                                 )}
@@ -326,16 +418,16 @@ export default function ManageBookingsPage() {
                               <>
                                 <Button
                                   size="sm"
-                                  onClick={() => updateBookingStatus(booking.id, 'confirmed')}
+                                  onClick={() => updateBookingStatus(booking.id, 'approve')}
                                   className="bg-green-600 hover:bg-green-700"
                                 >
                                   <CheckCircle className="w-4 h-4 mr-2" />
-                                  Accept
+                                  Approve
                                 </Button>
                                 <Button
                                   size="sm"
                                   variant="destructive"
-                                  onClick={() => updateBookingStatus(booking.id, 'cancelled')}
+                                  onClick={() => updateBookingStatus(booking.id, 'cancel')}
                                 >
                                   <XCircle className="w-4 h-4 mr-2" />
                                   Decline
@@ -343,32 +435,51 @@ export default function ManageBookingsPage() {
                               </>
                             )}
 
+                            {booking.status === 'monastery_approved' && (
+                              <div className="text-sm text-blue-600 bg-blue-50 p-2 rounded text-center">
+                                Waiting for donor confirmation
+                              </div>
+                            )}
+
                             {booking.status === 'confirmed' && (
                               <>
                                 <Button
                                   size="sm"
-                                  variant="outline"
-                                  onClick={() => updateBookingStatus(booking.id, 'completed')}
+                                  onClick={() => openReceivedStatusDialog(booking.id, 'delivered')}
+                                  className="bg-green-600 hover:bg-green-700"
                                 >
                                   <CheckCircle className="w-4 h-4 mr-2" />
-                                  Mark Complete
+                                  Mark Received
                                 </Button>
                                 <Button
                                   size="sm"
-                                  variant="destructive"
-                                  onClick={() => updateBookingStatus(booking.id, 'cancelled')}
+                                  variant="outline"
+                                  onClick={() => openReceivedStatusDialog(booking.id, 'not_delivered')}
                                 >
                                   <XCircle className="w-4 h-4 mr-2" />
-                                  Cancel
+                                  Not Received
                                 </Button>
                               </>
+                            )}
+
+                            {(booking.status === 'delivered' || booking.status === 'not_delivered') && (
+                              <div className="space-y-2">
+                                <Badge className={getStatusColor(booking.status)}>
+                                  {booking.status === 'delivered' ? 'Delivered' : 'Not Delivered'}
+                                </Badge>
+                                {booking.delivery_notes && (
+                                  <div className="text-xs text-gray-600 bg-gray-50 p-2 rounded">
+                                    <strong>Notes:</strong> {booking.delivery_notes}
+                                  </div>
+                                )}
+                              </div>
                             )}
 
                             {booking.status === 'cancelled' && booking.created_at > new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString() && (
                               <Button
                                 size="sm"
                                 variant="outline"
-                                onClick={() => updateBookingStatus(booking.id, 'pending')}
+                                onClick={() => updateBookingStatus(booking.id, 'reopen')}
                               >
                                 <AlertCircle className="w-4 h-4 mr-2" />
                                 Reopen
@@ -385,6 +496,58 @@ export default function ManageBookingsPage() {
           </div>
         )}
       </main>
+
+      {/* Delivery Status Dialog */}
+      <Dialog open={receivedStatusDialog.isOpen} onOpenChange={closeReceivedStatusDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>
+              Mark Donation as {receivedStatusDialog.receivedStatus === 'delivered' ? 'Received' : 'Not Received'}
+            </DialogTitle>
+            <DialogDescription>
+              {receivedStatusDialog.receivedStatus === 'delivered' 
+                ? 'Confirm that the donation was successfully received'
+                : 'Mark that the donation was not received as expected'
+              }
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="space-y-4">
+            <div>
+              <label htmlFor="monastery-notes" className="text-sm font-medium">
+                Notes (optional)
+              </label>
+              <Textarea
+                id="monastery-notes"
+                placeholder={
+                  receivedStatusDialog.receivedStatus === 'delivered'
+                    ? 'Add any notes about the donation received...'
+                    : 'Please explain why the donation was not received...'
+                }
+                value={monasteryNotes}
+                onChange={(e) => setMonasteryNotes(e.target.value)}
+                className="mt-1"
+              />
+            </div>
+          </div>
+
+          <DialogFooter>
+            <Button variant="outline" onClick={closeReceivedStatusDialog}>
+              Cancel
+            </Button>
+            <Button
+              onClick={updateReceivedStatus}
+              className={
+                receivedStatusDialog.receivedStatus === 'delivered'
+                  ? 'bg-green-600 hover:bg-green-700'
+                  : 'bg-orange-600 hover:bg-orange-700'
+              }
+            >
+              Confirm {receivedStatusDialog.receivedStatus === 'delivered' ? 'Received' : 'Not Received'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

@@ -4,10 +4,11 @@ import { useEffect, useState } from 'react'
 import { useAuth } from '@/lib/auth-context'
 import { Navigation } from '@/components/navigation'
 import { AuthForm } from '@/components/auth-form'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { supabase, DonationBooking } from '@/lib/supabase'
+import { executeBookingTransition } from '@/lib/services/booking-workflow'
 import { format, parseISO } from 'date-fns'
 import { Calendar, Clock, MapPin, Phone, Utensils, Users } from 'lucide-react'
 
@@ -46,29 +47,40 @@ export default function MyDonationsPage() {
     setLoading(false)
   }
 
-  const updateBookingStatus = async (bookingId: string, status: string) => {
-    const { error } = await supabase
-      .from('donation_bookings')
-      .update({ status })
-      .eq('id', bookingId)
+  const updateBookingStatus = async (bookingId: string, action: 'confirm' | 'cancel') => {
+    if (!user) return
 
-    if (!error) {
+    const result = await executeBookingTransition({
+      bookingId,
+      transition: action,
+      userId: user.id,
+      userRole: 'donor',
+    })
+
+    if (result.success) {
       fetchMyBookings() // Refresh the list
+    } else {
+      console.error('Failed to update booking:', result.error)
+      // You might want to show a toast error here
     }
   }
 
-  const getStatusColor = (status: string) => {
+  const getStatusText = (status: string) => {
     switch (status) {
+      case 'monastery_approved':
+        return 'Monastery Approved'
       case 'confirmed':
-        return 'bg-green-100 text-green-800'
+        return 'Confirmed'
       case 'pending':
-        return 'bg-yellow-100 text-yellow-800'
+        return 'Pending Approval'
       case 'cancelled':
-        return 'bg-red-100 text-red-800'
-      case 'completed':
-        return 'bg-blue-100 text-blue-800'
+        return 'Cancelled'
+      case 'delivered':
+        return 'Delivered'
+      case 'not_delivered':
+        return 'Not Delivered'
       default:
-        return 'bg-gray-100 text-gray-800'
+        return status.charAt(0).toUpperCase() + status.slice(1)
     }
   }
 
@@ -194,34 +206,68 @@ export default function MyDonationsPage() {
                         <Badge 
                           variant={
                             booking.status === 'confirmed' ? 'default' :
+                            booking.status === 'monastery_approved' ? 'secondary' :
+                            booking.status === 'delivered' ? 'default' :
                             booking.status === 'pending' ? 'secondary' :
                             booking.status === 'cancelled' ? 'destructive' : 'outline'
                           }
                           className="text-sm px-3 py-1"
                         >
-                          {booking.status?.charAt(0).toUpperCase() + booking.status?.slice(1) || 'Unknown'}
+                          {getStatusText(booking.status)}
                         </Badge>
                         
                         <div className="flex gap-3">
-                          {booking.status === 'pending' && (
+                          {booking.status === 'monastery_approved' && (
                             <>
                               <Button
                                 size="sm"
-                                onClick={() => updateBookingStatus(booking.id, 'confirmed')}
+                                onClick={() => updateBookingStatus(booking.id, 'confirm')}
                                 className="btn-dana-primary text-sm"
                               >
-                                Confirm
+                                Confirm Donation
                               </Button>
                               <Button
                                 size="sm"
                                 variant="outline"
-                                onClick={() => updateBookingStatus(booking.id, 'cancelled')}
+                                onClick={() => updateBookingStatus(booking.id, 'cancel')}
                                 className="text-sm border-[var(--primary-color)] text-[var(--primary-color)] hover:bg-[var(--primary-color)] hover:text-white"
                               >
                                 Cancel
                               </Button>
                             </>
                           )}
+                          
+                          {booking.status === 'pending' && (
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => updateBookingStatus(booking.id, 'cancel')}
+                              className="text-sm border-[var(--primary-color)] text-[var(--primary-color)] hover:bg-[var(--primary-color)] hover:text-white"
+                            >
+                              Cancel Request
+                            </Button>
+                          )}
+
+                          {(booking.status === 'confirmed' || booking.status === 'delivered' || booking.status === 'not_delivered') && (
+                            <div className="text-center">
+                              {booking.status === 'confirmed' && (
+                                <div className="text-xs text-green-600 bg-green-50 px-2 py-1 rounded">
+                                  Ready for donation day
+                                </div>
+                              )}
+                              {booking.status === 'delivered' && (
+                                <div className="text-xs text-emerald-600 bg-emerald-50 px-2 py-1 rounded">
+                                  Successfully delivered
+                                </div>
+                              )}
+                              {booking.status === 'not_delivered' && (
+                                <div className="text-xs text-orange-600 bg-orange-50 px-2 py-1 rounded">
+                                  Not delivered
+                                </div>
+                              )}
+                            </div>
+                          )}
+
                           {booking.donation_slot?.monastery?.phone && (
                             <Button
                               size="sm"
