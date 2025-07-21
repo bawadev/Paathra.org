@@ -37,13 +37,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         
         if (error) {
           console.error('Error getting session:', error)
-          if (error.message.includes('refresh') || error.message.includes('token')) {
+          
+          // Handle specific refresh token errors
+          if (error.message.toLowerCase().includes('invalid refresh token') || 
+              error.message.toLowerCase().includes('refresh token not found')) {
+            console.log('Refresh token error detected, clearing session')
+            await supabase.auth.signOut()
+            setError('Your session has expired. Please sign in again.')
+          } else if (error.message.includes('refresh') || error.message.includes('token')) {
             // Clear invalid session
             await supabase.auth.signOut()
             setError('Your session has expired. Please sign in again.')
           } else {
             setError('Authentication error. Please try again.')
           }
+          
           if (mounted) {
             setSession(null)
             setUser(null)
@@ -124,9 +132,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
               setLoading(false)
             }
         }
-      } catch (err) {
+      } catch (err: any) {
         console.error('Error handling auth state change:', err)
-        setError('Authentication error occurred. Please refresh the page.')
+        
+        // Handle refresh token errors specifically
+        if (err?.message?.toLowerCase().includes('invalid refresh token') || 
+            err?.message?.toLowerCase().includes('refresh token not found')) {
+          console.log('Refresh token error in auth state change, clearing session')
+          await supabase.auth.signOut()
+          setError('Your session has expired. Please sign in again.')
+          setSession(null)
+          setUser(null)
+          setProfile(null)
+        } else {
+          setError('Authentication error occurred. Please refresh the page.')
+        }
         setLoading(false)
       }
     })
