@@ -341,7 +341,7 @@ export default function ManageSlotsPage() {
                                   <div className="flex items-center space-x-1">
                                     <Users className="w-4 h-4 text-gray-400" />
                                     <span className="text-sm">
-                                      {slot.current_bookings}/{slot.max_donors} booked
+                                      {slot.monks_fed}/{slot.monks_capacity} monks fed
                                     </span>
                                   </div>
 
@@ -351,6 +351,19 @@ export default function ManageSlotsPage() {
                                       : 'bg-red-100 text-red-800'
                                   }`}>
                                     {slot.is_available ? 'Active' : 'Disabled'}
+                                  </div>
+                                </div>
+
+                                {/* Feeding Progress */}
+                                <div className="mt-2">
+                                  <div className="w-full bg-gray-200 rounded-full h-1.5">
+                                    <div 
+                                      className="bg-green-600 h-1.5 rounded-full transition-all duration-300" 
+                                      style={{ width: `${(slot.monks_fed / slot.monks_capacity) * 100}%` }}
+                                    ></div>
+                                  </div>
+                                  <div className="text-xs text-gray-500 mt-1">
+                                    {slot.monks_capacity - slot.monks_fed} monks remaining
                                   </div>
                                 </div>
 
@@ -418,16 +431,16 @@ export default function ManageSlotsPage() {
                     
                     <div className="text-center">
                       <div className="text-2xl font-bold text-yellow-600">
-                        {slots.reduce((sum, slot) => sum + slot.current_bookings, 0)}
+                        {slots.reduce((sum, slot) => sum + slot.monks_fed, 0)}
                       </div>
-                      <div className="text-sm text-gray-600">Bookings</div>
+                      <div className="text-sm text-gray-600">Monks Fed</div>
                     </div>
                     
                     <div className="text-center">
                       <div className="text-2xl font-bold text-purple-600">
-                        {slots.reduce((sum, slot) => sum + slot.max_donors, 0)}
+                        {slots.reduce((sum, slot) => sum + slot.monks_capacity, 0)}
                       </div>
-                      <div className="text-sm text-gray-600">Total Capacity</div>
+                      <div className="text-sm text-gray-600">Total Monk Capacity</div>
                     </div>
                   </div>
                 </CardContent>

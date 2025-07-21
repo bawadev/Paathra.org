@@ -61,13 +61,13 @@ export function DonationCalendar({ onSlotSelect }: DonationCalendarProps) {
   const getSlotsForDate = (date: Date) => {
     return slots.filter(slot => 
       isSameDay(parseISO(slot.date), date) && 
-      slot.current_bookings < slot.max_donors
+      slot.monks_fed < slot.monks_capacity
     )
   }
 
   const getAvailableDates = () => {
     const availableDates = slots
-      .filter(slot => slot.current_bookings < slot.max_donors)
+      .filter(slot => slot.monks_fed < slot.monks_capacity)
       .map(slot => parseISO(slot.date))
     
     return availableDates
@@ -145,7 +145,20 @@ export function DonationCalendar({ onSlotSelect }: DonationCalendarProps) {
                         
                         <div className="flex items-center space-x-1">
                           <Users className="w-4 h-4" />
-                          <span>{slot.current_bookings}/{slot.max_donors}</span>
+                          <span>{slot.monks_fed}/{slot.monks_capacity} monks fed</span>
+                        </div>
+                      </div>
+
+                      {/* Progress Bar */}
+                      <div className="mb-2">
+                        <div className="w-full bg-gray-200 rounded-full h-1.5">
+                          <div 
+                            className="bg-green-600 h-1.5 rounded-full transition-all duration-300" 
+                            style={{ width: `${(slot.monks_fed / slot.monks_capacity) * 100}%` }}
+                          ></div>
+                        </div>
+                        <div className="text-xs text-gray-500 mt-1">
+                          {slot.monks_capacity - slot.monks_fed} monks remaining
                         </div>
                       </div>
 

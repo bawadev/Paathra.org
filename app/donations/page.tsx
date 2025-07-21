@@ -36,12 +36,16 @@ export default function DonationsPage() {
       .eq('is_available', true)
       .gte('date', new Date().toISOString().split('T')[0])
       .order('date', { ascending: true })
-      .limit(20)
+      .limit(50)
 
     if (error) {
       console.error('Error fetching donation slots:', error)
     } else {
-      setSlots(data || [])
+      // Filter slots that still have capacity for monks
+      const availableSlots = (data || []).filter(slot => 
+        slot.monks_fed < slot.monks_capacity
+      ).slice(0, 20)
+      setSlots(availableSlots)
     }
     setLoading(false)
   }
@@ -158,12 +162,26 @@ export default function DonationsPage() {
                         <div className="flex items-center gap-3 text-[var(--text-light)]">
                           <Users className="w-4 h-4 text-[var(--primary-color)]" />
                           <span>
-                            {slot.current_bookings}/{slot.max_donors} donors
+                            {slot.monks_fed}/{slot.monks_capacity} monks fed
                           </span>
                         </div>
                         <div className="flex items-center gap-3 text-[var(--text-light)]">
                           <MapPin className="w-4 h-4 text-[var(--primary-color)]" />
                           <span className="text-sm">{slot.monastery.address}</span>
+                        </div>
+                        
+                        {/* Feeding Progress Bar */}
+                        <div className="mt-4">
+                          <div className="flex justify-between text-sm mb-1">
+                            <span>Feeding Progress</span>
+                            <span>{slot.monks_capacity - slot.monks_fed} monks remaining</span>
+                          </div>
+                          <div className="w-full bg-gray-200 rounded-full h-2">
+                            <div 
+                              className="bg-[var(--primary-color)] h-2 rounded-full transition-all duration-300" 
+                              style={{ width: `${(slot.monks_fed / slot.monks_capacity) * 100}%` }}
+                            ></div>
+                          </div>
                         </div>
                       </div>
 
@@ -177,14 +195,14 @@ export default function DonationsPage() {
 
                       <div className="flex justify-between items-center">
                         <div className="text-sm text-[var(--text-light)]">
-                          {slot.max_donors - slot.current_bookings} spots left
+                          Feed up to {slot.monks_capacity - slot.monks_fed} monks
                         </div>
                         <Button 
                           className="btn-dana-primary"
-                          disabled={slot.current_bookings >= slot.max_donors}
+                          disabled={slot.monks_fed >= slot.monks_capacity}
                         >
                           <Heart className="w-4 h-4 mr-2" />
-                          Book Slot
+                          Donate Food
                         </Button>
                       </div>
                     </div>

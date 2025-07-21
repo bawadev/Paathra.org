@@ -29,6 +29,7 @@ export function DonationBookingForm({ slot, onSuccess, onCancel }: DonationBooki
     defaultValues: {
       food_type: '',
       estimated_servings: '',
+      monks_to_feed: '',
       special_notes: '',
       contact_phone: '',
     },
@@ -41,13 +42,45 @@ export function DonationBookingForm({ slot, onSuccess, onCancel }: DonationBooki
     setError('')
 
     try {
+      const monksToFeed = parseInt(data.monks_to_feed)
+      
+      // Check if there's enough capacity left
+      const remainingCapacity = slot.monks_capacity - slot.monks_fed
+      if (monksToFeed > remainingCapacity) {
+        setError(`Only ${remainingCapacity} monks can be fed for this slot. Please reduce the number or check other available slots.`)
+        setLoading(false)
+        return
+      }
+
+      // Optimistic check: re-fetch slot data to ensure it hasn't changed
+      const { data: currentSlot, error: fetchError } = await supabase
+        .from('donation_slots')
+        .select('monks_capacity, monks_fed')
+        .eq('id', slot.id)
+        .single()
+
+      if (fetchError) {
+        setError('Unable to verify slot availability. Please try again.')
+        setLoading(false)
+        return
+      }
+
+      const currentRemainingCapacity = currentSlot.monks_capacity - currentSlot.monks_fed
+      if (monksToFeed > currentRemainingCapacity) {
+        setError(`This slot was just updated! Only ${currentRemainingCapacity} monks can be fed now. Please adjust your donation or try another slot.`)
+        setLoading(false)
+        return
+      }
+
       const { error: bookingError } = await supabase
         .from('donation_bookings')
         .insert({
           donation_slot_id: slot.id,
           donor_id: user.id,
+          donation_date: slot.date,
           food_type: data.food_type,
           estimated_servings: parseInt(data.estimated_servings),
+          monks_to_feed: monksToFeed,
           special_notes: data.special_notes || null,
           contact_phone: data.contact_phone || null,
         })
@@ -88,12 +121,26 @@ export function DonationBookingForm({ slot, onSuccess, onCancel }: DonationBooki
             
             <div className="flex items-center space-x-1">
               <Users className="w-4 h-4" />
-              <span>{slot.current_bookings}/{slot.max_donors} booked</span>
+              <span>{slot.monks_fed}/{slot.monks_capacity} monks fed</span>
             </div>
             
             <div className="flex items-center space-x-1">
               <MapPin className="w-4 h-4" />
               <span>{slot.monastery?.address}</span>
+            </div>
+          </div>
+
+          {/* Capacity Progress Bar */}
+          <div className="mt-4">
+            <div className="flex justify-between text-sm mb-1">
+              <span>Feeding Progress</span>
+              <span>{slot.monks_capacity - slot.monks_fed} monks remaining</span>
+            </div>
+            <div className="w-full bg-gray-200 rounded-full h-2">
+              <div 
+                className="bg-green-600 h-2 rounded-full transition-all duration-300" 
+                style={{ width: `${(slot.monks_fed / slot.monks_capacity) * 100}%` }}
+              ></div>
             </div>
           </div>
 
@@ -107,7 +154,7 @@ export function DonationBookingForm({ slot, onSuccess, onCancel }: DonationBooki
         {/* Booking Form */}
         <FormProvider {...form}>
           <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <TextField
                 name="food_type"
                 label="Type of Food"
@@ -119,6 +166,13 @@ export function DonationBookingForm({ slot, onSuccess, onCancel }: DonationBooki
                 name="estimated_servings"
                 label="Estimated Servings"
                 placeholder="Number of people this will serve"
+                required
+              />
+
+              <TextField
+                name="monks_to_feed"
+                label="Monks to Feed"
+                placeholder={`Max ${slot.monks_capacity - slot.monks_fed} remaining`}
                 required
               />
             </div>

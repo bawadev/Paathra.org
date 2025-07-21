@@ -95,6 +95,8 @@ export interface DonationSlot {
   time_slot: string
   max_donors: number
   current_bookings: number
+  monks_capacity: number
+  monks_fed: number
   special_requirements?: string
   is_available: boolean
   created_by?: string
@@ -109,6 +111,7 @@ export interface DonationBooking {
   donor_id: string
   food_type: string
   estimated_servings: number
+  monks_to_feed: number
   special_notes?: string
   contact_phone?: string
   donation_date: string
