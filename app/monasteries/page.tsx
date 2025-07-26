@@ -7,34 +7,117 @@ import { AuthForm } from '@/components/auth-form'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { supabase, Monastery } from '@/lib/supabase'
-import { MapPin, Phone, Mail, Globe, Users } from 'lucide-react'
+import { Input } from '@/components/ui/input'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { getMonasteriesWithDistance, MonasteryWithDistance } from '@/lib/supabase'
+import { LocationSettings } from '@/components/location-settings'
+import { MonasteryMap } from '@/components/monastery-map'
+import { getUserLocation, formatDistance } from '@/lib/location-utils'
+import { MapPin, Phone, Mail, Globe, Users, Map, List, Navigation as NavigationIcon } from 'lucide-react'
 import Link from 'next/link'
 
 export default function MonasteriesPage() {
-  const { user, loading: authLoading } = useAuth()
-  const [monasteries, setMonasteries] = useState<Monastery[]>([])
+  const { user, profile, loading: authLoading } = useAuth()
+  const [monasteries, setMonasteries] = useState<MonasteryWithDistance[]>([])
+  const [filteredMonasteries, setFilteredMonasteries] = useState<MonasteryWithDistance[]>([])
   const [loading, setLoading] = useState(true)
+  const [userLocation, setUserLocation] = useState<{latitude: number, longitude: number, address?: string} | null>(null)
+  const [showMap, setShowMap] = useState(false)
+  const [searchQuery, setSearchQuery] = useState('')
+  const [sortBy, setSortBy] = useState<'distance' | 'name' | 'capacity'>('distance')
+  const [maxDistance, setMaxDistance] = useState<number>(100)
+  const [showLocationSettings, setShowLocationSettings] = useState(false)
 
   useEffect(() => {
     if (user) {
-      fetchMonasteries()
+      initializeLocationAndMonasteries()
     }
   }, [user])
 
-  const fetchMonasteries = async () => {
-    setLoading(true)
-    const { data, error } = await supabase
-      .from('monasteries')
-      .select('*')
-      .order('name')
+  useEffect(() => {
+    filterAndSortMonasteries()
+  }, [monasteries, searchQuery, sortBy, maxDistance, userLocation])
 
-    if (error) {
-      console.error('Error fetching monasteries:', error)
+  const initializeLocationAndMonasteries = async () => {
+    setLoading(true)
+    
+    // Try to get user location from profile first
+    let currentLocation: { latitude: number; longitude: number; address?: string } | null = null
+    if (profile?.latitude && profile?.longitude) {
+      currentLocation = {
+        latitude: profile.latitude,
+        longitude: profile.longitude,
+        ...(profile.address && { address: profile.address })
+      }
+      setUserLocation(currentLocation)
     } else {
-      setMonasteries(data || [])
+      // Try to get current location
+      const detectedLocation = await getUserLocation()
+      if (detectedLocation) {
+        setUserLocation(detectedLocation)
+        currentLocation = detectedLocation
+      }
     }
+
+    await fetchMonasteries(currentLocation)
+  }
+
+  const fetchMonasteries = async (location?: { latitude: number; longitude: number } | null) => {
+    setLoading(true)
+    const data = await getMonasteriesWithDistance(
+      location?.latitude,
+      location?.longitude,
+      maxDistance
+    )
+    setMonasteries(data)
     setLoading(false)
+  }
+
+  const filterAndSortMonasteries = () => {
+    let filtered = [...monasteries]
+
+    // Apply search filter
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase()
+      filtered = filtered.filter(monastery => 
+        monastery.name.toLowerCase().includes(query) ||
+        monastery.address.toLowerCase().includes(query) ||
+        monastery.description?.toLowerCase().includes(query)
+      )
+    }
+
+    // Apply distance filter
+    if (userLocation && maxDistance) {
+      filtered = filtered.filter(monastery => 
+        !monastery.distance || monastery.distance <= maxDistance
+      )
+    }
+
+    // Apply sorting
+    switch (sortBy) {
+      case 'distance':
+        filtered.sort((a, b) => (a.distance || Infinity) - (b.distance || Infinity))
+        break
+      case 'name':
+        filtered.sort((a, b) => a.name.localeCompare(b.name))
+        break
+      case 'capacity':
+        filtered.sort((a, b) => (b.capacity || 0) - (a.capacity || 0))
+        break
+    }
+
+    setFilteredMonasteries(filtered)
+  }
+
+  const handleLocationUpdate = async (location: { latitude: number; longitude: number; address?: string }) => {
+    setUserLocation(location)
+    await fetchMonasteries(location)
+    setShowLocationSettings(false)
+  }
+
+  const handleMonasterySelect = (monastery: MonasteryWithDistance) => {
+    // You can add navigation or modal logic here
+    console.log('Selected monastery:', monastery)
   }
 
   if (authLoading) {
@@ -50,120 +133,246 @@ export default function MonasteriesPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[var(--bg-light)]">
+    <div className="min-h-screen bg-gray-50">
       <Navigation />
       
-      <main className="container-dana px-5 py-8">
-        {/* Header */}
-        <div className="text-center mb-12 pt-20">
-          <h1 className="text-4xl font-bold gradient-text mb-4 fade-in-1">
-            Buddhist Monasteries
-          </h1>
-          <p className="text-xl text-[var(--text-light)] max-w-2xl mx-auto fade-in-2">
-            Discover and support Buddhist monasteries in your area. Each monastery has unique needs and practices.
+      <main className="container mx-auto px-4 py-8">
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">Find Monasteries</h1>
+          <p className="text-gray-600">
+            Discover monasteries near you for food donations
           </p>
         </div>
 
-        {loading ? (
-          <div className="text-center py-8">
-            <div className="text-lg text-[var(--text-light)]">Loading monasteries...</div>
-          </div>
-        ) : (
-          <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-            {monasteries.map((monastery) => (
-              <Card key={monastery.id} className="card-dana group overflow-hidden">
-                <CardHeader className="pb-4">
-                  <div className="w-full h-32 bg-gradient-to-r from-[var(--primary-color)] to-[var(--accent-color)] rounded-lg mb-4 flex items-center justify-center">
-                    <span className="text-4xl">🏛️</span>
+        {/* Location and Controls */}
+        <div className="grid gap-6 lg:grid-cols-4 mb-6">
+          <div className="lg:col-span-3">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center justify-between">
+                  <div className="flex items-center space-x-2">
+                    <MapPin className="w-5 h-5" />
+                    <span>Location & Filters</span>
                   </div>
-                  
-                  <CardTitle className="text-[var(--text-dark)] group-hover:text-[var(--primary-color)] transition-colors">
-                    {monastery.name}
-                  </CardTitle>
-                  {monastery.description && (
-                    <CardDescription className="text-[var(--text-light)]">
-                      {monastery.description}
-                    </CardDescription>
-                  )}
-                </CardHeader>
-                
-                <CardContent>
-                  <div className="space-y-3 mb-6">
-                    <div className="flex items-start text-sm text-[var(--text-light)]">
-                      <MapPin className="w-4 h-4 mr-2 mt-0.5 flex-shrink-0 text-[var(--primary-color)]" />
-                      <span>{monastery.address}</span>
-                    </div>
-
-                    {monastery.phone && (
-                      <div className="flex items-center text-sm text-[var(--text-light)]">
-                        <Phone className="w-4 h-4 mr-2 flex-shrink-0 text-[var(--primary-color)]" />
-                        <span>{monastery.phone}</span>
-                      </div>
-                    )}
-
-                    {monastery.email && (
-                      <div className="flex items-center text-sm text-[var(--text-light)]">
-                        <Mail className="w-4 h-4 mr-2 flex-shrink-0 text-[var(--primary-color)]" />
-                        <span>{monastery.email}</span>
-                      </div>
-                    )}
-
-                    {monastery.website && (
-                      <div className="flex items-center text-sm text-[var(--text-light)]">
-                        <Globe className="w-4 h-4 mr-2 flex-shrink-0 text-[var(--primary-color)]" />
-                        <a
-                          href={monastery.website}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-[var(--primary-color)] hover:underline"
-                        >
-                          Visit Website
-                        </a>
-                      </div>
-                    )}
-
-                    <div className="flex items-center justify-between pt-2 border-t border-gray-100">
-                      <Badge
-                        variant={monastery.status === 'approved' ? 'default' : 'secondary'}
-                        className={monastery.status === 'approved' ? 'bg-green-100 text-green-800' : ''}
-                      >
-                        {monastery.status}
-                      </Badge>
-                      
-                      <div className="flex items-center text-sm text-[var(--text-light)]">
-                        <Users className="w-4 h-4 mr-1" />
-                        <span>{monastery.capacity || 'N/A'}</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="space-y-2">
-                    <Link href={`/donate?monastery=${monastery.id}`}>
-                      <Button className="w-full btn-dana-primary">
-                        Donate Food
-                      </Button>
-                    </Link>
-                    
-                    <Button variant="outline" className="w-full btn-dana-secondary">
-                      View Details
+                  <div className="flex space-x-2">
+                    <Button
+                      variant={showMap ? "default" : "outline"}
+                      size="sm"
+                      onClick={() => setShowMap(!showMap)}
+                    >
+                      {showMap ? <List className="w-4 h-4 mr-1" /> : <Map className="w-4 h-4 mr-1" />}
+                      {showMap ? 'List View' : 'Map View'}
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setShowLocationSettings(!showLocationSettings)}
+                    >
+                      <NavigationIcon className="w-4 h-4 mr-1" />
+                      Set Location
                     </Button>
                   </div>
-                </CardContent>
-              </Card>
-            ))}
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid gap-4 md:grid-cols-3">
+                  {/* Search */}
+                  <div className="space-y-1">
+                    <label className="text-sm font-medium">Search</label>
+                    <Input
+                      placeholder="Search monasteries..."
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                    />
+                  </div>
+
+                  {/* Sort By */}
+                  <div className="space-y-1">
+                    <label className="text-sm font-medium">Sort By</label>
+                    <Select value={sortBy} onValueChange={(value: any) => setSortBy(value)}>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="distance">Distance</SelectItem>
+                        <SelectItem value="name">Name</SelectItem>
+                        <SelectItem value="capacity">Capacity</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  {/* Max Distance */}
+                  <div className="space-y-1">
+                    <label className="text-sm font-medium">Max Distance (km)</label>
+                    <Select value={maxDistance.toString()} onValueChange={(value) => setMaxDistance(parseInt(value))}>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="10">10 km</SelectItem>
+                        <SelectItem value="25">25 km</SelectItem>
+                        <SelectItem value="50">50 km</SelectItem>
+                        <SelectItem value="100">100 km</SelectItem>
+                        <SelectItem value="500">500 km</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+
+                {/* Current Location Display */}
+                {userLocation && (
+                  <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                    <div className="flex items-center space-x-2">
+                      <MapPin className="w-4 h-4 text-blue-600" />
+                      <span className="text-sm font-medium text-blue-800">Your Location:</span>
+                      <span className="text-sm text-blue-700">
+                        {userLocation.address || `${userLocation.latitude.toFixed(4)}, ${userLocation.longitude.toFixed(4)}`}
+                      </span>
+                    </div>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </div>
+
+          <div>
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg">Quick Stats</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-3">
+                  <div>
+                    <div className="text-2xl font-bold text-blue-600">{filteredMonasteries.length}</div>
+                    <div className="text-sm text-gray-600">Monasteries Found</div>
+                  </div>
+                  {userLocation && (
+                    <div>
+                      <div className="text-2xl font-bold text-green-600">
+                        {filteredMonasteries.filter(m => m.distance && m.distance <= 25).length}
+                      </div>
+                      <div className="text-sm text-gray-600">Within 25km</div>
+                    </div>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+
+        {/* Location Settings Modal */}
+        {showLocationSettings && (
+          <div className="mb-6">
+            <LocationSettings
+              userId={user?.id}
+              currentLocation={userLocation}
+              onLocationUpdate={handleLocationUpdate}
+            />
           </div>
         )}
 
-        {!loading && monasteries.length === 0 && (
-          <div className="text-center py-12">
-            <div className="text-6xl mb-4">🏛️</div>
-            <h3 className="text-xl font-semibold text-[var(--text-dark)] mb-2">No Monasteries Found</h3>
-            <p className="text-[var(--text-light)] mb-6">
-              There are currently no monasteries available in your area.
-            </p>
-            <Button className="btn-dana-secondary">
-              Request New Monastery
-            </Button>
+        {/* Map View */}
+        {showMap && (
+          <Card className="mb-6">
+            <CardContent className="p-0">
+              <MonasteryMap
+                monasteries={filteredMonasteries}
+                userLocation={userLocation}
+                onMonasterySelect={handleMonasterySelect}
+                height="500px"
+              />
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Loading State */}
+        {loading ? (
+          <div className="text-center py-8">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+            <p className="text-gray-600">Loading monasteries...</p>
+          </div>
+        ) : (
+          /* Monasteries Grid */
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {filteredMonasteries.length === 0 ? (
+              <div className="col-span-full text-center py-8">
+                <MapPin className="w-12 h-12 mx-auto text-gray-300 mb-4" />
+                <h3 className="text-lg font-medium text-gray-900 mb-2">No monasteries found</h3>
+                <p className="text-gray-600">
+                  {searchQuery ? 'Try adjusting your search or filters' : 'Try setting your location or increasing the distance range'}
+                </p>
+              </div>
+            ) : (
+              filteredMonasteries.map((monastery) => (
+                <Card key={monastery.id} className="hover:shadow-lg transition-shadow">
+                  <CardHeader>
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                        <CardTitle className="text-lg">{monastery.name}</CardTitle>
+                        <CardDescription className="flex items-center mt-1">
+                          <MapPin className="w-4 h-4 mr-1" />
+                          {monastery.address}
+                        </CardDescription>
+                      </div>
+                      {monastery.distance && (
+                        <Badge variant="outline" className="ml-2">
+                          {formatDistance(monastery.distance)}
+                        </Badge>
+                      )}
+                    </div>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    {monastery.description && (
+                      <p className="text-sm text-gray-600">{monastery.description}</p>
+                    )}
+                    
+                    <div className="grid grid-cols-2 gap-4 text-sm">
+                      {monastery.capacity && (
+                        <div className="flex items-center">
+                          <Users className="w-4 h-4 mr-2 text-gray-400" />
+                          <span>{monastery.capacity} monks</span>
+                        </div>
+                      )}
+                      
+                      {monastery.phone && (
+                        <div className="flex items-center">
+                          <Phone className="w-4 h-4 mr-2 text-gray-400" />
+                          <span className="truncate">{monastery.phone}</span>
+                        </div>
+                      )}
+                      
+                      {monastery.email && (
+                        <div className="flex items-center">
+                          <Mail className="w-4 h-4 mr-2 text-gray-400" />
+                          <span className="truncate">{monastery.email}</span>
+                        </div>
+                      )}
+                      
+                      {monastery.website && (
+                        <div className="flex items-center">
+                          <Globe className="w-4 h-4 mr-2 text-gray-400" />
+                          <a href={monastery.website} target="_blank" rel="noopener noreferrer" 
+                             className="text-blue-600 hover:underline truncate">
+                            Website
+                          </a>
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="flex space-x-2">
+                      <Link href={`/donations?monastery=${monastery.id}`} className="flex-1">
+                        <Button className="w-full">
+                          Make Donation
+                        </Button>
+                      </Link>
+                      <Button variant="outline" size="sm">
+                        Details
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))
+            )}
           </div>
         )}
       </main>
