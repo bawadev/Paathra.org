@@ -11,6 +11,13 @@ import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Calendar } from '@/components/ui/calendar'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import { supabase, DonationSlot, Monastery } from '@/lib/supabase'
 import { format, parseISO, addDays, isBefore, startOfDay } from 'date-fns'
 import { hasRole } from '@/types/auth'
@@ -19,7 +26,6 @@ import {
   Clock, 
   Users, 
   Plus,
-  Edit,
   Trash2,
   AlertCircle
 } from 'lucide-react'
@@ -35,7 +41,9 @@ export default function ManageSlotsPage() {
   // Form state for creating slots
   const [formData, setFormData] = useState({
     date: '',
+    meal_type: 'lunch' as 'breakfast' | 'lunch' | 'dinner',
     time_slot: '',
+    monks_capacity: 10,
     max_donors: 5,
     special_requirements: ''
   })
@@ -45,6 +53,31 @@ export default function ManageSlotsPage() {
       fetchData()
     }
   }, [user, profile])
+
+  // Update time slot when meal type changes
+  useEffect(() => {
+    if (monastery && formData.meal_type) {
+      const defaultTime = getDefaultTimeForMeal(monastery, formData.meal_type)
+      setFormData(prev => ({
+        ...prev,
+        time_slot: defaultTime,
+        monks_capacity: monastery.capacity || 10
+      }))
+    }
+  }, [formData.meal_type, monastery])
+
+  const getDefaultTimeForMeal = (monastery: Monastery, mealType: string) => {
+    switch (mealType) {
+      case 'breakfast':
+        return monastery.breakfast_time?.substring(0, 5) || '07:00'
+      case 'lunch':
+        return monastery.lunch_time?.substring(0, 5) || '11:30'
+      case 'dinner':
+        return monastery.dinner_time?.substring(0, 5) || '17:00'
+      default:
+        return '11:30'
+    }
+  }
 
   const fetchData = async () => {
     if (!user) return
@@ -80,22 +113,54 @@ export default function ManageSlotsPage() {
     e.preventDefault()
     if (!monastery) return
 
+    // Check if slot already exists for this date/meal type/monastery
+    const { data: existingSlots } = await supabase
+      .from('donation_slots')
+      .select('id')
+      .eq('monastery_id', monastery.id)
+      .eq('date', formData.date)
+      .eq('meal_type', formData.meal_type)
+
+    if (existingSlots && existingSlots.length > 0) {
+      alert(`A ${formData.meal_type} slot already exists for this date`)
+      return
+    }
+
     const { error } = await supabase
       .from('donation_slots')
       .insert({
         monastery_id: monastery.id,
         date: formData.date,
         time_slot: formData.time_slot,
+        meal_type: formData.meal_type,
+        monks_capacity: formData.monks_capacity,
         max_donors: formData.max_donors,
         special_requirements: formData.special_requirements || null,
+        is_available: true,
+        monks_fed: 0,
+        current_bookings: 0,
         created_by: user?.id
       })
 
     if (!error) {
+      // Update monastery's default meal time if it was changed
+      const currentDefaultTime = getDefaultTimeForMeal(monastery, formData.meal_type)
+      if (formData.time_slot !== currentDefaultTime) {
+        const updateField = `${formData.meal_type}_time`
+        await supabase
+          .from('monasteries')
+          .update({
+            [updateField]: `${formData.time_slot}:00`
+          })
+          .eq('id', monastery.id)
+      }
+
       setIsCreateDialogOpen(false)
       setFormData({
         date: '',
+        meal_type: 'lunch',
         time_slot: '',
+        monks_capacity: 10,
         max_donors: 5,
         special_requirements: ''
       })
@@ -106,7 +171,11 @@ export default function ManageSlotsPage() {
   const createBulkSlots = async () => {
     if (!monastery || !selectedDate) return
 
-    const timeSlots = ['07:00', '11:30', '17:00']
+    const mealSlots = [
+      { time: '07:00', meal_type: 'breakfast', special_req: 'Breakfast donations - simple meals preferred' },
+      { time: '11:30', meal_type: 'lunch', special_req: 'Lunch donations - main meals welcome' },
+      { time: '17:00', meal_type: 'dinner', special_req: 'Dinner donations - light meals preferred' }
+    ]
     const slots = []
 
     // Create slots for the next 30 days
@@ -116,19 +185,18 @@ export default function ManageSlotsPage() {
       // Skip weekends (0 = Sunday, 6 = Saturday)
       if (date.getDay() === 0 || date.getDay() === 6) continue
 
-      for (const timeSlot of timeSlots) {
-        const specialReq = timeSlot === '07:00' 
-          ? 'Breakfast donations - simple meals preferred'
-          : timeSlot === '11:30' 
-          ? 'Lunch donations - main meals welcome'
-          : 'Dinner donations - light meals preferred'
-
+      for (const mealSlot of mealSlots) {
         slots.push({
           monastery_id: monastery.id,
           date: format(date, 'yyyy-MM-dd'),
-          time_slot: timeSlot,
+          time_slot: mealSlot.time,
+          meal_type: mealSlot.meal_type,
+          monks_capacity: monastery.capacity || 10,
           max_donors: 5,
-          special_requirements: specialReq,
+          special_requirements: mealSlot.special_req,
+          is_available: true,
+          monks_fed: 0,
+          current_bookings: 0,
           created_by: user?.id
         })
       }
@@ -137,7 +205,7 @@ export default function ManageSlotsPage() {
     const { error } = await supabase
       .from('donation_slots')
       .upsert(slots, { 
-        onConflict: 'monastery_id,date,time_slot',
+        onConflict: 'monastery_id,date,meal_type',
         ignoreDuplicates: true 
       })
 
@@ -231,7 +299,19 @@ export default function ManageSlotsPage() {
                   
                   <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
                     <DialogTrigger asChild>
-                      <Button variant="outline" className="w-full">
+                      <Button 
+                        variant="outline" 
+                        className="w-full"
+                        onClick={() => {
+                          // Auto-populate selected date when opening dialog
+                          if (selectedDate) {
+                            setFormData(prev => ({
+                              ...prev,
+                              date: format(selectedDate, 'yyyy-MM-dd')
+                            }))
+                          }
+                        }}
+                      >
                         <Plus className="w-4 h-4 mr-2" />
                         Create Single Slot
                       </Button>
@@ -257,6 +337,23 @@ export default function ManageSlotsPage() {
                         </div>
 
                         <div className="space-y-2">
+                          <Label htmlFor="meal_type">Meal Type *</Label>
+                          <Select
+                            value={formData.meal_type}
+                            onValueChange={(value) => setFormData(prev => ({ ...prev, meal_type: value as 'breakfast' | 'lunch' | 'dinner' }))}
+                          >
+                            <SelectTrigger>
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="breakfast">Breakfast</SelectItem>
+                              <SelectItem value="lunch">Lunch</SelectItem>
+                              <SelectItem value="dinner">Dinner</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+
+                        <div className="space-y-2">
                           <Label htmlFor="time_slot">Time *</Label>
                           <Input
                             id="time_slot"
@@ -265,19 +362,39 @@ export default function ManageSlotsPage() {
                             onChange={(e) => setFormData(prev => ({ ...prev, time_slot: e.target.value }))}
                             required
                           />
+                          <p className="text-xs text-muted-foreground">
+                            This will become the default time for {formData.meal_type} at this monastery
+                          </p>
                         </div>
 
-                        <div className="space-y-2">
-                          <Label htmlFor="max_donors">Maximum Donors *</Label>
-                          <Input
-                            id="max_donors"
-                            type="number"
-                            min="1"
-                            max="20"
-                            value={formData.max_donors}
-                            onChange={(e) => setFormData(prev => ({ ...prev, max_donors: parseInt(e.target.value) }))}
-                            required
-                          />
+                        <div className="grid grid-cols-2 gap-4">
+                          <div className="space-y-2">
+                            <Label htmlFor="monks_capacity">Monks Capacity</Label>
+                            <Input
+                              id="monks_capacity"
+                              type="number"
+                              value={formData.monks_capacity}
+                              onChange={(e) => setFormData(prev => ({ ...prev, monks_capacity: parseInt(e.target.value) || 0 }))}
+                              min="0"
+                              placeholder="Number of monks to feed"
+                            />
+                            <p className="text-xs text-muted-foreground">
+                              Capacity for this specific day only
+                            </p>
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label htmlFor="max_donors">Max Donors</Label>
+                            <Input
+                              id="max_donors"
+                              type="number"
+                              min="1"
+                              max="20"
+                              value={formData.max_donors}
+                              onChange={(e) => setFormData(prev => ({ ...prev, max_donors: parseInt(e.target.value) }))}
+                              required
+                            />
+                          </div>
                         </div>
 
                         <div className="space-y-2">

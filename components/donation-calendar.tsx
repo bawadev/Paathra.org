@@ -5,7 +5,7 @@ import { Calendar } from '@/components/ui/calendar'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { supabase, DonationSlot, Monastery } from '@/lib/supabase'
+import { supabase, DonationSlot } from '@/lib/supabase'
 import { format, parseISO, isSameDay } from 'date-fns'
 import { Clock, Users, MapPin } from 'lucide-react'
 
@@ -16,26 +16,11 @@ interface DonationCalendarProps {
 export function DonationCalendar({ onSlotSelect }: DonationCalendarProps) {
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date())
   const [slots, setSlots] = useState<DonationSlot[]>([])
-  const [monasteries, setMonasteries] = useState<Monastery[]>([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    fetchMonasteries()
     fetchSlots()
   }, [])
-
-  const fetchMonasteries = async () => {
-    const { data, error } = await supabase
-      .from('monasteries')
-      .select('*')
-      .order('name')
-
-    if (error) {
-      console.error('Error fetching monasteries:', error)
-    } else {
-      setMonasteries(data || [])
-    }
-  }
 
   const fetchSlots = async () => {
     setLoading(true)

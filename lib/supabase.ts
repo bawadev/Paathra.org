@@ -83,6 +83,9 @@ export interface Monastery {
   capacity: number
   dietary_requirements: string[]
   preferred_donation_times?: string
+  breakfast_time?: string
+  lunch_time?: string
+  dinner_time?: string
   status?: 'pending' | 'approved' | 'rejected'
   created_at: string
   updated_at: string
@@ -93,6 +96,7 @@ export interface DonationSlot {
   monastery_id: string
   date: string
   time_slot: string
+  meal_type?: 'breakfast' | 'lunch' | 'dinner'
   max_donors: number
   current_bookings: number
   monks_capacity: number
