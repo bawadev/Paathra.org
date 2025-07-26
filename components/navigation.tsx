@@ -89,6 +89,18 @@ export function Navigation() {
                       <div className="grid gap-3 p-6 w-[400px]">
                         <NavigationMenuLink asChild>
                           <Link
+                            href="/monastery-admin/upcoming-bookings"
+                            className="flex flex-row items-center space-x-2 p-3 rounded-md hover:bg-[var(--primary-color)]/10 hover:text-[var(--primary-color)] transition-all duration-300"
+                          >
+                            <Calendar className="w-4 h-4 flex-shrink-0 text-[var(--primary-color)]" />
+                            <div>
+                              <div className="font-medium">Upcoming Confirmations</div>
+                              <div className="text-sm text-gray-500">Review and confirm donations</div>
+                            </div>
+                          </Link>
+                        </NavigationMenuLink>
+                        <NavigationMenuLink asChild>
+                          <Link
                             href="/manage/slots"
                             className="flex flex-row items-center space-x-2 p-3 rounded-md hover:bg-[var(--primary-color)]/10 hover:text-[var(--primary-color)] transition-all duration-300"
                           >
