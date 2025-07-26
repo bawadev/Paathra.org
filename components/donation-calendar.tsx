@@ -58,16 +58,27 @@ export function DonationCalendar({ onSlotSelect }: DonationCalendarProps) {
     setLoading(false)
   }
 
+  const getEffectiveCapacity = (slot: DonationSlot) => {
+    // Use monastery capacity if available, otherwise fall back to slot capacity
+    return slot.monastery?.capacity || slot.monks_capacity || 0
+  }
+
   const getSlotsForDate = (date: Date) => {
-    return slots.filter(slot => 
-      isSameDay(parseISO(slot.date), date) && 
-      slot.monks_fed < slot.monks_capacity
-    )
+    return slots.filter(slot => {
+      const effectiveCapacity = getEffectiveCapacity(slot)
+      return isSameDay(parseISO(slot.date), date) && 
+             slot.is_available &&
+             (effectiveCapacity === 0 || slot.monks_fed < effectiveCapacity)
+    })
   }
 
   const getAvailableDates = () => {
     const availableDates = slots
-      .filter(slot => slot.monks_fed < slot.monks_capacity)
+      .filter(slot => {
+        const effectiveCapacity = getEffectiveCapacity(slot)
+        return slot.is_available &&
+               (effectiveCapacity === 0 || slot.monks_fed < effectiveCapacity)
+      })
       .map(slot => parseISO(slot.date))
     
     return availableDates
@@ -127,7 +138,9 @@ export function DonationCalendar({ onSlotSelect }: DonationCalendarProps) {
             </div>
           ) : (
             <div className="space-y-4">
-              {selectedDateSlots.map((slot) => (
+              {selectedDateSlots.map((slot) => {
+                const effectiveCapacity = getEffectiveCapacity(slot)
+                return (
                 <div
                   key={slot.id}
                   className="border rounded-lg p-4 hover:bg-gray-50 cursor-pointer transition-colors"
@@ -145,22 +158,37 @@ export function DonationCalendar({ onSlotSelect }: DonationCalendarProps) {
                         
                         <div className="flex items-center space-x-1">
                           <Users className="w-4 h-4" />
-                          <span>{slot.monks_fed}/{slot.monks_capacity} monks fed</span>
+                          <span>
+                            {effectiveCapacity > 0 
+                              ? `${slot.monks_fed}/${effectiveCapacity} monks fed`
+                              : 'Open capacity'
+                            }
+                          </span>
                         </div>
                       </div>
 
                       {/* Progress Bar */}
-                      <div className="mb-2">
-                        <div className="w-full bg-gray-200 rounded-full h-1.5">
-                          <div 
-                            className="bg-green-600 h-1.5 rounded-full transition-all duration-300" 
-                            style={{ width: `${(slot.monks_fed / slot.monks_capacity) * 100}%` }}
-                          ></div>
+                      {effectiveCapacity > 0 && (
+                        <div className="mb-2">
+                          <div className="w-full bg-gray-200 rounded-full h-1.5">
+                            <div 
+                              className="bg-green-600 h-1.5 rounded-full transition-all duration-300" 
+                              style={{ width: `${(slot.monks_fed / effectiveCapacity) * 100}%` }}
+                            ></div>
+                          </div>
+                          <div className="text-xs text-gray-500 mt-1">
+                            {effectiveCapacity - slot.monks_fed} monks remaining
+                          </div>
                         </div>
-                        <div className="text-xs text-gray-500 mt-1">
-                          {slot.monks_capacity - slot.monks_fed} monks remaining
+                      )}
+
+                      {effectiveCapacity === 0 && (
+                        <div className="mb-2">
+                          <div className="text-xs text-blue-600 bg-blue-50 px-2 py-1 rounded">
+                            Flexible capacity - Contact monastery for details
+                          </div>
                         </div>
-                      </div>
+                      )}
 
                       <div className="flex items-center text-sm text-gray-600">
                         <MapPin className="w-4 h-4 mr-1" />
@@ -189,7 +217,8 @@ export function DonationCalendar({ onSlotSelect }: DonationCalendarProps) {
                     </Button>
                   </div>
                 </div>
-              ))}
+                )
+              })}
             </div>
           )}
         </CardContent>
