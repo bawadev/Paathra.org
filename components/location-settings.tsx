@@ -7,9 +7,10 @@ import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { MapPin, Navigation, Search, CheckCircle2, AlertCircle, Loader2, Map } from 'lucide-react'
-import { getUserLocation, geocodeAddress, reverseGeocode, formatDistance } from '@/lib/location-utils'
+import { getUserLocation, formatDistance } from '@/lib/location-utils'
+import { LocationService } from '@/lib/location-services'
 import { updateUserLocation } from '@/lib/supabase'
-import { InteractiveLocationPicker } from '@/components/interactive-location-picker'
+import { DualModeLocationPicker } from '@/components/interactive-location-picker'
 
 interface LocationSettingsProps {
   userId?: string;
@@ -41,7 +42,7 @@ export function LocationSettings({
       
       if (userLocation) {
         // Get address for the coordinates
-        const address = await reverseGeocode(userLocation.latitude, userLocation.longitude)
+        const address = await LocationService.reverseGeocode(userLocation.latitude, userLocation.longitude)
         
         const newLocation = {
           ...userLocation,
@@ -92,7 +93,8 @@ export function LocationSettings({
     setStatus({ type: 'info', message: 'Searching for address...' })
     
     try {
-      const geocodedLocation = await geocodeAddress(searchAddress)
+      const geocodedResult = await LocationService.geocode(searchAddress)
+      const geocodedLocation = geocodedResult?.location
       
       if (geocodedLocation) {
         setLocation(geocodedLocation)
@@ -281,7 +283,7 @@ export function LocationSettings({
           </Button>
           {showMapPicker && (
             <div className="mt-3">
-              <InteractiveLocationPicker
+              <DualModeLocationPicker
                 initialLocation={location || null}
                 onLocationSelect={handleMapLocationSelect}
                 height="400px"

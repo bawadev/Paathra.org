@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { LocationSettings } from '@/components/location-settings'
-import { InteractiveLocationPicker } from '@/components/interactive-location-picker'
+import { DualModeLocationPicker } from '@/components/interactive-location-picker'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { MapPin, Info } from 'lucide-react'
@@ -115,7 +115,7 @@ export default function LocationDemoPage() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <InteractiveLocationPicker
+              <DualModeLocationPicker
                 initialLocation={standaloneLocation}
                 onLocationSelect={setStandaloneLocation}
                 height="500px"

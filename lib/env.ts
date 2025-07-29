@@ -29,12 +29,16 @@ const envSchema = z.object({
   SENTRY_DSN: z.string().optional(),
   GOOGLE_ANALYTICS_ID: z.string().optional(),
   
+  // Maps and Location Services
+  NEXT_PUBLIC_GOOGLE_MAPS_API_KEY: z.string().optional(),
+  NEXT_PUBLIC_RADAR_API_KEY: z.string().optional(),
+  
   // Database
   DATABASE_URL: z.string().url().optional(),
   
   // Email (optional)
   SMTP_HOST: z.string().optional(),
-  SMTP_PORT: z.string().transform(val => parseInt(val)).optional(),
+  SMTP_PORT: z.string().optional().transform(val => val ? parseInt(val) : undefined),
   SMTP_USER: z.string().optional(),
   SMTP_PASS: z.string().optional(),
   
@@ -45,6 +49,36 @@ const envSchema = z.object({
 
 // Parse and validate environment variables
 function createEnv() {
+  // In development, use a more lenient validation approach
+  if (process.env.NODE_ENV === 'development') {
+    // Create a development-friendly configuration
+    const devConfig = {
+      NODE_ENV: 'development' as const,
+      NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL || '',
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '',
+      NEXT_PUBLIC_APP_NAME: process.env.NEXT_PUBLIC_APP_NAME || 'Dhaana',
+      NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL,
+      NEXT_PUBLIC_ENABLE_ANALYTICS: process.env.NEXT_PUBLIC_ENABLE_ANALYTICS === 'true',
+      NEXT_PUBLIC_ENABLE_ERROR_REPORTING: process.env.NEXT_PUBLIC_ENABLE_ERROR_REPORTING === 'true',
+      NEXT_PUBLIC_ENABLE_DEBUG_MODE: process.env.NEXT_PUBLIC_ENABLE_DEBUG_MODE === 'true',
+      NEXT_PUBLIC_GOOGLE_MAPS_API_KEY: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY,
+      NEXT_PUBLIC_RADAR_API_KEY: process.env.NEXT_PUBLIC_RADAR_API_KEY,
+      SUPABASE_SERVICE_ROLE_KEY: process.env.SUPABASE_SERVICE_ROLE_KEY,
+      DATABASE_URL: process.env.DATABASE_URL,
+      SENTRY_DSN: process.env.SENTRY_DSN,
+      GOOGLE_ANALYTICS_ID: process.env.GOOGLE_ANALYTICS_ID,
+      SMTP_HOST: process.env.SMTP_HOST,
+      SMTP_PORT: process.env.SMTP_PORT ? parseInt(process.env.SMTP_PORT) : undefined,
+      SMTP_USER: process.env.SMTP_USER,
+      SMTP_PASS: process.env.SMTP_PASS,
+      NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET,
+      NEXTAUTH_URL: process.env.NEXTAUTH_URL,
+    }
+    
+    return devConfig
+  }
+  
+  // In production, use strict validation
   const parsed = envSchema.safeParse(process.env)
   
   if (!parsed.success) {
@@ -85,6 +119,14 @@ export const supabaseConfig = {
 export const appConfig = {
   name: env.NEXT_PUBLIC_APP_NAME,
   url: env.NEXT_PUBLIC_APP_URL || (isProduction ? 'https://dhaana.app' : 'http://localhost:3000'),
+} as const
+
+// Maps and Location Services configuration
+export const mapsConfig = {
+  googleMapsApiKey: env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY,
+  radarApiKey: env.NEXT_PUBLIC_RADAR_API_KEY,
+  enableGoogleMaps: !!env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY,
+  enableRadar: !!env.NEXT_PUBLIC_RADAR_API_KEY,
 } as const
 
 // Validation helper for runtime checks
