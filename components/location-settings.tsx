@@ -31,7 +31,7 @@ export function LocationSettings({
   const [searchAddress, setSearchAddress] = useState('')
   const [status, setStatus] = useState<{ type: 'success' | 'error' | 'info'; message: string } | null>(null)
   const [location, setLocation] = useState(currentLocation)
-  const [showMapPicker, setShowMapPicker] = useState(false)
+  const [showMapPicker, setShowMapPicker] = useState(true)
 
   const getCurrentLocation = async () => {
     setLoading(true)
@@ -270,17 +270,20 @@ export function LocationSettings({
           </p>
         </div>
 
-        {/* Interactive Map Picker */}
+        {/* Interactive Map Picker - Always Visible */}
         <div className="space-y-2">
-          <Button
-            onClick={() => setShowMapPicker(!showMapPicker)}
-            variant="outline"
-            className="w-full"
-            disabled={loading}
-          >
-            <Map className="w-4 h-4 mr-2" />
-            {showMapPicker ? 'Close Map' : 'Pick Location from Map'}
-          </Button>
+          <div className="flex items-center justify-between">
+            <Label className="text-sm font-medium">Pick Location from Map</Label>
+            <Button
+              onClick={() => setShowMapPicker(!showMapPicker)}
+              variant="outline"
+              size="sm"
+              disabled={loading}
+            >
+              <Map className="w-4 h-4 mr-1" />
+              {showMapPicker ? 'Hide Map' : 'Show Map'}
+            </Button>
+          </div>
           {showMapPicker && (
             <div className="mt-3">
               <DualModeLocationPicker

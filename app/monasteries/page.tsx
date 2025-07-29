@@ -13,7 +13,7 @@ import { getMonasteriesWithDistance, MonasteryWithDistance } from '@/lib/supabas
 import { LocationSettings } from '@/components/location-settings'
 import { MonasteryMap } from '@/components/monastery-map'
 import { getUserLocation, formatDistance } from '@/lib/location-utils'
-import { MapPin, Phone, Mail, Globe, Users, Map, List, Navigation as NavigationIcon } from 'lucide-react'
+import { MapPin, Phone, Mail, Globe, Users, Map, Navigation as NavigationIcon } from 'lucide-react'
 import Link from 'next/link'
 
 export default function MonasteriesPage() {
@@ -22,7 +22,7 @@ export default function MonasteriesPage() {
   const [filteredMonasteries, setFilteredMonasteries] = useState<MonasteryWithDistance[]>([])
   const [loading, setLoading] = useState(true)
   const [userLocation, setUserLocation] = useState<{latitude: number, longitude: number, address?: string} | null>(null)
-  const [showMap, setShowMap] = useState(false)
+  const [showMap, setShowMap] = useState(true)
   const [searchQuery, setSearchQuery] = useState('')
   const [sortBy, setSortBy] = useState<'distance' | 'name' | 'capacity'>('distance')
   const [maxDistance, setMaxDistance] = useState<number>(100)
@@ -154,24 +154,14 @@ export default function MonasteriesPage() {
                     <MapPin className="w-5 h-5" />
                     <span>Location & Filters</span>
                   </div>
-                  <div className="flex space-x-2">
-                    <Button
-                      variant={showMap ? "default" : "outline"}
-                      size="sm"
-                      onClick={() => setShowMap(!showMap)}
-                    >
-                      {showMap ? <List className="w-4 h-4 mr-1" /> : <Map className="w-4 h-4 mr-1" />}
-                      {showMap ? 'List View' : 'Map View'}
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => setShowLocationSettings(!showLocationSettings)}
-                    >
-                      <NavigationIcon className="w-4 h-4 mr-1" />
-                      Set Location
-                    </Button>
-                  </div>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setShowLocationSettings(!showLocationSettings)}
+                  >
+                    <NavigationIcon className="w-4 h-4 mr-1" />
+                    Set Location
+                  </Button>
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -271,19 +261,23 @@ export default function MonasteriesPage() {
           </div>
         )}
 
-        {/* Map View */}
-        {showMap && (
-          <Card className="mb-6">
-            <CardContent className="p-0">
-              <MonasteryMap
-                monasteries={filteredMonasteries}
-                userLocation={userLocation}
-                onMonasterySelect={handleMonasterySelect}
-                height="500px"
-              />
-            </CardContent>
-          </Card>
-        )}
+        {/* Map View - Always Visible */}
+        <Card className="mb-6">
+          <CardHeader>
+            <CardTitle className="flex items-center space-x-2">
+              <Map className="w-5 h-5" />
+              <span>Monasteries Map</span>
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="p-0">
+            <MonasteryMap
+              monasteries={filteredMonasteries}
+              userLocation={userLocation}
+              onMonasterySelect={handleMonasterySelect}
+              height="500px"
+            />
+          </CardContent>
+        </Card>
 
         {/* Loading State */}
         {loading ? (
