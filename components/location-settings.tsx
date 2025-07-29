@@ -6,9 +6,10 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Alert, AlertDescription } from '@/components/ui/alert'
-import { MapPin, Navigation, Search, CheckCircle2, AlertCircle, Loader2 } from 'lucide-react'
+import { MapPin, Navigation, Search, CheckCircle2, AlertCircle, Loader2, Map } from 'lucide-react'
 import { getUserLocation, geocodeAddress, reverseGeocode, formatDistance } from '@/lib/location-utils'
 import { updateUserLocation } from '@/lib/supabase'
+import { InteractiveLocationPicker } from '@/components/interactive-location-picker'
 
 interface LocationSettingsProps {
   userId?: string;
@@ -18,9 +19,9 @@ interface LocationSettingsProps {
   targetLocation?: { latitude: number; longitude: number };
 }
 
-export function LocationSettings({ 
-  userId, 
-  currentLocation, 
+export function LocationSettings({
+  userId,
+  currentLocation,
   onLocationUpdate,
   showDistance = false,
   targetLocation
@@ -29,6 +30,7 @@ export function LocationSettings({
   const [searchAddress, setSearchAddress] = useState('')
   const [status, setStatus] = useState<{ type: 'success' | 'error' | 'info'; message: string } | null>(null)
   const [location, setLocation] = useState(currentLocation)
+  const [showMapPicker, setShowMapPicker] = useState(false)
 
   const getCurrentLocation = async () => {
     setLoading(true)
@@ -135,6 +137,33 @@ export function LocationSettings({
     }
   }
 
+  const handleMapLocationSelect = async (selectedLocation: { latitude: number; longitude: number; address?: string }) => {
+    setLocation(selectedLocation)
+    
+    // Save to database if userId provided
+    if (userId) {
+      const { error } = await updateUserLocation(
+        userId,
+        selectedLocation.latitude,
+        selectedLocation.longitude,
+        selectedLocation.address
+      )
+      
+      if (error) {
+        setStatus({ type: 'error', message: 'Failed to save location to profile' })
+      } else {
+        setStatus({ type: 'success', message: 'Location selected and saved!' })
+        onLocationUpdate?.(selectedLocation)
+      }
+    } else {
+      setStatus({ type: 'success', message: 'Location selected!' })
+      onLocationUpdate?.(selectedLocation)
+    }
+    
+    // Close the map picker after selection
+    setShowMapPicker(false)
+  }
+
   const calculateDistanceToTarget = () => {
     if (!location || !targetLocation) return null
     
@@ -212,7 +241,7 @@ export function LocationSettings({
 
         {/* Manual Address Entry */}
         <div className="space-y-2">
-          <Label htmlFor="address">Or enter your address manually</Label>
+          <Label htmlFor="address" className="text-sm sm:text-base">Or enter your address manually</Label>
           <div className="flex space-x-2">
             <Input
               id="address"
@@ -222,7 +251,7 @@ export function LocationSettings({
               onKeyPress={handleKeyPress}
               disabled={loading}
             />
-            <Button 
+            <Button
               onClick={searchByAddress}
               disabled={loading || !searchAddress.trim()}
               variant="outline"
@@ -234,16 +263,40 @@ export function LocationSettings({
               )}
             </Button>
           </div>
-          <p className="text-xs text-gray-500">
+          <p className="text-xs text-gray-500 px-1">
             Try: "Bangalore", "Connaught Place Delhi", or a specific address
           </p>
         </div>
 
+        {/* Interactive Map Picker */}
+        <div className="space-y-2">
+          <Button
+            onClick={() => setShowMapPicker(!showMapPicker)}
+            variant="outline"
+            className="w-full"
+            disabled={loading}
+          >
+            <Map className="w-4 h-4 mr-2" />
+            {showMapPicker ? 'Close Map' : 'Pick Location from Map'}
+          </Button>
+          {showMapPicker && (
+            <div className="mt-3">
+              <InteractiveLocationPicker
+                initialLocation={location || null}
+                onLocationSelect={handleMapLocationSelect}
+                height="400px"
+                searchPlaceholder="Search for a country, city, or landmark..."
+                className="w-full"
+              />
+            </div>
+          )}
+        </div>
+
         {/* Additional Info */}
-        <div className="text-xs text-gray-500 space-y-1">
-          <p>• Location is used to find nearby monasteries and calculate distances</p>
-          <p>• Your location data is stored securely and used only for this purpose</p>
-          <p>• You can update your location anytime</p>
+        <div className="text-xs text-gray-500 space-y-1 px-1">
+          <p className="break-words">• Location is used to find nearby monasteries and calculate distances</p>
+          <p className="break-words">• Your location data is stored securely and used only for this purpose</p>
+          <p className="break-words">• You can update your location anytime</p>
         </div>
       </CardContent>
     </Card>
