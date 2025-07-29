@@ -39,7 +39,7 @@ export default function LocationDemoPage() {
           <AlertDescription>
             This demo showcases the new interactive map location picker. You can:
             <ul className="list-disc list-inside mt-2 space-y-1">
-              <li>Search for countries, cities, or landmarks to focus the map</li>
+              <li>Search for countries, cities, or landmarks to focus the map (doesn't select location)</li>
               <li>Click anywhere on the map to select a precise location</li>
               <li>Drag the marker to fine-tune your selection</li>
               <li>Use it alongside GPS detection and manual address entry</li>

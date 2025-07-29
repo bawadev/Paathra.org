@@ -212,56 +212,11 @@ export function InteractiveLocationPicker({
         const lat = parseFloat(result.lat)
         const lng = parseFloat(result.lon)
         
-        // Pan and zoom to searched location
+        // Just pan and zoom to searched location, don't set it as selected
         mapInstanceRef.current.setView([lat, lng], 12)
         
-        // Optionally place a marker at searched location
-        if (markerRef.current) {
-          markerRef.current.setLatLng([lat, lng])
-        } else {
-          // Create custom icon
-          const L = await import('leaflet')
-          const selectedIcon = L.divIcon({
-            html: `
-              <div style="position: relative;">
-                <div style="
-                  position: absolute;
-                  left: -12px;
-                  top: -41px;
-                  width: 25px;
-                  height: 41px;
-                  background-image: url('https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png');
-                  background-size: contain;
-                  filter: hue-rotate(120deg);
-                "></div>
-                <div style="
-                  position: absolute;
-                  left: -12px;
-                  top: -3px;
-                  width: 25px;
-                  height: 16px;
-                  background-image: url('https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png');
-                  background-size: contain;
-                "></div>
-              </div>
-            `,
-            className: 'custom-selected-marker',
-            iconSize: [25, 41],
-            iconAnchor: [12, 41]
-          })
-
-          markerRef.current = L.marker([lat, lng], { 
-            icon: selectedIcon,
-            draggable: true 
-          }).addTo(mapInstanceRef.current)
-
-          markerRef.current.on('dragend', async (e: any) => {
-            const latlng = e.target.getLatLng()
-            await updateSelectedLocation(latlng.lat, latlng.lng)
-          })
-        }
-        
-        await updateSelectedLocation(lat, lng)
+        // Don't place a marker or update the selected location
+        // User needs to click on the map to actually select the location
       } else {
         setLoadError('Location not found. Try a different search term.')
         setTimeout(() => setLoadError(null), 3000)
@@ -296,7 +251,7 @@ export function InteractiveLocationPicker({
       <Alert>
         <Info className="h-4 w-4" />
         <AlertDescription>
-          Search for a location or click directly on the map to select your position. 
+          Search to focus the map on a location, then click on the map to select your precise position.
           You can drag the marker to fine-tune the location.
         </AlertDescription>
       </Alert>
