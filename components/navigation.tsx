@@ -36,7 +36,7 @@ export function Navigation() {
             <NavigationMenu>
               <NavigationMenuList>
                 <NavigationMenuItem>
-                  <NavigationMenuTrigger>Donations</NavigationMenuTrigger>
+                  <NavigationMenuTrigger>{t('donations')}</NavigationMenuTrigger>
                   <NavigationMenuContent>
                     <div className="grid gap-3 p-6 w-[400px]">
                       <NavigationMenuLink asChild>
@@ -46,8 +46,8 @@ export function Navigation() {
                         >
                           <Calendar className="w-4 h-4 flex-shrink-0 text-[var(--primary-color)]" />
                           <div>
-                            <div className="font-medium">Make Donation</div>
-                            <div className="text-sm text-gray-500">Book a donation slot</div>
+                            <div className="font-medium">{t('makeDonation')}</div>
+                            <div className="text-sm text-gray-500">{t('makeDonationDesc')}</div>
                           </div>
                         </Link>
                       </NavigationMenuLink>
@@ -58,8 +58,8 @@ export function Navigation() {
                         >
                           <User className="w-4 h-4 flex-shrink-0 text-[var(--primary-color)]" />
                           <div>
-                            <div className="font-medium">My Donations</div>
-                            <div className="text-sm text-gray-500">View your bookings</div>
+                            <div className="font-medium">{t('myDonations')}</div>
+                            <div className="text-sm text-gray-500">{t('myDonationsDesc')}</div>
                           </div>
                         </Link>
                       </NavigationMenuLink>
@@ -70,7 +70,7 @@ export function Navigation() {
                 <NavigationMenuItem>
                   <NavigationMenuLink asChild>
                     <Link href="/monasteries" className="px-3 py-2 rounded-md hover:bg-[var(--primary-color)]/10 hover:text-[var(--primary-color)] transition-all duration-300">
-                      Monasteries
+                      {t('monasteries')}
                     </Link>
                   </NavigationMenuLink>
                 </NavigationMenuItem>
@@ -79,7 +79,7 @@ export function Navigation() {
                   <NavigationMenuItem>
                     <NavigationMenuLink asChild>
                       <Link href="/manage/monastery" className="px-3 py-2 rounded-md hover:bg-[var(--primary-color)]/10 hover:text-[var(--primary-color)] text-[var(--primary-color)] transition-all duration-300">
-                        Create Monastery
+                        {t('createMonastery')}
                       </Link>
                     </NavigationMenuLink>
                   </NavigationMenuItem>
@@ -87,7 +87,7 @@ export function Navigation() {
 
                 {hasRole(profile, 'monastery_admin') && (
                   <NavigationMenuItem>
-                    <NavigationMenuTrigger>Manage</NavigationMenuTrigger>
+                    <NavigationMenuTrigger>{t('manage')}</NavigationMenuTrigger>
                     <NavigationMenuContent>
                       <div className="grid gap-3 p-6 w-[400px]">
                         <NavigationMenuLink asChild>
@@ -97,8 +97,8 @@ export function Navigation() {
                           >
                             <Calendar className="w-4 h-4 flex-shrink-0 text-[var(--primary-color)]" />
                             <div>
-                              <div className="font-medium">Upcoming Confirmations</div>
-                              <div className="text-sm text-gray-500">Review and confirm donations</div>
+                              <div className="font-medium">{t('upcomingConfirmations')}</div>
+                              <div className="text-sm text-gray-500">{t('upcomingConfirmationsDesc')}</div>
                             </div>
                           </Link>
                         </NavigationMenuLink>
@@ -109,8 +109,8 @@ export function Navigation() {
                           >
                             <Calendar className="w-4 h-4 flex-shrink-0 text-[var(--primary-color)]" />
                             <div>
-                              <div className="font-medium">Donation Slots</div>
-                              <div className="text-sm text-gray-500">Manage available slots</div>
+                              <div className="font-medium">{t('donationSlots')}</div>
+                              <div className="text-sm text-gray-500">{t('donationSlotsDesc')}</div>
                             </div>
                           </Link>
                         </NavigationMenuLink>
@@ -121,8 +121,8 @@ export function Navigation() {
                           >
                             <Users className="w-4 h-4 flex-shrink-0 text-[var(--primary-color)]" />
                             <div>
-                              <div className="font-medium">Bookings</div>
-                              <div className="text-sm text-gray-500">View and manage bookings</div>
+                              <div className="font-medium">{t('bookings')}</div>
+                              <div className="text-sm text-gray-500">{t('bookingsDesc')}</div>
                             </div>
                           </Link>
                         </NavigationMenuLink>
@@ -133,8 +133,8 @@ export function Navigation() {
                           >
                             <Building className="w-4 h-4 flex-shrink-0 text-[var(--primary-color)]" />
                             <div>
-                              <div className="font-medium">Monastery Info</div>
-                              <div className="text-sm text-gray-500">Update monastery details</div>
+                              <div className="font-medium">{t('monasteryInfo')}</div>
+                              <div className="text-sm text-gray-500">{t('monasteryInfoDesc')}</div>
                             </div>
                           </Link>
                         </NavigationMenuLink>
@@ -145,7 +145,7 @@ export function Navigation() {
 
                 {isSuperAdmin(profile) && (
                   <NavigationMenuItem>
-                    <NavigationMenuTrigger>Admin</NavigationMenuTrigger>
+                    <NavigationMenuTrigger>{t('admin')}</NavigationMenuTrigger>
                     <NavigationMenuContent>
                       <div className="grid gap-3 p-6 w-[400px]">
                         <NavigationMenuLink asChild>
@@ -155,8 +155,8 @@ export function Navigation() {
                           >
                             <BarChart3 className="w-4 h-4 flex-shrink-0 text-[var(--primary-color)]" />
                             <div>
-                              <div className="font-medium">Dashboard</div>
-                              <div className="text-sm text-gray-500">System overview & analytics</div>
+                              <div className="font-medium">{t('dashboard')}</div>
+                              <div className="text-sm text-gray-500">{t('dashboardDesc')}</div>
                             </div>
                           </Link>
                         </NavigationMenuLink>
@@ -167,8 +167,8 @@ export function Navigation() {
                           >
                             <Users className="w-4 h-4 flex-shrink-0 text-[var(--primary-color)]" />
                             <div>
-                              <div className="font-medium">User Management</div>
-                              <div className="text-sm text-gray-500">Manage all users</div>
+                              <div className="font-medium">{t('userManagement')}</div>
+                              <div className="text-sm text-gray-500">{t('userManagementDesc')}</div>
                             </div>
                           </Link>
                         </NavigationMenuLink>
@@ -179,8 +179,8 @@ export function Navigation() {
                           >
                             <Building className="w-4 h-4 flex-shrink-0 text-[var(--primary-color)]" />
                             <div>
-                              <div className="font-medium">Monasteries</div>
-                              <div className="text-sm text-gray-500">Approve & manage monasteries</div>
+                              <div className="font-medium">{t('monasteriesAdmin')}</div>
+                              <div className="text-sm text-gray-500">{t('monasteriesAdminDesc')}</div>
                             </div>
                           </Link>
                         </NavigationMenuLink>
@@ -191,8 +191,8 @@ export function Navigation() {
                           >
                             <BarChart3 className="w-4 h-4 flex-shrink-0 text-[var(--primary-color)]" />
                             <div>
-                              <div className="font-medium">Analytics</div>
-                              <div className="text-sm text-gray-500">Detailed reports & metrics</div>
+                              <div className="font-medium">{t('analytics')}</div>
+                              <div className="text-sm text-gray-500">{t('analyticsDesc')}</div>
                             </div>
                           </Link>
                         </NavigationMenuLink>
@@ -203,8 +203,8 @@ export function Navigation() {
                           >
                             <Shield className="w-4 h-4 flex-shrink-0 text-[var(--primary-color)]" />
                             <div>
-                              <div className="font-medium">Settings</div>
-                              <div className="text-sm text-gray-500">System configuration</div>
+                              <div className="font-medium">{t('settings')}</div>
+                              <div className="text-sm text-gray-500">{t('settingsDesc')}</div>
                             </div>
                           </Link>
                         </NavigationMenuLink>
@@ -217,6 +217,8 @@ export function Navigation() {
           </div>
 
           <div className="flex items-center space-x-4">
+            <LanguageSwitcher />
+            
             <div className="flex items-center space-x-2">
               <Avatar className="w-8 h-8">
                 <AvatarImage src={profile?.avatar_url} />
@@ -238,7 +240,7 @@ export function Navigation() {
               }}
             >
               <LogOut className="w-4 h-4 mr-2" />
-              Sign Out
+              {t('signOut')}
             </Button>
           </div>
         </div>
