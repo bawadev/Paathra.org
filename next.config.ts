@@ -1,7 +1,10 @@
 import type { NextConfig } from "next";
+import createNextIntlPlugin from 'next-intl/plugin';
+
+const withNextIntl = createNextIntlPlugin();
 
 const nextConfig: NextConfig = {
-  output: 'export',
+  // Removed 'output: export' for hybrid rendering support
   trailingSlash: true,
   images: {
     unoptimized: true,
@@ -14,9 +17,14 @@ const nextConfig: NextConfig = {
     // Allow TypeScript errors during production builds
     ignoreBuildErrors: true,
   },
+  // Enable experimental features for better performance
+  experimental: {
+    // Enable partial prerendering for hybrid approach
+    ppr: false, // Keep false for now, can enable later
+  },
   // If you're deploying to a subdirectory, uncomment and set the basePath
   // basePath: '/your-repo-name',
   // assetPrefix: '/your-repo-name/',
 };
 
-export default nextConfig;
+export default withNextIntl(nextConfig);

@@ -1,11 +1,5 @@
-import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { AuthProvider } from "@/lib/auth-context";
-import { Toaster } from "@/components/ui/sonner";
-import AuthErrorBoundary from "@/components/auth-error-boundary";
-import { ErrorProvider } from "@/lib/error-management";
-import { LoadingProvider } from "@/lib/loading-system";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -17,18 +11,13 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-export const metadata: Metadata = {
-  title: "Dhaana - Food Donation Platform",
-  description: "Connect donors with monasteries for meaningful food donations",
-};
-
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html>
       <head>
         {/* Leaflet CSS for maps */}
         <link
@@ -41,16 +30,7 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <ErrorProvider enableLogging={process.env.NODE_ENV === 'development'}>
-          <LoadingProvider>
-            <AuthErrorBoundary>
-              <AuthProvider>
-                {children}
-                <Toaster />
-              </AuthProvider>
-            </AuthErrorBoundary>
-          </LoadingProvider>
-        </ErrorProvider>
+        {children}
       </body>
     </html>
   );

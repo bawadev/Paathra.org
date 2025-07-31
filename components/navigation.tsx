@@ -1,6 +1,6 @@
 'use client'
 
-import Link from 'next/link'
+import { Link } from '@/src/i18n/navigation'
 import { useAuth } from '@/lib/auth-context'
 import { Button } from '@/components/ui/button'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
@@ -14,9 +14,12 @@ import {
 } from '@/components/ui/navigation-menu'
 import { Calendar, Users, Building, LogOut, User, Shield, BarChart3 } from 'lucide-react'
 import { hasRole, isSuperAdmin } from '@/types/auth'
+import { useTranslations } from 'next-intl'
+import { LanguageSwitcher } from '@/components/language-switcher'
 
 export function Navigation() {
   const { user, profile, signOut } = useAuth()
+  const t = useTranslations('Navigation')
 
   if (!user) return null
 
@@ -27,7 +30,7 @@ export function Navigation() {
           <div className="flex items-center space-x-8">
             <Link href="/" className="flex items-center gap-3 text-xl font-bold text-[var(--primary-color)] hover:scale-105 transition-transform">
               <div className="lotus-icon"></div>
-              <span>Dana</span>
+              <span>{t('brand')}</span>
             </Link>
             
             <NavigationMenu>
