@@ -14,10 +14,13 @@ import { LocationSettings } from '@/components/location-settings'
 import { MonasteryMap } from '@/components/monastery-map'
 import { getUserLocation, formatDistance } from '@/lib/location-utils'
 import { MapPin, Phone, Mail, Globe, Users, Map, Navigation as NavigationIcon } from 'lucide-react'
-import Link from 'next/link'
+import { Link } from '@/src/i18n/navigation'
+import { useTranslations } from 'next-intl'
 
 export default function MonasteriesPage() {
   const { user, profile, loading: authLoading } = useAuth()
+  const t = useTranslations('Monasteries')
+  const tCommon = useTranslations('Common')
   const [monasteries, setMonasteries] = useState<MonasteryWithDistance[]>([])
   const [filteredMonasteries, setFilteredMonasteries] = useState<MonasteryWithDistance[]>([])
   const [loading, setLoading] = useState(true)
@@ -123,7 +126,7 @@ export default function MonasteriesPage() {
   if (authLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-[var(--bg-light)]">
-        <div className="text-lg text-[var(--text-light)]">Loading...</div>
+        <div className="text-lg text-[var(--text-light)]">{tCommon('loading')}</div>
       </div>
     )
   }
@@ -138,9 +141,9 @@ export default function MonasteriesPage() {
       
       <main className="container mx-auto px-4 py-8">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Find Monasteries</h1>
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">{t('title')}</h1>
           <p className="text-gray-600">
-            Discover monasteries near you for food donations
+            {t('description')}
           </p>
         </div>
 
@@ -152,7 +155,7 @@ export default function MonasteriesPage() {
                 <CardTitle className="flex items-center justify-between">
                   <div className="flex items-center space-x-2">
                     <MapPin className="w-5 h-5" />
-                    <span>Location & Filters</span>
+                    <span>{t('locationAndFilters')}</span>
                   </div>
                   <Button
                     variant="outline"
@@ -160,7 +163,7 @@ export default function MonasteriesPage() {
                     onClick={() => setShowLocationSettings(!showLocationSettings)}
                   >
                     <NavigationIcon className="w-4 h-4 mr-1" />
-                    Set Location
+                    {t('setLocation')}
                   </Button>
                 </CardTitle>
               </CardHeader>
@@ -168,9 +171,9 @@ export default function MonasteriesPage() {
                 <div className="grid gap-4 md:grid-cols-3">
                   {/* Search */}
                   <div className="space-y-1">
-                    <label className="text-sm font-medium">Search</label>
+                    <label className="text-sm font-medium">{t('search')}</label>
                     <Input
-                      placeholder="Search monasteries..."
+                      placeholder={t('searchPlaceholder')}
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
                     />
@@ -178,22 +181,22 @@ export default function MonasteriesPage() {
 
                   {/* Sort By */}
                   <div className="space-y-1">
-                    <label className="text-sm font-medium">Sort By</label>
+                    <label className="text-sm font-medium">{t('sortBy')}</label>
                     <Select value={sortBy} onValueChange={(value: any) => setSortBy(value)}>
                       <SelectTrigger>
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="distance">Distance</SelectItem>
-                        <SelectItem value="name">Name</SelectItem>
-                        <SelectItem value="capacity">Capacity</SelectItem>
+                        <SelectItem value="distance">{t('distance')}</SelectItem>
+                        <SelectItem value="name">{t('name')}</SelectItem>
+                        <SelectItem value="capacity">{t('capacity')}</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
 
                   {/* Max Distance */}
                   <div className="space-y-1">
-                    <label className="text-sm font-medium">Max Distance (km)</label>
+                    <label className="text-sm font-medium">{t('maxDistance')}</label>
                     <Select value={maxDistance.toString()} onValueChange={(value) => setMaxDistance(parseInt(value))}>
                       <SelectTrigger>
                         <SelectValue />
@@ -214,7 +217,7 @@ export default function MonasteriesPage() {
                   <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
                     <div className="flex items-center space-x-2">
                       <MapPin className="w-4 h-4 text-blue-600" />
-                      <span className="text-sm font-medium text-blue-800">Your Location:</span>
+                      <span className="text-sm font-medium text-blue-800">{t('yourLocation')}</span>
                       <span className="text-sm text-blue-700">
                         {userLocation.address || `${userLocation.latitude.toFixed(4)}, ${userLocation.longitude.toFixed(4)}`}
                       </span>
@@ -228,7 +231,7 @@ export default function MonasteriesPage() {
           <div>
             <Card>
               <CardHeader>
-                <CardTitle className="text-lg">Quick Stats</CardTitle>
+                <CardTitle className="text-lg">{t('quickStats')}</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
@@ -354,13 +357,19 @@ export default function MonasteriesPage() {
                     </div>
 
                     <div className="flex space-x-2">
-                      <Link href={`/donations?monastery=${monastery.id}`} className="flex-1">
+                      <Link
+                        href={{
+                          pathname: '/donations',
+                          query: { monastery: monastery.id }
+                        }}
+                        className="flex-1"
+                      >
                         <Button className="w-full">
-                          Make Donation
+                          {t('makeDonation')}
                         </Button>
                       </Link>
                       <Button variant="outline" size="sm">
-                        Details
+                        {t('details')}
                       </Button>
                     </div>
                   </CardContent>

@@ -21,6 +21,10 @@ export const routing = defineRouting({
       en: '/donate',
       si: '/daanaya' // Sinhala translation for donate
     },
+    '/donations': {
+      en: '/donations',
+      si: '/daana-kiriima' // Sinhala translation for donations
+    },
     '/my-donations': {
       en: '/my-donations',
       si: '/mama-daana' // Sinhala translation for my donations
