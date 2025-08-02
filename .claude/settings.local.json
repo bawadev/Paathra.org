@@ -17,7 +17,8 @@
       "mcp__playwright-mcp__browser_close",
       "mcp__supabase-mcp__list_tables",
       "Bash(grep:*)",
-      "mcp__supabase-mcp__execute_sql"
+      "mcp__supabase-mcp__execute_sql",
+      "Bash(git checkout:*)"
     ],
     "deny": []
   }

@@ -10,6 +10,7 @@ import { Badge } from '@/components/ui/badge'
 import { cn } from '@/lib/utils'
 import { supabase } from '@/lib/supabase'
 import { DonationSlot, Monastery } from '@/lib/types'
+import { MonasterySlotsDialog } from './MonasterySlotsDialog'
 
 interface DonationSlotWithMonastery extends DonationSlot {
   monastery?: Monastery
@@ -40,6 +41,8 @@ export function DonationCalendar({
     recurringDonations: 0,
     mealsProvided: 0
   })
+  const [dialogOpen, setDialogOpen] = useState(false)
+  const [selectedDateForDialog, setSelectedDateForDialog] = useState<Date | null>(null)
 
   const selectedDate = externalSelectedDate || internalSelectedDate
 
@@ -154,9 +157,21 @@ export function DonationCalendar({
     } else {
       setInternalSelectedDate(date)
     }
+    setSelectedDateForDialog(date)
+    setDialogOpen(true)
     setSelectedSlot(null)
     onSlotSelect(null)
   }, [onDateSelect, onSlotSelect])
+
+  const handleDialogSlotSelect = useCallback((slot: DonationSlotWithMonastery) => {
+    setSelectedSlot(slot)
+    onSlotSelect(slot)
+    setDialogOpen(false)
+  }, [onSlotSelect])
+
+  const handleMonasteryNavigate = useCallback((monasteryId: string) => {
+    window.location.href = `/monasteries/${monasteryId}`
+  }, [])
 
   const handleSlotSelect = useCallback((slot: DonationSlotWithMonastery) => {
     setSelectedSlot(slot)
@@ -377,46 +392,17 @@ export function DonationCalendar({
             </CardContent>
           </Card>
 
-          {/* Selected Date Slots */}
-          {selectedDate && (
-            <Card className="mt-6 shadow-xl">
-              <CardHeader>
-                <CardTitle className="text-xl">
-                  Available Slots for {format(selectedDate, 'EEEE, MMMM d, yyyy')}
-                </CardTitle>
-                <CardDescription>
-                  {selectedDateSlots.length} donation slot{selectedDateSlots.length !== 1 ? 's' : ''} available
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                {loading ? (
-                  <div className="text-center py-12">
-                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-amber-500 mx-auto"></div>
-                    <p className="mt-4 text-gray-600">Loading slots...</p>
-                  </div>
-                ) : selectedDateSlots.length === 0 ? (
-                  <div className="text-center py-12">
-                    <Calendar className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                    <p className="text-gray-600">No donation slots available for this date</p>
-                    <p className="text-sm text-gray-500 mt-2">Try selecting a different date</p>
-                  </div>
-                ) : (
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {selectedDateSlots.map(slot => (
-                      <SlotCard 
-                        key={slot.id}
-                        slot={slot}
-                        isSelected={selectedSlot?.id === slot.id}
-                        onSelect={handleSlotSelect}
-                      />
-                    ))}
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          )}
         </div>
       </div>
+
+      <MonasterySlotsDialog
+        open={dialogOpen}
+        onOpenChange={setDialogOpen}
+        date={selectedDateForDialog}
+        slots={selectedDateForDialog ? (slotsByDate[format(selectedDateForDialog, 'yyyy-MM-dd')] || []) : []}
+        onSlotSelect={handleDialogSlotSelect}
+        onMonasteryNavigate={handleMonasteryNavigate}
+      />
     </div>
   )
 }
