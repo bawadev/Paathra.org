@@ -68,11 +68,25 @@ export function Navigation() {
                 </NavigationMenuItem>
 
                 <NavigationMenuItem>
-                  <NavigationMenuLink asChild>
-                    <Link href="/monasteries" className="px-3 py-2 text-lg font-bold rounded-md hover:bg-[var(--primary-color)]/10 hover:text-[var(--primary-color)] transition-all duration-300">
-                      {t('monasteries')}
-                    </Link>
-                  </NavigationMenuLink>
+                  <NavigationMenuTrigger className="text-lg font-bold">
+                    {t('monasteries')}
+                  </NavigationMenuTrigger>
+                  <NavigationMenuContent>
+                    <div className="grid gap-3 p-6 w-[250px]">
+                      <NavigationMenuLink asChild>
+                        <Link
+                          href="/monasteries"
+                          className="flex flex-row items-center space-x-2 p-3 rounded-md hover:bg-[var(--primary-color)]/10 hover:text-[var(--primary-color)] transition-all duration-300"
+                        >
+                          <Building className="w-4 h-4 flex-shrink-0 text-[var(--primary-color)]" />
+                          <div>
+                            <div className="font-medium">{t('browseMonasteries')}</div>
+                            <div className="text-sm text-gray-500">{t('browseMonasteriesDesc')}</div>
+                          </div>
+                        </Link>
+                      </NavigationMenuLink>
+                    </div>
+                  </NavigationMenuContent>
                 </NavigationMenuItem>
 
                 {!hasRole(profile, 'monastery_admin') && (

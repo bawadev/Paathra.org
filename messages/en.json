@@ -24,6 +24,8 @@
     "userManagementDesc": "Manage all users",
     "monasteriesAdmin": "Monasteries",
     "monasteriesAdminDesc": "Approve & manage monasteries",
+    "browseMonasteries": "Browse Monasteries",
+    "browseMonasteriesDesc": "View and explore all monasteries",
     "analytics": "Analytics",
     "analyticsDesc": "Detailed reports & metrics",
     "settings": "Settings",

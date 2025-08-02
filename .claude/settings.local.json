@@ -10,7 +10,8 @@
       "Bash(true)",
       "Bash(cat:*)",
       "mcp__playwright-mcp__browser_console_messages",
-      "mcp__playwright-mcp__browser_evaluate"
+      "mcp__playwright-mcp__browser_evaluate",
+      "Bash(npm run test:*)"
     ],
     "deny": []
   }

@@ -2,10 +2,16 @@
 
 import { useLocale } from 'next-intl'
 import { useRouter, usePathname } from '@/src/i18n/navigation'
-import { Button } from '@/components/ui/button'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Globe } from 'lucide-react'
 import { routing } from '@/src/i18n/routing'
+import {
+  NavigationMenu,
+  NavigationMenuContent,
+  NavigationMenuItem,
+  NavigationMenuLink,
+  NavigationMenuList,
+  NavigationMenuTrigger,
+} from '@/components/ui/navigation-menu'
 
 const localeNames = {
   en: 'English',
@@ -22,20 +28,34 @@ export function LanguageSwitcher() {
   }
 
   return (
-    <div className="flex items-center gap-2">
-      <Globe className="w-4 h-4 text-gray-500" />
-      <Select value={locale} onValueChange={handleLocaleChange}>
-        <SelectTrigger className="w-auto min-w-[100px] border-none bg-transparent">
-          <SelectValue />
-        </SelectTrigger>
-        <SelectContent>
-          {routing.locales.map((loc) => (
-            <SelectItem key={loc} value={loc}>
-              {localeNames[loc as keyof typeof localeNames]}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
-    </div>
+    <NavigationMenu>
+      <NavigationMenuList>
+        <NavigationMenuItem>
+          <NavigationMenuTrigger className="text-lg font-bold flex items-center gap-2">
+            <Globe className="w-4 h-4" />
+            {localeNames[locale as keyof typeof localeNames]}
+          </NavigationMenuTrigger>
+          <NavigationMenuContent>
+            <div className="grid gap-3 p-6 w-[180px]">
+              {routing.locales.map((loc) => (
+                <NavigationMenuLink
+                  key={loc}
+                  className="block cursor-pointer"
+                  onSelect={() => handleLocaleChange(loc)}
+                >
+                  <div 
+                    className={`flex items-center p-3 rounded-md hover:bg-[var(--primary-color)]/10 hover:text-[var(--primary-color)] transition-all duration-300 ${
+                      locale === loc ? 'bg-[var(--primary-color)]/10 text-[var(--primary-color)]' : ''
+                    }`}
+                  >
+                    {localeNames[loc as keyof typeof localeNames]}
+                  </div>
+                </NavigationMenuLink>
+              ))}
+            </div>
+          </NavigationMenuContent>
+        </NavigationMenuItem>
+      </NavigationMenuList>
+    </NavigationMenu>
   )
 }
