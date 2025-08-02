@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useMemo } from 'react'
 import { format } from 'date-fns'
-import { Search, MapPin, Clock, Users, ExternalLink, X } from 'lucide-react'
+import { Search, MapPin, Clock, Users, ExternalLink } from 'lucide-react'
 
 import {
   Dialog,
@@ -16,7 +16,11 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Card } from '@/components/ui/card'
 import { cn } from '@/lib/utils'
-import { DonationSlotWithMonastery } from '@/components/features/donation/DonationCalendar'
+import { DonationSlot, Monastery } from '@/lib/types'
+
+interface DonationSlotWithMonastery extends DonationSlot {
+  monastery?: Monastery
+}
 
 interface MonasterySlotsDialogProps {
   open: boolean
@@ -43,13 +47,46 @@ export function MonasterySlotsDialog({
   const [searchQuery, setSearchQuery] = useState('')
   const [userLocation, setUserLocation] = useState<UserLocation | null>(null)
   const [locationLoading, setLocationLoading] = useState(false)
+  const [scrollY, setScrollY] = useState(0)
 
   // Get user's location on component mount
   useEffect(() => {
     if (open && !userLocation && !locationLoading) {
       getUserLocation()
     }
-  }, [open])
+    
+    // Prevent body scroll when dialog is open
+    if (open) {
+      // Store current scroll position
+      setScrollY(window.scrollY)
+      
+      // Add styles to prevent scrolling
+      document.body.style.position = 'fixed'
+      document.body.style.top = `-${window.scrollY}px`
+      document.body.style.width = '100%'
+      document.body.style.overflow = 'hidden'
+    } else {
+      // Restore scrolling
+      document.body.style.position = ''
+      document.body.style.top = ''
+      document.body.style.width = ''
+      document.body.style.overflow = ''
+      
+      // Restore scroll position
+      window.scrollTo(0, scrollY)
+    }
+    
+    return () => {
+      // Ensure body scroll is restored when component unmounts
+      document.body.style.position = ''
+      document.body.style.top = ''
+      document.body.style.width = ''
+      document.body.style.overflow = ''
+      if (scrollY) {
+        window.scrollTo(0, scrollY)
+      }
+    }
+  }, [open, scrollY])
 
   const getUserLocation = () => {
     setLocationLoading(true)
@@ -156,7 +193,7 @@ export function MonasterySlotsDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-4xl max-h-[80vh] overflow-hidden">
+      <DialogContent className="max-w-4xl max-h-[80vh] flex flex-col">
         <DialogHeader className="pb-4 border-b">
           <DialogTitle className="text-2xl">
             Available Slots for {date && format(date, 'EEEE, MMMM d, yyyy')}
@@ -166,7 +203,7 @@ export function MonasterySlotsDialog({
           </DialogDescription>
         </DialogHeader>
 
-        <div className="flex flex-col h-full">
+        <div className="flex flex-col h-full overflow-hidden">
           {/* Search Bar */}
           <div className="px-6 py-4 border-b">
             <div className="relative">
@@ -192,7 +229,27 @@ export function MonasterySlotsDialog({
           )}
 
           {/* Slots List */}
-          <div className="flex-1 overflow-y-auto px-6 py-4">
+          <div className="flex-1 overflow-y-auto px-6 py-4" style={{
+            maxHeight: 'calc(80vh - 200px)',
+            scrollbarWidth: 'thin',
+            scrollbarColor: '#d1d5db #f3f4f6'
+          }}>
+          <style jsx>{`
+            div::-webkit-scrollbar {
+              width: 8px;
+            }
+            div::-webkit-scrollbar-track {
+              background: #f3f4f6;
+              border-radius: 4px;
+            }
+            div::-webkit-scrollbar-thumb {
+              background: #d1d5db;
+              border-radius: 4px;
+            }
+            div::-webkit-scrollbar-thumb:hover {
+              background: #9ca3af;
+            }
+          `}</style>
             {filteredAndSortedSlots.length === 0 ? (
               <div className="text-center py-12">
                 <MapPin className="w-12 h-12 text-gray-400 mx-auto mb-4" />
