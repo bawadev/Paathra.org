@@ -30,45 +30,82 @@ export interface Database {
         Row: {
           id: string
           name: string
+          description?: string
           address: string
-          latitude: number
-          longitude: number
-          contact_person: string
-          phone: string
-          email: string
-          dietary_requirements: string[]
-          special_instructions?: string
-          capacity: number
-          user_id: string
+          phone?: string
+          email?: string
+          website?: string
+          admin_id?: string
+          image_url?: string
+          capacity?: number
+          dietary_requirements?: string[]
+          preferred_donation_times?: string
           created_at: string
           updated_at: string
-          is_active: boolean
+          is_active?: boolean
+          status?: string
+          latitude?: number
+          longitude?: number
+          location_verified?: boolean
+          location_updated_at?: string
+          confirmation_days_config?: any
+          representative_name?: string
+          representative_phone?: string
+          representative_email?: string
+          breakfast_time?: string
+          lunch_time?: string
+          dinner_time?: string
         }
         Insert: {
           name: string
           address: string
-          latitude: number
-          longitude: number
-          contact_person: string
-          phone: string
-          email: string
-          dietary_requirements: string[]
-          special_instructions?: string
-          capacity: number
-          user_id: string
+          description?: string
+          phone?: string
+          email?: string
+          website?: string
+          admin_id?: string
+          image_url?: string
+          capacity?: number
+          dietary_requirements?: string[]
+          preferred_donation_times?: string
+          is_active?: boolean
+          status?: string
+          latitude?: number
+          longitude?: number
+          location_verified?: boolean
+          location_updated_at?: string
+          confirmation_days_config?: any
+          representative_name?: string
+          representative_phone?: string
+          representative_email?: string
+          breakfast_time?: string
+          lunch_time?: string
+          dinner_time?: string
         }
         Update: {
           name?: string
           address?: string
-          latitude?: number
-          longitude?: number
-          contact_person?: string
+          description?: string
           phone?: string
           email?: string
-          dietary_requirements?: string[]
-          special_instructions?: string
+          website?: string
+          image_url?: string
           capacity?: number
+          dietary_requirements?: string[]
+          preferred_donation_times?: string
           is_active?: boolean
+          status?: string
+          latitude?: number
+          longitude?: number
+          location_verified?: boolean
+          location_updated_at?: string
+          confirmation_days_config?: any
+          representative_name?: string
+          representative_phone?: string
+          representative_email?: string
+          breakfast_time?: string
+          lunch_time?: string
+          dinner_time?: string
           updated_at?: string
         }
       }
@@ -77,29 +114,39 @@ export interface Database {
           id: string
           monastery_id: string
           date: string
-          start_time: string
-          end_time: string
-          capacity: number
+          time_slot: string
+          max_donors: number
           current_bookings: number
           is_available: boolean
-          requirements?: string
+          special_requirements?: string
+          meal_type?: string
+          monks_capacity: number
+          monks_fed: number
+          created_by?: string
           created_at: string
           updated_at: string
         }
         Insert: {
           monastery_id: string
           date: string
-          start_time: string
-          end_time: string
-          capacity: number
-          is_available?: boolean
-          requirements?: string
-        }
-        Update: {
-          capacity?: number
+          time_slot: string
+          max_donors?: number
           current_bookings?: number
           is_available?: boolean
-          requirements?: string
+          special_requirements?: string
+          meal_type?: string
+          monks_capacity?: number
+          monks_fed?: number
+          created_by?: string
+        }
+        Update: {
+          max_donors?: number
+          current_bookings?: number
+          is_available?: boolean
+          special_requirements?: string
+          meal_type?: string
+          monks_capacity?: number
+          monks_fed?: number
           updated_at?: string
         }
       }

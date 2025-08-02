@@ -11,7 +11,12 @@
       "Bash(cat:*)",
       "mcp__playwright-mcp__browser_console_messages",
       "mcp__playwright-mcp__browser_evaluate",
-      "Bash(npm run test:*)"
+      "Bash(npm run test:*)",
+      "mcp__playwright-mcp__browser_network_requests",
+      "mcp__playwright-mcp__browser_wait_for",
+      "mcp__playwright-mcp__browser_close",
+      "mcp__supabase-mcp__list_tables",
+      "Bash(grep:*)"
     ],
     "deny": []
   }
