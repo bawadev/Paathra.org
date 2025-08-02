@@ -28,15 +28,15 @@ export function Navigation() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex h-20 items-center justify-between">
           <div className="flex items-center space-x-8">
-            <Link href="/" className="flex items-center gap-3 text-xl font-bold text-[var(--primary-color)] hover:scale-105 transition-transform">
-              <div className="lotus-icon"></div>
-              <span>{t('brand')}</span>
+            <Link href="/" className="flex items-center gap-4 text-2xl font-bold text-[var(--primary-color)] hover:scale-105 transition-transform">
+              <div className="lotus-icon text-3xl"></div>
+              <span className="font-bold">{t('brand')}</span>
             </Link>
             
             <NavigationMenu>
               <NavigationMenuList>
                 <NavigationMenuItem>
-                  <NavigationMenuTrigger>{t('donations')}</NavigationMenuTrigger>
+                  <NavigationMenuTrigger className="text-lg font-bold">{t('donations')}</NavigationMenuTrigger>
                   <NavigationMenuContent>
                     <div className="grid gap-3 p-6 w-[400px]">
                       <NavigationMenuLink asChild>
@@ -69,7 +69,7 @@ export function Navigation() {
 
                 <NavigationMenuItem>
                   <NavigationMenuLink asChild>
-                    <Link href="/monasteries" className="px-3 py-2 rounded-md hover:bg-[var(--primary-color)]/10 hover:text-[var(--primary-color)] transition-all duration-300">
+                    <Link href="/monasteries" className="px-3 py-2 text-lg font-bold rounded-md hover:bg-[var(--primary-color)]/10 hover:text-[var(--primary-color)] transition-all duration-300">
                       {t('monasteries')}
                     </Link>
                   </NavigationMenuLink>
@@ -78,7 +78,7 @@ export function Navigation() {
                 {!hasRole(profile, 'monastery_admin') && (
                   <NavigationMenuItem>
                     <NavigationMenuLink asChild>
-                      <Link href="/manage/monastery" className="px-3 py-2 rounded-md hover:bg-[var(--primary-color)]/10 hover:text-[var(--primary-color)] text-[var(--primary-color)] transition-all duration-300">
+                      <Link href="/manage/monastery" className="px-3 py-2 text-lg font-bold rounded-md hover:bg-[var(--primary-color)]/10 hover:text-[var(--primary-color)] text-[var(--primary-color)] transition-all duration-300">
                         {t('createMonastery')}
                       </Link>
                     </NavigationMenuLink>
@@ -87,7 +87,7 @@ export function Navigation() {
 
                 {hasRole(profile, 'monastery_admin') && (
                   <NavigationMenuItem>
-                    <NavigationMenuTrigger>{t('manage')}</NavigationMenuTrigger>
+                    <NavigationMenuTrigger className="text-lg font-bold">{t('manage')}</NavigationMenuTrigger>
                     <NavigationMenuContent>
                       <div className="grid gap-3 p-6 w-[400px]">
                         <NavigationMenuLink asChild>
@@ -145,7 +145,7 @@ export function Navigation() {
 
                 {isSuperAdmin(profile) && (
                   <NavigationMenuItem>
-                    <NavigationMenuTrigger>{t('admin')}</NavigationMenuTrigger>
+                    <NavigationMenuTrigger className="text-lg font-bold">{t('admin')}</NavigationMenuTrigger>
                     <NavigationMenuContent>
                       <div className="grid gap-3 p-6 w-[400px]">
                         <NavigationMenuLink asChild>
@@ -226,12 +226,12 @@ export function Navigation() {
                   {profile?.full_name?.split(' ').map(n => n[0]).join('') || 'U'}
                 </AvatarFallback>
               </Avatar>
-              <span className="text-sm font-medium">{profile?.full_name}</span>
+              <span className="text-base font-bold">{profile?.full_name}</span>
             </div>
             
             <Button
               variant="ghost"
-              size="sm"
+              size="default"
               onClick={async () => {
                 await signOut();
                 if (typeof window !== 'undefined') {
@@ -239,8 +239,8 @@ export function Navigation() {
                 }
               }}
             >
-              <LogOut className="w-4 h-4 mr-2" />
-              {t('signOut')}
+              <LogOut className="w-5 h-5 mr-2" />
+              <span className="font-bold">{t('signOut')}</span>
             </Button>
           </div>
         </div>

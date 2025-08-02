@@ -2,7 +2,15 @@
   "permissions": {
     "allow": [
       "Bash(rm:*)",
-      "Bash(mkdir:*)"
+      "Bash(mkdir:*)",
+      "Bash(npm run dev:*)",
+      "Bash(curl:*)",
+      "mcp__playwright-mcp__browser_navigate",
+      "Bash(pkill:*)",
+      "Bash(true)",
+      "Bash(cat:*)",
+      "mcp__playwright-mcp__browser_console_messages",
+      "mcp__playwright-mcp__browser_evaluate"
     ],
     "deny": []
   }
