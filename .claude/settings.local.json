@@ -16,7 +16,8 @@
       "mcp__playwright-mcp__browser_wait_for",
       "mcp__playwright-mcp__browser_close",
       "mcp__supabase-mcp__list_tables",
-      "Bash(grep:*)"
+      "Bash(grep:*)",
+      "mcp__supabase-mcp__execute_sql"
     ],
     "deny": []
   }

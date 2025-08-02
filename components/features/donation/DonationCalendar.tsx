@@ -2,17 +2,21 @@
 
 import { useState, useEffect, useMemo, useCallback } from 'react'
 import { Calendar, ChevronLeft, ChevronRight, MapPin, Clock, Users, Plus, TrendingUp, Heart, Gift } from 'lucide-react'
-import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, isSameDay, isToday, addMonths, subMonths } from 'date-fns'
+import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, isSameDay, isToday } from 'date-fns'
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { cn } from '@/lib/utils'
 import { supabase } from '@/lib/supabase'
-import { DonationSlot } from '@/lib/types'
+import { DonationSlot, Monastery } from '@/lib/types'
+
+interface DonationSlotWithMonastery extends DonationSlot {
+  monastery?: Monastery
+}
 
 interface DonationCalendarProps {
-  onSlotSelect: (slot: DonationSlot) => void
+  onSlotSelect: (slot: DonationSlot | null) => void
   selectedDate?: Date
   onDateSelect?: (date: Date) => void
   monasteryId?: string
@@ -27,7 +31,7 @@ export function DonationCalendar({
   className 
 }: DonationCalendarProps) {
   const [currentMonth, setCurrentMonth] = useState(new Date())
-  const [slots, setSlots] = useState<DonationSlot[]>([])
+  const [slots, setSlots] = useState<DonationSlotWithMonastery[]>([])
   const [internalSelectedDate, setInternalSelectedDate] = useState<Date | undefined>(new Date())
   const [loading, setLoading] = useState(true)
   const [selectedSlot, setSelectedSlot] = useState<DonationSlot | null>(null)
@@ -53,31 +57,8 @@ export function DonationCalendar({
       let query = supabase
         .from('donation_slots')
         .select(`
-          id,
-          monastery_id,
-          date,
-          time_slot,
-          max_donors,
-          current_bookings,
-          is_available,
-          special_requirements,
-          meal_type,
-          monks_capacity,
-          monks_fed,
-          created_at,
-          updated_at,
-          monastery:monasteries(
-            id,
-            name,
-            address,
-            phone,
-            email,
-            website,
-            capacity,
-            dietary_requirements,
-            description,
-            image_url
-          )
+          *,
+          monastery:monasteries(*)
         `)
         .gte('date', startDate)
         .lte('date', endDate)
@@ -149,8 +130,6 @@ export function DonationCalendar({
     }
   }
 
-  const monthStart = useMemo(() => startOfMonth(currentMonth), [currentMonth])
-  const monthEnd = useMemo(() => endOfMonth(currentMonth), [currentMonth])
   const calendarDays = useMemo(() => {
     const start = startOfMonth(currentMonth)
     const end = endOfMonth(currentMonth)
@@ -158,7 +137,7 @@ export function DonationCalendar({
   }, [currentMonth])
 
   const slotsByDate = useMemo(() => {
-    const grouped: Record<string, DonationSlot[]> = {}
+    const grouped: Record<string, DonationSlotWithMonastery[]> = {}
     slots.forEach(slot => {
       const dateKey = slot.date
       if (!grouped[dateKey]) {
@@ -176,9 +155,10 @@ export function DonationCalendar({
       setInternalSelectedDate(date)
     }
     setSelectedSlot(null)
-  }, [onDateSelect])
+    onSlotSelect(null)
+  }, [onDateSelect, onSlotSelect])
 
-  const handleSlotSelect = useCallback((slot: DonationSlot) => {
+  const handleSlotSelect = useCallback((slot: DonationSlotWithMonastery) => {
     setSelectedSlot(slot)
     onSlotSelect(slot)
   }, [onSlotSelect])
@@ -447,9 +427,9 @@ function SlotCard({
   isSelected, 
   onSelect 
 }: { 
-  slot: DonationSlot
+  slot: DonationSlotWithMonastery
   isSelected: boolean
-  onSelect: (slot: DonationSlot) => void
+  onSelect: (slot: DonationSlotWithMonastery) => void
 }) {
   const isAvailable = slot.is_available
   
@@ -490,8 +470,8 @@ function SlotCard({
               <MapPin className="w-4 h-4 text-gray-600" />
               <div>
                 <p className="font-medium text-gray-900">{slot.monastery.name}</p>
-                {slot.monastery.location && (
-                  <p className="text-sm text-gray-600">{slot.monastery.location}</p>
+                {slot.monastery.address && (
+                  <p className="text-sm text-gray-600">{slot.monastery.address}</p>
                 )}
               </div>
             </div>

@@ -8,6 +8,7 @@ import { DonationBookingForm } from '@/components/donation-booking-form'
 import { DonationSlot } from '@/lib/supabase'
 import { AuthForm } from '@/components/auth-form'
 import { Alert, AlertDescription } from '@/components/ui/alert'
+import { Button } from '@/components/ui/button'
 import { CheckCircle, Heart, Users, Gift } from 'lucide-react'
 
 export default function DonatePage() {
@@ -27,7 +28,7 @@ export default function DonatePage() {
     return <AuthForm />
   }
 
-  const handleSlotSelect = (slot: DonationSlot) => {
+  const handleSlotSelect = (slot: DonationSlot | null) => {
     setSelectedSlot(slot)
     setBookingSuccess(false)
   }
