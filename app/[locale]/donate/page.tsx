@@ -47,19 +47,6 @@ export default function DonatePage() {
       <Navigation />
       
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Enhanced Header */}
-        <div className="text-center py-12">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-amber-500 to-orange-500 rounded-full mb-4">
-            <Gift className="w-8 h-8 text-white" />
-          </div>
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">
-            Make a Food Donation
-          </h1>
-          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-            Schedule your food donation to support monasteries and provide meals for monks. 
-            Every donation makes a meaningful impact.
-          </p>
-        </div>
 
         {/* Success Alert */}
         {bookingSuccess && (
@@ -85,14 +72,6 @@ export default function DonatePage() {
           {selectedSlot ? (
             <div className="bg-white rounded-2xl shadow-xl p-8">
               <div className="flex items-center justify-between mb-6">
-                <div>
-                  <h2 className="text-2xl font-bold text-gray-900 mb-2">
-                    Complete Your Booking
-                  </h2>
-                  <p className="text-gray-600">
-                    Review the details and confirm your donation
-                  </p>
-                </div>
                 <Button 
                   variant="outline" 
                   onClick={handleBookingCancel}
@@ -110,14 +89,7 @@ export default function DonatePage() {
             </div>
           ) : (
             <div>
-              <div className="mb-8">
-                <h2 className="text-2xl font-bold text-center text-gray-900 mb-4">
-                  Choose Your Donation Date
-                </h2>
-                <p className="text-center text-gray-600 max-w-lg mx-auto">
-                  Select a date and time slot that works for you. Available slots are shown in green.
-                </p>
-              </div>
+             
               
               <DonationCalendar onSlotSelect={handleSlotSelect} />
             </div>
