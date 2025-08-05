@@ -12,6 +12,7 @@ npm run build:ci     # Build without linting (for CI)
 npm run export       # Static export for deployment
 npm run start        # Start production server
 npm run lint         # ESLint check
+npm run typecheck    # TypeScript type checking
 
 # Testing
 npm run test         # Run Playwright E2E tests
@@ -20,10 +21,16 @@ npm run test:headed  # Run tests with visible browser
 npm run test:debug   # Run tests in debug mode
 npm run test:report  # View test report
 
+# Database
+npm run db:reset     # Reset Supabase local development database
+npm run db:types     # Generate TypeScript types from database
+npm run db:studio    # Open Supabase Studio
+
 # Environment Setup
 # Create .env.local with:
 NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+GOOGLE_MAPS_API_KEY=your_google_maps_key
 ```
 
 ## Project Architecture
@@ -33,25 +40,81 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
 **Core Architecture:**
 - **App Router** with `[locale]` prefix for internationalization (English/Sinhala)
 - **Server Components** by default, client components use 'use client'
-- **Supabase** for auth, database, real-time updates
+- **Supabase** for auth, database, real-time updates, and storage
 - **Row Level Security** for data protection
 - **Progressive Enhancement** with graceful degradation
 
-**Key Directories:**
-- `app/[locale]/` - Internationalized routes organized by feature
-- `components/ui/` - shadcn/ui components (don't modify directly)
-- `lib/services/` - Supabase API calls with error handling
-- `lib/types/` - TypeScript type definitions
-- `tests/` - Playwright E2E tests
-- `messages/` - i18n translations (en.json, si.json)
-- `supabase/` - Database migrations
+**Directory Structure:**
+```
+app/[locale]/                 # Internationalized routes
+├── donate/                   # Donation booking flow
+├── my-donations/            # User donation history
+├── manage/                  # Monastery admin dashboard
+├── admin/                   # Super admin panel
+├── auth/                    # Authentication flows
+├── monasteries/             # Browse/search monasteries
+└── profile/                 # User profile management
+
+components/                   # Reusable components
+├── ui/                      # shadcn/ui components (don't modify)
+├── forms/                   # Form components with validation
+├── maps/                    # Location picker components
+└── navigation.tsx           # Main navigation with role-based menus
+
+lib/                         # Core utilities
+├── services/api.ts          # Supabase API wrapper with error handling
+├── auth-context.tsx         # Authentication state management
+├── supabase.ts             # Supabase client configuration
+└── types/database.types.ts  # Generated database types
+
+tests/                       # E2E tests
+├── auth.spec.ts            # Authentication flows
+├── donations.spec.ts       # Donation booking
+├── monasteries.spec.ts     # Monastery browsing
+├── admin.spec.ts          # Admin functionality
+├── home.spec.ts           # Landing page
+└── manage.spec.ts         # Management features
+
+messages/                    # i18n translations
+├── en.json                # English
+├── si.json                # Sinhala
+└── ta.json                # Tamil (placeholder)
+
+supabase/                   # Database migrations and config
+├── migrations/            # Database schema migrations
+├── seed.sql              # Sample data
+└── config.toml           # Supabase configuration
+```
+
+## Database Schema
+
+**Core Tables:**
+- **user_profiles** - Extended user data with role management
+  - id (uuid, pk), email, full_name, phone, address, avatar_url
+  - user_types: enum[] ('donor', 'monastery_admin', 'super_admin')
+
+- **monasteries** - Monastery information with geospatial data
+  - id (uuid, pk), name, description, address, location (PostGIS point)
+  - monks_count, contact_info, user_id (owner), approved (bool)
+
+- **donation_slots** - Time slots for donations
+  - id (uuid, pk), monastery_id, date, time, capacity, status
+  - special_requirements, created_by
+
+- **donation_bookings** - User bookings with status tracking
+  - id (uuid, pk), donation_slot_id, donor_id, status, special_notes
+  - estimated_servings, contact_phone, confirmed_at, delivered_at
+  - Status enum: pending, monastery_approved, confirmed, delivered, not_delivered, cancelled
+
+- **user_roles** - Role assignments (junction table for many-to-many)
+  - user_id, role, assigned_at
 
 ## User Roles & Access Patterns
 
 **Role Hierarchy:**
-- `donor` - Browse monasteries, book donations, manage personal bookings
-- `monastery_admin` - Manage single monastery, donation slots, view bookings
-- `super_admin` - Full system access, user management, analytics
+1. **donor** - Browse monasteries, book donations, manage personal bookings
+2. **monastery_admin** - Manage single monastery, donation slots, view bookings
+3. **super_admin** - Full system access, user management, analytics
 
 **Protected Routes:**
 - `/donate` - Requires authentication
@@ -59,96 +122,175 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
 - `/manage/*` - Monastery admin dashboard
 - `/admin/*` - Super admin panel
 
-## Core Features & Data Flow
+## Key Technologies & Dependencies
 
-**Donation Booking Flow:**
-1. **Browse** `/monasteries` → View monastery details and dietary requirements
-2. **Book** `/donate` → Interactive calendar with real-time slot availability
-3. **Track** `/my-donations` → Personal booking history and status updates
-4. **Manage** `/manage/*` → Admin tools for monastery operations
+**Core Framework:**
+- Next.js 15 (App Router, Turbopack)
+- React 19 (Server Components, Suspense)
+- TypeScript 5.7
 
-**Database Schema:**
-- `user_profiles` - Extended user data with role management
-- `monasteries` - Monastery info with geospatial data (PostGIS)
-- `donation_slots` - Time slots with capacity and availability
-- `donation_bookings` - User bookings with status tracking (pending→confirmed→delivered)
+**Database & Backend:**
+- Supabase (PostgreSQL, Auth, Storage, Realtime)
+- PostGIS for geospatial queries
+- Zod for schema validation
+
+**UI & Styling:**
+- Tailwind CSS 3.4
+- shadcn/ui components
+- Radix UI primitives
+- Lucide React icons
+
+**Forms & Validation:**
+- React Hook Form
+- Zod validation
+- Server Actions for form handling
+
+**Internationalization:**
+- next-intl (Messages, routing, dates)
+- English/Sinhala support with Tamil placeholder
+
+**Maps & Location:**
+- Leaflet for interactive maps
+- Google Maps API for geocoding
+- PostGIS for nearby monastery search
+
+**Testing:**
+- Playwright E2E tests
+- Cross-browser testing (Chrome, Firefox, Safari, Mobile)
+- Visual regression testing
 
 ## Development Patterns
 
 **API Service Layer:**
-- Use `lib/services/api.ts` for all Supabase operations
-- Follow `ApiResponse<T>` pattern for consistent error handling
-- Use `ApiError` class for typed error responses
-- All queries use typed client from `@/lib/supabase`
+```typescript
+// Use the ApiResponse pattern for consistent error handling
+const result = await api.createDonationBooking(data)
+if (result.error) {
+  // Handle error with typed error messages
+}
+```
 
-**Component Patterns:**
-- **Client Components** use 'use client' and hooks for interactivity
-- **Server Components** fetch data directly, no loading states needed
-- **Form Handling** uses React Hook Form + Zod validation
-- **State Management** uses URL params and server actions
+**Form Handling:**
+```typescript
+// Server actions with validation
+const schema = z.object({
+  full_name: z.string().min(2),
+  phone: z.string().optional()
+})
+```
 
-**Internationalization:**
-- Routes: `/en/path` and `/si/path` with same component
-- Translations in `messages/[locale].json`
-- Use `useTranslations()` hook in client components
-- Server components use `getTranslations()`
+**Role Checking:**
+```typescript
+// Use the hasRole utility
+if (hasRole(profile, 'monastery_admin')) {
+  // Show monastery admin features
+}
+```
+
+**Database Queries:**
+```typescript
+// Use RLS with typed client
+const { data, error } = await supabase
+  .from('donation_bookings')
+  .select('*, donation_slots(*, monasteries(*))')
+  .eq('donor_id', user.id)
+```
 
 ## Testing Strategy
 
-**E2E Testing:**
-- **Playwright** tests cover complete user flows
-- **Role-based testing** for each user type
-- **Visual regression** with screenshots on failures
-- **Cross-browser** testing (Chrome, Firefox, Safari, Mobile)
+**E2E Coverage:**
+- **auth.spec.ts** - Sign up, sign in, sign out flows
+- **donations.spec.ts** - Complete donation booking flow
+- **monasteries.spec.ts** - Browse, search, filter monasteries
+- **admin.spec.ts** - Admin panel functionality
+- **manage.spec.ts** - Monastery management features
+- **home.spec.ts** - Landing page functionality
 
-**Test Structure:**
-- `home.spec.ts` - Landing page functionality
-- `auth.spec.ts` - Authentication flows
-- `donations.spec.ts` - Booking and donation flow
-- `monasteries.spec.ts` - Monastery browsing
-- `admin.spec.ts` - Admin functionality
+**Test Commands:**
+```bash
+# Run specific test suite
+npm run test auth.spec.ts
 
-## Location & Maps Integration
+# Run with specific browser
+npm run test -- --project=firefox
 
-**Geospatial Features:**
-- **Leaflet** for interactive maps with OpenStreetMap/Google Maps fallback
-- **PostGIS** for geospatial queries and nearby monastery search
-- **Location picker** components for precise coordinate selection
-- **Address autocomplete** with Google Places API
+# Debug mode with visible browser
+npm run test:debug -- --headed
+```
 
-**Map Components:**
-- `MonasteryMap` - Display monastery locations
-- `InteractiveLocationPicker` - Location selection for monasteries
-- `DualModeLocationPicker` - Toggle between map and address input
+## Build & Deployment
 
-## Error Handling & Loading States
+**Vercel Optimized:**
+- Static generation for public pages
+- ISR for dynamic content
+- Edge functions for API routes
+- Environment variables for different stages
 
-**Error Boundaries:**
-- `ErrorBoundary` for React component errors
-- `AuthErrorBoundary` for authentication failures
-- Global error handling in API layer
+**Performance Optimizations:**
+- Code splitting by route
+- Image optimization with Next.js Image
+- Font optimization with next/font
+- Bundle analysis with built-in tools
 
-**Loading Patterns:**
-- **Skeleton loaders** for content-heavy pages
-- **Progress indicators** for form submissions
-- **Optimistic updates** with rollback on failure
-- **Retry mechanisms** for network failures
+**Environment Configuration:**
+```bash
+# Development
+NEXT_PUBLIC_SUPABASE_URL=
+NEXT_PUBLIC_SUPABASE_ANON_KEY=
+GOOGLE_MAPS_API_KEY=
 
-## Deployment Configuration
+# Production (Vercel)
+NEXT_PUBLIC_SITE_URL=
+NEXT_PUBLIC_VERCEL_URL=
+```
 
-**Optimized for Vercel:**
-- **Static generation** for public pages
-- **ISR** for dynamic content
-- **Edge functions** for API routes
-- **Environment variables** for different environments
+## Common Development Tasks
 
-**Build Optimization:**
-- **Code splitting** by route
-- **Image optimization** with Next.js Image
-- **Font optimization** with next/font
-- **Bundle analysis** with built-in tools
+**Adding a New Route:**
+1. Create folder in `app/[locale]/new-feature/`
+2. Add `page.tsx` with appropriate component
+3. Update navigation in `components/navigation.tsx`
+4. Add translations to `messages/[locale].json`
+5. Create/update tests in `tests/`
 
+**Adding Database Table:**
+1. Create migration in `supabase/migrations/`
+2. Run `npm run db:types` to update TypeScript types
+3. Update `lib/types/database.types.ts`
+4. Create API service in `lib/services/`
+5. Add RLS policies in Supabase dashboard
 
-# Instructions to follow
+**Adding New Translation:**
+1. Add keys to all `messages/[locale].json` files
+2. Use `useTranslations()` hook in client components
+3. Use `getTranslations()` in server components
+4. Test with all supported locales
 
-- Always try to utilize mcp tools available.
+**Adding New Test:**
+1. Create file in `tests/` directory
+2. Use existing test patterns as reference
+3. Test with `npm run test:ui` for visual debugging
+4. Ensure tests pass in CI/CD
+
+## Troubleshooting
+
+**Common Issues:**
+- **Translation not loading**: Restart dev server, check JSON syntax
+- **Database connection**: Verify .env.local values
+- **Role access issues**: Check user_types array in user_profiles
+- **Upload failures**: Verify storage policies in Supabase dashboard
+
+**Debug Commands:**
+```bash
+# Check database connection
+npm run db:types
+
+# Verify translation files
+npm run lint
+
+# Debug tests
+npm run test:debug -- --headed --project=chromium
+
+# Check build
+npm run build:ci
+```
