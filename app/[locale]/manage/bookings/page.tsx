@@ -11,10 +11,13 @@ import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Textarea } from '@/components/ui/textarea'
-import { supabase, DonationBooking, Monastery } from '@/lib/supabase'
+import { supabase } from '@/lib/supabase'
 import { executeBookingTransition } from '@/lib/services/booking-workflow'
 import { format, parseISO } from 'date-fns'
-import { hasRole } from '@/types/auth'
+// Helper function to check role from database UserProfile
+const hasRole = (profile: any, role: string) => {
+  return profile?.role === role
+}
 import { 
   Calendar, 
   Clock, 
@@ -31,9 +34,9 @@ import {
 
 export default function ManageBookingsPage() {
   const { user, profile, loading: authLoading } = useAuth()
-  const [monastery, setMonastery] = useState<Monastery | null>(null)
-  const [bookings, setBookings] = useState<DonationBooking[]>([])
-  const [filteredBookings, setFilteredBookings] = useState<DonationBooking[]>([])
+  const [monastery, setMonastery] = useState<any | null>(null)
+  const [bookings, setBookings] = useState<any[]>([])
+  const [filteredBookings, setFilteredBookings] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState('')
   const [receivedStatusDialog, setReceivedStatusDialog] = useState<{
@@ -78,10 +81,10 @@ export default function ManageBookingsPage() {
         .from('donation_bookings')
         .select(`
           *,
-          donation_slot:donation_slots(*),
-          donor:user_profiles(full_name, email, phone)
+          donation_slots!inner(*),
+          user_profiles!inner(full_name, email, phone)
         `)
-        .eq('donation_slot.monastery_id', monasteryData.id)
+        .eq('donation_slots.monastery_id', monasteryData.id)
         .order('created_at', { ascending: false })
 
       setBookings(bookingsData || [])
@@ -96,9 +99,9 @@ export default function ManageBookingsPage() {
     // Filter by search term
     if (searchTerm) {
       filtered = filtered.filter(booking =>
-        booking.donor?.full_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        booking.food_type.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        booking.donor?.email?.toLowerCase().includes(searchTerm.toLowerCase())
+        booking.user_profiles?.full_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        booking.food_type?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        booking.user_profiles?.email?.toLowerCase().includes(searchTerm.toLowerCase())
       )
     }
 
@@ -156,22 +159,26 @@ export default function ManageBookingsPage() {
   }
 
   const updateReceivedStatus = async () => {
-    if (!receivedStatusDialog.receivedStatus || !receivedStatusDialog.bookingId) return
+    if (!receivedStatusDialog.receivedStatus || !receivedStatusDialog.bookingId || !user) return
 
-    const { error } = await supabase
-      .from('donation_bookings')
-      .update({ 
-        delivery_status: receivedStatusDialog.receivedStatus === 'delivered' ? 'received' : 'not_received',
-        delivery_confirmed_at: new Date().toISOString(),
-        delivery_confirmed_by: user?.id,
-        delivery_notes: monasteryNotes || null,
-        status: receivedStatusDialog.receivedStatus
-      })
-      .eq('id', receivedStatusDialog.bookingId)
+    const action = receivedStatusDialog.receivedStatus === 'delivered' ? 'markDelivered' : 'markNotDelivered'
+    
+    const transitionData = {
+      bookingId: receivedStatusDialog.bookingId,
+      transition: action,
+      userId: user.id,
+      userRole: 'monastery_admin' as const,
+      data: { delivery_notes: monasteryNotes }
+    }
 
-    if (!error) {
+    const result = await executeBookingTransition(transitionData)
+
+    if (result.success) {
       fetchData() // Refresh data
       closeReceivedStatusDialog()
+    } else {
+      console.error('Failed to update booking:', result.error)
+      // You might want to show a toast error here
     }
   }
 
@@ -308,7 +315,7 @@ export default function ManageBookingsPage() {
                             {/* Header */}
                             <div className="flex items-center justify-between">
                               <div className="flex items-center space-x-3">
-                                <h3 className="text-lg font-medium">{booking.donor?.full_name}</h3>
+                                <h3 className="text-lg font-medium">{booking.user_profiles?.full_name}</h3>
                                 <Badge className={getStatusColor(booking.status)}>
                                   <div className="flex items-center space-x-1">
                                     {getStatusIcon(booking.status)}
@@ -328,7 +335,7 @@ export default function ManageBookingsPage() {
                                 <div className="flex items-center text-sm">
                                   <Calendar className="w-4 h-4 mr-2 text-gray-400" />
                                   <span>
-                                    <strong>Date:</strong> {format(parseISO(booking.donation_slot?.date || ''), 'MMMM d, yyyy')}
+                                    <strong>Date:</strong> {format(parseISO(booking.donation_slots?.date || ''), 'MMMM d, yyyy')}
                                   </span>
                                 </div>
                                 
@@ -336,7 +343,7 @@ export default function ManageBookingsPage() {
                                   <Clock className="w-4 h-4 mr-2 text-gray-400" />
                                   <span>
                                     <strong>Time:</strong> {format(
-                                      parseISO(`2000-01-01T${booking.donation_slot?.time_slot}`),
+                                      parseISO(`2000-01-01T${booking.donation_slots?.time_slot}`),
                                       'h:mm a'
                                     )}
                                   </span>
@@ -349,14 +356,14 @@ export default function ManageBookingsPage() {
 
                                 <div className="flex items-center text-sm">
                                   <Users className="w-4 h-4 mr-2 text-gray-400" />
-                                  <span><strong>Servings:</strong> {booking.estimated_servings}</span>
+                                  <span><strong>Quantity:</strong> {booking.quantity}</span>
                                 </div>
                               </div>
 
                               <div className="space-y-2">
                                 <div className="flex items-center text-sm">
                                   <Mail className="w-4 h-4 mr-2 text-gray-400" />
-                                  <span><strong>Email:</strong> {booking.donor?.email}</span>
+                                  <span><strong>Email:</strong> {booking.user_profiles?.email}</span>
                                 </div>
 
                                 {booking.contact_phone && (
@@ -366,48 +373,22 @@ export default function ManageBookingsPage() {
                                   </div>
                                 )}
 
-                                {booking.confirmed_at && (
-                                  <div className="flex items-center text-sm">
-                                    <CheckCircle className="w-4 h-4 mr-2 text-green-500" />
-                                    <span>
-                                      <strong>Donor Confirmed:</strong> {format(parseISO(booking.confirmed_at), 'MMM d, h:mm a')}
-                                    </span>
-                                  </div>
-                                )}
-
-                                {booking.monastery_approved_at && (
-                                  <div className="flex items-center text-sm">
-                                    <CheckCircle className="w-4 h-4 mr-2 text-blue-500" />
-                                    <span>
-                                      <strong>Monastery Approved:</strong> {format(parseISO(booking.monastery_approved_at), 'MMM d, h:mm a')}
-                                    </span>
-                                  </div>
-                                )}
-
-                                {booking.delivery_confirmed_at && (
-                                  <div className="flex items-center text-sm">
-                                    <CheckCircle className="w-4 h-4 mr-2 text-purple-500" />
-                                    <span>
-                                      <strong>Delivery Status:</strong> {format(parseISO(booking.delivery_confirmed_at), 'MMM d, h:mm a')}
-                                    </span>
-                                  </div>
-                                )}
                               </div>
                             </div>
 
-                            {/* Special Notes */}
-                            {booking.special_notes && (
+                            {/* Special Instructions */}
+                            {booking.special_instructions && (
                               <div className="bg-blue-50 p-3 rounded-md">
-                                <strong className="text-sm text-blue-800">Special Notes:</strong>
-                                <p className="text-sm text-blue-700 mt-1">{booking.special_notes}</p>
+                                <strong className="text-sm text-blue-800">Special Instructions:</strong>
+                                <p className="text-sm text-blue-700 mt-1">{booking.special_instructions}</p>
                               </div>
                             )}
 
                             {/* Special Requirements for the slot */}
-                            {booking.donation_slot?.special_requirements && (
+                            {booking.donation_slots?.special_requirements && (
                               <div className="bg-yellow-50 p-3 rounded-md">
                                 <strong className="text-sm text-yellow-800">Slot Requirements:</strong>
-                                <p className="text-sm text-yellow-700 mt-1">{booking.donation_slot.special_requirements}</p>
+                                <p className="text-sm text-yellow-700 mt-1">{booking.donation_slots.special_requirements}</p>
                               </div>
                             )}
                           </div>
