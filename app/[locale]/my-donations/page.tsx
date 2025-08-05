@@ -7,14 +7,16 @@ import { AuthForm } from '@/components/auth-form'
 
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { supabase, DonationBooking } from '@/lib/supabase'
+import { Card, CardContent } from '@/components/ui/card'
+import { cn } from '@/lib/utils'
+import { supabase } from '@/lib/supabase'
 import { executeBookingTransition } from '@/lib/services/booking-workflow'
 import { format, parseISO } from 'date-fns'
-import { Calendar, Clock, MapPin, Phone, Utensils, Users } from 'lucide-react'
+import { Calendar, Clock, MapPin, Phone, Utensils, Users, Gift } from 'lucide-react'
 
 export default function MyDonationsPage() {
   const { user, loading: authLoading } = useAuth()
-  const [bookings, setBookings] = useState<DonationBooking[]>([])
+  const [bookings, setBookings] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -31,9 +33,9 @@ export default function MyDonationsPage() {
       .from('donation_bookings')
       .select(`
         *,
-        donation_slot:donation_slots(
+        donation_slots!inner(
           *,
-          monastery:monasteries(*)
+          monasteries!inner(*)
         )
       `)
       .eq('donor_id', user.id)
@@ -176,33 +178,33 @@ export default function MyDonationsPage() {
                             </div>
                             <div className="flex-1">
                               <h3 className="font-bold text-xl text-gray-900 mb-3">
-                                {booking.donation_slot?.monastery?.name || 'Unknown Monastery'}
+                                {booking.donation_slots?.monasteries?.name || 'Unknown Monastery'}
                               </h3>
                               <div className="grid md:grid-cols-2 gap-4 text-sm text-gray-600">
                                 <div className="flex items-center gap-2">
                                   <Calendar className="w-4 h-4 text-amber-600" />
                                   <span className="font-medium">
-                                    {booking.donation_slot?.date
-                                      ? format(parseISO(booking.donation_slot.date), 'MMMM d, yyyy')
+                                    {booking.donation_slots?.date
+                                      ? format(parseISO(booking.donation_slots.date), 'MMMM d, yyyy')
                                       : 'Date not available'}
                                   </span>
                                 </div>
                                 <div className="flex items-center gap-2">
                                   <Clock className="w-4 h-4 text-amber-600" />
                                   <span className="font-medium">
-                                    {booking.donation_slot?.time_slot || 'Time not available'}
+                                    {booking.donation_slots?.time_slot || 'Time not available'}
                                   </span>
                                 </div>
                                 <div className="flex items-center gap-2">
                                   <Users className="w-4 h-4 text-amber-600" />
                                   <span>
-                                    {booking.donation_slot?.max_donors || 0} donors capacity
+                                    {booking.donation_slots?.max_donors || 0} donors capacity
                                   </span>
                                 </div>
                                 <div className="flex items-center gap-2">
                                   <MapPin className="w-4 h-4 text-amber-600" />
                                   <span className="truncate">
-                                    {booking.donation_slot?.monastery?.address || 'Location not available'}
+                                    {booking.donation_slots?.monasteries?.address || 'Location not available'}
                                   </span>
                                 </div>
                               </div>
@@ -260,6 +262,26 @@ export default function MyDonationsPage() {
                               </>
                             )}
                             
+                            {booking.status === 'monastery_approved' && (
+                              <>
+                                <Button
+                                  size="sm"
+                                  onClick={() => updateBookingStatus(booking.id, 'confirm')}
+                                  className="bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white text-sm font-medium"
+                                >
+                                  Confirm
+                                </Button>
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  onClick={() => updateBookingStatus(booking.id, 'cancel')}
+                                  className="text-sm border-red-300 text-red-600 hover:bg-red-50"
+                                >
+                                  Cancel
+                                </Button>
+                              </>
+                            )}
+                            
                             {booking.status === 'pending' && (
                               <Button
                                 size="sm"
@@ -293,7 +315,7 @@ export default function MyDonationsPage() {
                               </div>
                             )}
 
-                            {booking.donation_slot?.monastery?.phone && (
+                            {booking.donation_slots?.monasteries?.phone && (
                               <Button
                                 size="sm"
                                 variant="outline"

@@ -22,7 +22,8 @@
       "mcp__supabase-mcp__list_projects",
       "mcp__supabase-mcp__get_project",
       "mcp__supabase-mcp__search_docs",
-      "Bash(chmod:*)"
+      "Bash(chmod:*)",
+      "mcp__ide__getDiagnostics"
     ],
     "deny": []
   }
