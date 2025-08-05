@@ -184,6 +184,8 @@
     "removePhoto": "Remove Photo",
     "myProfile": "My Profile",
     "saving": "Saving...",
+    "edit": "Edit",
+    "cancel": "Cancel",
     "roles": {
       "donor": "Donor",
       "monastery_admin": "Monastery Admin",

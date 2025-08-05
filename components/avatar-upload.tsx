@@ -48,36 +48,47 @@ export function AvatarUpload({
       }
 
       const fileExt = file.name.split('.').pop()
+      const safeFileName = file.name.replace(/[^a-zA-Z0-9.-]/g, '_')
       const fileName = `${profile?.id}-${Date.now()}.${fileExt}`
       const filePath = `avatars/${fileName}`
 
-      // Upload to Supabase storage
+      console.log('Uploading to path:', filePath)
+      console.log('User ID:', profile?.id)
+
+      // Upload to Supabase storage with upsert enabled for updates
       const { error: uploadError } = await supabase.storage
         .from('avatars')
         .upload(filePath, file, {
           cacheControl: '3600',
-          upsert: false
+          upsert: true
         })
 
       if (uploadError) {
+        console.error('Upload error:', uploadError)
         throw uploadError
       }
 
       // Get public URL
-      const { data: { publicUrl } } = supabase.storage
+      const { data } = supabase.storage
         .from('avatars')
         .getPublicUrl(filePath)
 
-      // Update user profile
-      await updateProfile({ avatar_url: publicUrl })
-      
-      if (onUploadComplete) {
-        onUploadComplete(publicUrl)
+      if (!data?.publicUrl) {
+        throw new Error('Failed to get public URL')
       }
 
-    } catch (error) {
+      console.log('Upload successful, URL:', data.publicUrl)
+
+      // Update user profile
+      await updateProfile({ avatar_url: data.publicUrl })
+      
+      if (onUploadComplete) {
+        onUploadComplete(data.publicUrl)
+      }
+
+    } catch (error: any) {
       console.error('Error uploading avatar:', error)
-      alert('Error uploading image. Please try again.')
+      alert(`Error uploading image: ${error.message}`)
     } finally {
       setUploading(false)
     }
@@ -89,12 +100,19 @@ export function AvatarUpload({
       
       // Remove from storage if URL exists
       if (profile?.avatar_url) {
-        const url = new URL(profile.avatar_url)
-        const path = url.pathname.split('/').slice(2).join('/')
-        
-        await supabase.storage
-          .from('avatars')
-          .remove([path])
+        try {
+          const url = new URL(profile.avatar_url)
+          const path = url.pathname.split('/').slice(3).join('/') // Skip /storage/v1/object/public/avatars/
+          
+          if (path) {
+            await supabase.storage
+              .from('avatars')
+              .remove([path])
+          }
+        } catch (error) {
+          console.error('Error removing old avatar:', error)
+          // Continue even if removal fails
+        }
       }
 
       // Update profile
