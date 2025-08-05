@@ -2,7 +2,6 @@
 
 import { Link } from '@/src/i18n/navigation'
 import { useAuth } from '@/lib/auth-context'
-import { Button } from '@/components/ui/button'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import {
   NavigationMenu,
@@ -233,29 +232,52 @@ export function Navigation() {
           <div className="flex items-center space-x-4">
             <LanguageSwitcher />
             
-            <div className="flex items-center space-x-2">
-              <Avatar className="w-8 h-8">
-                <AvatarImage src={profile?.avatar_url} />
-                <AvatarFallback>
-                  {profile?.full_name?.split(' ').map(n => n[0]).join('') || 'U'}
-                </AvatarFallback>
-              </Avatar>
-              <span className="text-base font-bold">{profile?.full_name}</span>
-            </div>
-            
-            <Button
-              variant="ghost"
-              size="default"
-              onClick={async () => {
-                await signOut();
-                if (typeof window !== 'undefined') {
-                  window.location.href = '/';
-                }
-              }}
-            >
-              <LogOut className="w-5 h-5 mr-2" />
-              <span className="font-bold">{t('signOut')}</span>
-            </Button>
+            <NavigationMenu>
+              <NavigationMenuList>
+                <NavigationMenuItem>
+                  <NavigationMenuTrigger className="text-lg font-bold">
+                    <div className="flex items-center space-x-2">
+                      <Avatar className="w-8 h-8">
+                        <AvatarImage src={profile?.avatar_url} />
+                        <AvatarFallback>
+                          {profile?.full_name?.split(' ').map(n => n[0]).join('') || 'U'}
+                        </AvatarFallback>
+                      </Avatar>
+                      <span className="text-base font-bold">{profile?.full_name}</span>
+                    </div>
+                  </NavigationMenuTrigger>
+                  <NavigationMenuContent>
+                    <div className="p-4 w-48">
+                      <NavigationMenuLink asChild>
+                        <Link
+                          href="/profile"
+                          className="flex items-center space-x-2 p-3 rounded-md hover:bg-[var(--primary-color)]/10 hover:text-[var(--primary-color)] transition-all duration-300"
+                        >
+                          <User className="w-4 h-4 flex-shrink-0 text-[var(--primary-color)]" />
+                          <span>{t('myProfile')}</span>
+                        </Link>
+                      </NavigationMenuLink>
+                      <NavigationMenuLink asChild>
+                        <Link
+                          href="/"
+                          onClick={async (e) => {
+                            e.preventDefault();
+                            await signOut();
+                            if (typeof window !== 'undefined') {
+                              window.location.href = '/';
+                            }
+                          }}
+                          className="flex items-center space-x-2 p-3 rounded-md hover:bg-[var(--primary-color)]/10 hover:text-[var(--primary-color)] transition-all duration-300"
+                        >
+                          <LogOut className="w-4 h-4 flex-shrink-0 text-[var(--primary-color)]" />
+                          <span>{t('signOut')}</span>
+                        </Link>
+                      </NavigationMenuLink>
+                    </div>
+                  </NavigationMenuContent>
+                </NavigationMenuItem>
+              </NavigationMenuList>
+            </NavigationMenu>
           </div>
         </div>
       </div>

@@ -25,7 +25,8 @@
       "Bash(chmod:*)",
       "mcp__ide__getDiagnostics",
       "Bash(npm run typecheck:*)",
-      "Bash(npm run build:*)"
+      "Bash(npm run build:*)",
+      "mcp__supabase-mcp__apply_migration"
     ],
     "deny": []
   }

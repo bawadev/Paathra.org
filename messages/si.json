@@ -30,7 +30,8 @@
     "analyticsDesc": "විස්තරාත්මක වාර්තා සහ මිනුම්",
     "settings": "සැකසුම්",
     "settingsDesc": "පද්ධති වින්‍යාසය",
-    "signOut": "ඉවත් වන්න"
+    "signOut": "ඉවත් වන්න",
+    "myProfile": "මගේ පැතිකඩ"
   },
   "HomePage": {
     "heroTitle1": "පෝෂණය",
@@ -162,5 +163,31 @@
     "confirm": "තහවුරු කරන්න",
     "yes": "ඔව්",
     "no": "නැත"
+  },
+  "Profile": {
+    "title": "පැතිකඩ සැකසුම්",
+    "profilePicture": "පැතිකඩ රූපය",
+    "profilePictureDesc": "ඔබේ ගිණුම පුද්ගලික කිරීමට පැතිකඩ රූපයක් උඩුගත කරන්න",
+    "basicInfo": "මූලික තොරතුරු",
+    "basicInfoDesc": "ඔබේ පුද්ගලික තොරතුරු යාවත්කාලීන කරන්න",
+    "fullName": "සම්පූර්ණ නම",
+    "email": "විද්‍යුත් තැපැල් ලිපිනය",
+    "phone": "දුරකථන අංකය",
+    "phonePlaceholder": "ඔබේ දුරකථන අංකය",
+    "address": "ලිපිනය",
+    "addressPlaceholder": "ඔබේ ලිපිනය",
+    "accountInfo": "ගිණුම් තොරතුරු",
+    "accountInfoDesc": "ඔබේ ගිණුම පිළිබඳ තොරතුරු",
+    "userRole": "පරිශීලක භූමිකාව",
+    "accountCreated": "ගිණුම නිර්මාණය කරන ලදී",
+    "uploadPhoto": "රූපය උඩුගත කරන්න",
+    "removePhoto": "රූපය ඉවත් කරන්න",
+    "myProfile": "මගේ පැතිකඩ",
+    "saving": "සුරකිමින්...",
+    "roles": {
+      "donor": "දායකයා",
+      "monastery_admin": "පන්සල් පරිපාලක",
+      "super_admin": "ප්‍රධාන පරිපාලක"
+    }
   }
 }

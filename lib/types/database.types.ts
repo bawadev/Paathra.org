@@ -7,21 +7,31 @@ export interface Database {
           email: string
           full_name: string
           phone?: string
+          avatar_url?: string
+          address?: string
           user_types: ('donor' | 'monastery_admin' | 'super_admin')[]
           created_at: string
           updated_at: string
           is_email_verified: boolean
+          latitude?: number
+          longitude?: number
+          location_permission?: boolean
+          location_updated_at?: string
         }
         Insert: {
           id: string
           email: string
           full_name: string
           phone?: string
+          avatar_url?: string
+          address?: string
           user_types?: ('donor' | 'monastery_admin' | 'super_admin')[]
         }
         Update: {
           full_name?: string
           phone?: string
+          avatar_url?: string
+          address?: string
           user_types?: ('donor' | 'monastery_admin' | 'super_admin')[]
           updated_at?: string
         }

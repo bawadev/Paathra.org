@@ -30,7 +30,8 @@
     "analyticsDesc": "Detailed reports & metrics",
     "settings": "Settings",
     "settingsDesc": "System configuration",
-    "signOut": "Sign Out"
+    "signOut": "Sign Out",
+    "myProfile": "My Profile"
   },
   "HomePage": {
     "heroTitle1": "Nourish",
@@ -162,5 +163,31 @@
     "confirm": "Confirm",
     "yes": "Yes",
     "no": "No"
+  },
+  "Profile": {
+    "title": "Profile Settings",
+    "profilePicture": "Profile Picture",
+    "profilePictureDesc": "Upload a profile picture to personalize your account",
+    "basicInfo": "Basic Information",
+    "basicInfoDesc": "Update your personal information",
+    "fullName": "Full Name",
+    "email": "Email Address",
+    "phone": "Phone Number",
+    "phonePlaceholder": "Your phone number",
+    "address": "Address",
+    "addressPlaceholder": "Your address",
+    "accountInfo": "Account Information",
+    "accountInfoDesc": "Information about your account",
+    "userRole": "User Role",
+    "accountCreated": "Account Created",
+    "uploadPhoto": "Upload Photo",
+    "removePhoto": "Remove Photo",
+    "myProfile": "My Profile",
+    "saving": "Saving...",
+    "roles": {
+      "donor": "Donor",
+      "monastery_admin": "Monastery Admin",
+      "super_admin": "Super Admin"
+    }
   }
 }
