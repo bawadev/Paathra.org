@@ -27,7 +27,8 @@ import {
   Users, 
   Plus,
   Trash2,
-  AlertCircle
+  AlertCircle,
+  Edit3
 } from 'lucide-react'
 
 export default function ManageSlotsPage() {
@@ -36,10 +37,22 @@ export default function ManageSlotsPage() {
   const [slots, setSlots] = useState<DonationSlot[]>([])
   const [loading, setLoading] = useState(true)
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false)
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
+  const [editingSlot, setEditingSlot] = useState<DonationSlot | null>(null)
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date())
 
   // Form state for creating slots
   const [formData, setFormData] = useState({
+    date: '',
+    meal_type: 'lunch' as 'breakfast' | 'lunch' | 'dinner',
+    time_slot: '',
+    monks_capacity: 10,
+    max_donors: 5,
+    special_requirements: ''
+  })
+
+  // Form state for editing slots
+  const [editFormData, setEditFormData] = useState({
     date: '',
     meal_type: 'lunch' as 'breakfast' | 'lunch' | 'dinner',
     time_slot: '',
@@ -232,6 +245,43 @@ export default function ManageSlotsPage() {
       .eq('id', slotId)
 
     if (!error) {
+      fetchData()
+    }
+  }
+
+  const startEditingSlot = (slot: DonationSlot) => {
+    setEditingSlot(slot)
+    setEditFormData({
+      date: slot.date,
+      meal_type: slot.meal_type as 'breakfast' | 'lunch' | 'dinner',
+      time_slot: slot.time_slot,
+      monks_capacity: slot.monks_capacity,
+      max_donors: slot.max_donors,
+      special_requirements: slot.special_requirements || ''
+    })
+    setIsEditDialogOpen(true)
+  }
+
+  const editSlot = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!editingSlot) return
+
+    const { error } = await supabase
+      .from('donation_slots')
+      .update({
+        date: editFormData.date,
+        time_slot: editFormData.time_slot,
+        meal_type: editFormData.meal_type,
+        monks_capacity: editFormData.monks_capacity,
+        max_donors: editFormData.max_donors,
+        special_requirements: editFormData.special_requirements || null,
+        updated_at: new Date().toISOString()
+      })
+      .eq('id', editingSlot.id)
+
+    if (!error) {
+      setIsEditDialogOpen(false)
+      setEditingSlot(null)
       fetchData()
     }
   }
@@ -496,6 +546,14 @@ export default function ManageSlotsPage() {
                                 <Button
                                   size="sm"
                                   variant="outline"
+                                  onClick={() => startEditingSlot(slot)}
+                                >
+                                  <Edit3 className="w-4 h-4" />
+                                </Button>
+                                
+                                <Button
+                                  size="sm"
+                                  variant="outline"
                                   onClick={() => toggleSlotAvailability(slot.id, slot.is_available)}
                                 >
                                   {slot.is_available ? 'Disable' : 'Enable'}
@@ -524,6 +582,109 @@ export default function ManageSlotsPage() {
                   )}
                 </CardContent>
               </Card>
+
+              {/* Edit Slot Dialog */}
+              <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>Edit Donation Slot</DialogTitle>
+                    <DialogDescription>
+                      Update the details for this donation slot
+                    </DialogDescription>
+                  </DialogHeader>
+                  <form onSubmit={editSlot} className="space-y-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="edit-date">Date *</Label>
+                      <Input
+                        id="edit-date"
+                        type="date"
+                        value={editFormData.date}
+                        onChange={(e) => setEditFormData(prev => ({ ...prev, date: e.target.value }))}
+                        min={format(new Date(), 'yyyy-MM-dd')}
+                        required
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="edit-meal_type">Meal Type *</Label>
+                      <Select
+                        value={editFormData.meal_type}
+                        onValueChange={(value) => setEditFormData(prev => ({ ...prev, meal_type: value as 'breakfast' | 'lunch' | 'dinner' }))}
+                      >
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="breakfast">Breakfast</SelectItem>
+                          <SelectItem value="lunch">Lunch</SelectItem>
+                          <SelectItem value="dinner">Dinner</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="edit-time_slot">Time *</Label>
+                      <Input
+                        id="edit-time_slot"
+                        type="time"
+                        value={editFormData.time_slot}
+                        onChange={(e) => setEditFormData(prev => ({ ...prev, time_slot: e.target.value }))}
+                        required
+                      />
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="edit-monks_capacity">Monks Capacity</Label>
+                        <Input
+                          id="edit-monks_capacity"
+                          type="number"
+                          value={editFormData.monks_capacity}
+                          onChange={(e) => setEditFormData(prev => ({ ...prev, monks_capacity: parseInt(e.target.value) || 0 }))}
+                          min="0"
+                          placeholder="Number of monks to feed"
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label htmlFor="edit-max_donors">Max Donors</Label>
+                        <Input
+                          id="edit-max_donors"
+                          type="number"
+                          min="1"
+                          max="20"
+                          value={editFormData.max_donors}
+                          onChange={(e) => setEditFormData(prev => ({ ...prev, max_donors: parseInt(e.target.value) }))}
+                          required
+                        />
+                      </div>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="edit-special_requirements">Special Requirements</Label>
+                      <Textarea
+                        id="edit-special_requirements"
+                        value={editFormData.special_requirements}
+                        onChange={(e) => setEditFormData(prev => ({ ...prev, special_requirements: e.target.value }))}
+                        placeholder="Any special requirements for this time slot..."
+                      />
+                    </div>
+
+                    <div className="flex space-x-2">
+                      <Button type="submit" className="flex-1">
+                        Update Slot
+                      </Button>
+                      <Button 
+                        type="button" 
+                        variant="outline"
+                        onClick={() => setIsEditDialogOpen(false)}
+                      >
+                        Cancel
+                      </Button>
+                    </div>
+                  </form>
+                </DialogContent>
+              </Dialog>
 
               {/* Quick Stats */}
               <Card className="mt-6">
