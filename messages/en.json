@@ -186,6 +186,7 @@
     "saving": "Saving...",
     "edit": "Edit",
     "cancel": "Cancel",
+    "save": "Save",
     "roles": {
       "donor": "Donor",
       "monastery_admin": "Monastery Admin",
