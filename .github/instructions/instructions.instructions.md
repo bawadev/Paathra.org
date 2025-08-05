@@ -1,0 +1,1 @@
+- before every step see what mcp tools you can use to make it easier

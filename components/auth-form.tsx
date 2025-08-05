@@ -8,8 +8,83 @@ import { signInSchema, signUpSchema, type SignInInput, type SignUpInput } from '
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Alert, AlertDescription } from '@/components/ui/alert'
-import { TextField } from '@/components/forms/FormFields'
-import { Eye, EyeOff } from 'lucide-react'
+import { Eye, EyeOff, Chrome, Facebook, Twitter } from 'lucide-react'
+
+interface SocialAuthButtonsProps {
+  onSuccess: () => void;
+  onError: (error: string) => void;
+}
+
+function SocialAuthButtons({ onSuccess, onError }: SocialAuthButtonsProps) {
+  const [loading, setLoading] = useState<string | null>(null);
+  const { signInWithSocial } = useAuth();
+
+  const handleSocialLogin = async (provider: 'google' | 'facebook' | 'twitter') => {
+    setLoading(provider);
+    try {
+      const { error } = await signInWithSocial(provider);
+      
+      if (error) {
+        onError(error.message);
+      } else {
+        // OAuth redirect will handle success
+        onSuccess();
+      }
+    } catch (err) {
+      onError('An unexpected error occurred during social login');
+    } finally {
+      setLoading(null);
+    }
+  };
+
+  return (
+    <div className="space-y-4">
+      <div className="relative">
+        <div className="absolute inset-0 flex items-center">
+          <span className="w-full border-t border-gray-200" />
+        </div>
+        <div className="relative flex justify-center text-xs">
+          <span className="px-2 bg-white text-[var(--text-light)]">Or continue with</span>
+        </div>
+      </div>
+      
+      <div className="grid grid-cols-3 gap-3">
+        <Button
+          type="button"
+          variant="outline"
+          onClick={() => handleSocialLogin('google')}
+          disabled={!!loading}
+          className="w-full flex items-center justify-center gap-2 border-gray-200 hover:bg-gray-50"
+        >
+          <Chrome className="w-4 h-4" />
+          <span className="sr-only">Google</span>
+        </Button>
+        
+        <Button
+          type="button"
+          variant="outline"
+          onClick={() => handleSocialLogin('facebook')}
+          disabled={!!loading}
+          className="w-full flex items-center justify-center gap-2 border-gray-200 hover:bg-gray-50"
+        >
+          <Facebook className="w-4 h-4" />
+          <span className="sr-only">Facebook</span>
+        </Button>
+        
+        <Button
+          type="button"
+          variant="outline"
+          onClick={() => handleSocialLogin('twitter')}
+          disabled={!!loading}
+          className="w-full flex items-center justify-center gap-2 border-gray-200 hover:bg-gray-50"
+        >
+          <Twitter className="w-4 h-4" />
+          <span className="sr-only">Twitter</span>
+        </Button>
+      </div>
+    </div>
+  );
+}
 
 function SignInForm({ onSuccess, onError }: { onSuccess: () => void; onError: (error: string) => void }) {
   const [loading, setLoading] = useState(false)
@@ -109,6 +184,8 @@ function SignInForm({ onSuccess, onError }: { onSuccess: () => void; onError: (e
         >
           {loading ? 'Signing in...' : 'Sign In'}
         </Button>
+        
+        <SocialAuthButtons onSuccess={onSuccess} onError={onError} />
       </form>
     </FormProvider>
   )
@@ -223,6 +300,8 @@ function SignUpForm({ onSuccess, onError }: { onSuccess: (message: string) => vo
         >
           {loading ? 'Creating account...' : 'Create Account'}
         </Button>
+        
+        <SocialAuthButtons onSuccess={() => onSuccess('Account created successfully!')} onError={onError} />
         
         <p className="text-xs text-[var(--text-light)] text-center">
           By signing up, you agree to our Terms of Service and Privacy Policy
