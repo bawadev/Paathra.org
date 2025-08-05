@@ -7,7 +7,7 @@ export interface Database {
           email: string
           full_name: string
           phone?: string
-          role: 'donor' | 'monastery_admin' | 'super_admin'
+          user_types: ('donor' | 'monastery_admin' | 'super_admin')[]
           created_at: string
           updated_at: string
           is_email_verified: boolean
@@ -17,12 +17,12 @@ export interface Database {
           email: string
           full_name: string
           phone?: string
-          role?: 'donor' | 'monastery_admin' | 'super_admin'
+          user_types?: ('donor' | 'monastery_admin' | 'super_admin')[]
         }
         Update: {
           full_name?: string
           phone?: string
-          role?: 'donor' | 'monastery_admin' | 'super_admin'
+          user_types?: ('donor' | 'monastery_admin' | 'super_admin')[]
           updated_at?: string
         }
       }

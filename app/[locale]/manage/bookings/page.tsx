@@ -16,7 +16,7 @@ import { executeBookingTransition } from '@/lib/services/booking-workflow'
 import { format, parseISO } from 'date-fns'
 // Helper function to check role from database UserProfile
 const hasRole = (profile: any, role: string) => {
-  return profile?.role === role
+  return profile?.user_types?.includes(role) ?? false
 }
 import { 
   Calendar, 
