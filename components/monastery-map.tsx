@@ -60,13 +60,32 @@ export function MonasteryMap({
           }
         }
 
-        // Clean up existing map
-        if (mapInstanceRef.current) {
-          mapInstanceRef.current.remove();
+        // Ensure map container is valid before creating map
+        if (!mapRef.current || !mapRef.current.offsetParent) {
+          return;
         }
 
-        // Create map
-        const map = L.map(mapRef.current!).setView(center, zoom);
+        // Clean up existing map
+        if (mapInstanceRef.current) {
+          try {
+            mapInstanceRef.current.remove();
+          } catch (e) {
+            console.warn('Error removing previous map instance:', e);
+          }
+        }
+
+        // Create map with additional error handling
+        let map;
+        try {
+          map = L.map(mapRef.current, {
+            zoomControl: true,
+            attributionControl: true
+          }).setView(center, zoom);
+        } catch (error) {
+          console.error('Error creating map:', error);
+          setLoadError('Failed to initialize map');
+          return;
+        }
         mapInstanceRef.current = map;
 
         // Add OpenStreetMap tiles (FREE)
@@ -154,7 +173,11 @@ export function MonasteryMap({
     return () => {
       isMounted = false;
       if (mapInstanceRef.current) {
-        mapInstanceRef.current.remove();
+        try {
+          mapInstanceRef.current.remove();
+        } catch (error) {
+          console.warn('Error removing map:', error);
+        }
         mapInstanceRef.current = null;
       }
     };
