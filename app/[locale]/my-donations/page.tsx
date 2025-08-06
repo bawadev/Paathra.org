@@ -262,26 +262,6 @@ export default function MyDonationsPage() {
                               </>
                             )}
                             
-                            {booking.status === 'monastery_approved' && (
-                              <>
-                                <Button
-                                  size="sm"
-                                  onClick={() => updateBookingStatus(booking.id, 'confirm')}
-                                  className="bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white text-sm font-medium"
-                                >
-                                  Confirm
-                                </Button>
-                                <Button
-                                  size="sm"
-                                  variant="outline"
-                                  onClick={() => updateBookingStatus(booking.id, 'cancel')}
-                                  className="text-sm border-red-300 text-red-600 hover:bg-red-50"
-                                >
-                                  Cancel
-                                </Button>
-                              </>
-                            )}
-                            
                             {booking.status === 'pending' && (
                               <Button
                                 size="sm"
