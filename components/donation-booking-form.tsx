@@ -15,7 +15,7 @@ import { Clock, MapPin, Users } from 'lucide-react'
 
 interface DonationBookingFormProps {
   slot: DonationSlot
-  onSuccess: () => void
+  onSuccess: (bookingData: any) => void
   onCancel: () => void
 }
 
@@ -72,7 +72,7 @@ export function DonationBookingForm({ slot, onSuccess, onCancel }: DonationBooki
         return
       }
 
-      const { error: bookingError } = await supabase
+      const { data: bookingData, error: bookingError } = await supabase
         .from('donation_bookings')
         .insert({
           donation_slot_id: slot.id,
@@ -84,11 +84,13 @@ export function DonationBookingForm({ slot, onSuccess, onCancel }: DonationBooki
           special_notes: data.special_notes || null,
           contact_phone: data.contact_phone || null,
         })
+        .select()
+        .single()
 
       if (bookingError) {
         setError(bookingError.message)
       } else {
-        onSuccess()
+        onSuccess(bookingData)
       }
     } catch (err) {
       setError('An unexpected error occurred')

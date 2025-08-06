@@ -6,15 +6,17 @@ import { Navigation } from '@/components/navigation'
 import { DonationCalendar } from '@/components/features/donation/DonationCalendar'
 import { DonationBookingForm } from '@/components/donation-booking-form'
 import { DonationSlot } from '@/lib/supabase'
+import { supabase } from '@/lib/supabase'
 import { AuthForm } from '@/components/auth-form'
-import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
 import { CheckCircle, Heart, Users, Gift } from 'lucide-react'
+import { BookingConfirmationDialog } from '@/components/booking-confirmation-dialog'
 
 export default function DonatePage() {
   const { user, loading } = useAuth()
   const [selectedSlot, setSelectedSlot] = useState<DonationSlot | null>(null)
   const [bookingSuccess, setBookingSuccess] = useState(false)
+  const [confirmedBooking, setConfirmedBooking] = useState<any>(null)
 
   if (loading) {
     return (
@@ -33,8 +35,24 @@ export default function DonatePage() {
     setBookingSuccess(false)
   }
 
-  const handleBookingSuccess = () => {
-    setBookingSuccess(true)
+  const handleBookingSuccess = async (bookingData: any) => {
+    // Fetch the full booking details including monastery info
+    const { data: bookingDetails } = await supabase
+      .from('donation_bookings')
+      .select(`
+        *,
+        donation_slots!inner(
+          *,
+          monasteries!inner(*)
+        )
+      `)
+      .eq('id', bookingData.id)
+      .single()
+    
+    if (bookingDetails) {
+      setConfirmedBooking(bookingDetails)
+      setBookingSuccess(true)
+    }
     setSelectedSlot(null)
   }
 
@@ -48,24 +66,6 @@ export default function DonatePage() {
       
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
 
-        {/* Success Alert */}
-        {bookingSuccess && (
-          <div className="mb-8 max-w-2xl mx-auto">
-            <Alert className="border-green-200 bg-green-50 shadow-lg">
-              <div className="flex items-center gap-3">
-                <CheckCircle className="h-6 w-6 text-green-600" />
-                <div>
-                  <h3 className="font-semibold text-green-800 mb-1">
-                    Booking Confirmed!
-                  </h3>
-                  <p className="text-green-700">
-                    Your donation has been successfully booked. You'll receive confirmation details via email shortly.
-                  </p>
-                </div>
-              </div>
-            </Alert>
-          </div>
-        )}
 
         {/* Main Content */}
         <div className="max-w-6xl mx-auto">
@@ -125,6 +125,16 @@ export default function DonatePage() {
           </div>
         )}
       </main>
+
+      {/* Booking Confirmation Dialog */}
+      <BookingConfirmationDialog
+        isOpen={bookingSuccess}
+        onClose={() => {
+          setBookingSuccess(false)
+          setConfirmedBooking(null)
+        }}
+        booking={confirmedBooking}
+      />
     </div>
   )
 }
