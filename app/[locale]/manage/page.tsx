@@ -7,7 +7,7 @@ import { AuthForm } from '@/components/auth-form'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { supabase, DonationBooking, DonationSlot, Monastery } from '@/lib/supabase'
+import { supabase, DonationBooking, Monastery } from '@/lib/supabase'
 import { format, parseISO, isToday, isFuture } from 'date-fns'
 import { hasRole } from '@/types/auth'
 import { 
@@ -19,7 +19,9 @@ import {
   AlertCircle, 
   TrendingUp,
   Building,
-  Utensils
+  Utensils,
+  Phone,
+  UserPlus
 } from 'lucide-react'
 import Link from 'next/link'
 
@@ -28,6 +30,8 @@ interface DashboardStats {
   pendingBookings: number
   todayBookings: number
   upcomingBookings: number
+  totalGuestBookings: number
+  pendingGuestBookings: number
 }
 
 export default function MonasteryDashboard() {
@@ -38,7 +42,9 @@ export default function MonasteryDashboard() {
     totalBookings: 0,
     pendingBookings: 0,
     todayBookings: 0,
-    upcomingBookings: 0
+    upcomingBookings: 0,
+    totalGuestBookings: 0,
+    pendingGuestBookings: 0
   })
   const [loading, setLoading] = useState(true)
 
@@ -68,8 +74,20 @@ export default function MonasteryDashboard() {
         .from('donation_bookings')
         .select(`
           *,
-          donation_slot:donation_slots(*),
-          donor:user_profiles(full_name, email, phone)
+          donation_slot:donation_slots!slot_id(*),
+          donor:user_profiles!user_id(full_name, email, phone)
+        `)
+        .eq('donation_slot.monastery_id', monasteryData.id)
+        .order('created_at', { ascending: false })
+        .limit(10)
+
+      // Fetch guest bookings
+      const { data: guestBookingsData } = await supabase
+        .from('guest_bookings')
+        .select(`
+          *,
+          donation_slot:donation_slots!donation_slot_id(*),
+          guest_profile:guest_profiles!guest_profile_id(*)
         `)
         .eq('donation_slot.monastery_id', monasteryData.id)
         .order('created_at', { ascending: false })
@@ -78,22 +96,26 @@ export default function MonasteryDashboard() {
       setRecentBookings(bookingsData || [])
 
       // Calculate stats
-      if (bookingsData) {
-        const today = new Date()
-        const totalBookings = bookingsData.length
-        const pendingBookings = bookingsData.filter(b => b.status === 'pending').length
-        const todayBookings = bookingsData.filter(b => 
-          b.donation_slot && isToday(parseISO(b.donation_slot.date))
-        ).length
-        const upcomingBookings = bookingsData.filter(b => 
-          b.donation_slot && isFuture(parseISO(b.donation_slot.date)) && b.status !== 'cancelled'
-        ).length
+      if (bookingsData || guestBookingsData) {
+        const totalBookings = bookingsData?.length || 0
+        const pendingBookings = bookingsData?.filter(b => b.status === 'pending').length || 0
+        const todayBookings = bookingsData?.filter(b => 
+          b.booking_date && isToday(parseISO(b.booking_date))
+        ).length || 0
+        const upcomingBookings = bookingsData?.filter(b => 
+          b.booking_date && isFuture(parseISO(b.booking_date)) && b.status !== 'cancelled'
+        ).length || 0
+
+        const totalGuestBookings = guestBookingsData?.length || 0
+        const pendingGuestBookings = guestBookingsData?.filter(b => b.status === 'pending').length || 0
 
         setStats({
           totalBookings,
           pendingBookings,
           todayBookings,
-          upcomingBookings
+          upcomingBookings,
+          totalGuestBookings,
+          pendingGuestBookings
         })
       }
     }
@@ -193,7 +215,7 @@ export default function MonasteryDashboard() {
         ) : (
           <div className="space-y-6">
             {/* Stats Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4">
               <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <CardTitle className="text-sm font-medium">Total Bookings</CardTitle>
@@ -237,6 +259,28 @@ export default function MonasteryDashboard() {
                   <p className="text-xs text-muted-foreground">Future bookings</p>
                 </CardContent>
               </Card>
+
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">Guest Bookings</CardTitle>
+                  <Phone className="h-4 w-4 text-purple-500" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold">{stats.totalGuestBookings}</div>
+                  <p className="text-xs text-muted-foreground">Phone bookings</p>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">Pending Guests</CardTitle>
+                  <UserPlus className="h-4 w-4 text-orange-500" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold">{stats.pendingGuestBookings}</div>
+                  <p className="text-xs text-muted-foreground">Need approval</p>
+                </CardContent>
+              </Card>
             </div>
 
             {/* Quick Actions */}
@@ -248,7 +292,7 @@ export default function MonasteryDashboard() {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                   <Button asChild variant="outline" className="h-auto p-4">
                     <Link href="/manage/bookings" className="flex flex-col items-center space-y-2">
                       <Users className="w-6 h-6" />
@@ -278,6 +322,16 @@ export default function MonasteryDashboard() {
                       </div>
                     </Link>
                   </Button>
+
+                  <Button asChild variant="outline" className="h-auto p-4">
+                    <Link href="/manage/guest-bookings" className="flex flex-col items-center space-y-2">
+                      <Phone className="w-6 h-6" />
+                      <div className="text-center">
+                        <div className="font-medium">Guest Bookings</div>
+                        <div className="text-sm text-gray-500">Phone-based reservations</div>
+                      </div>
+                    </Link>
+                  </Button>
                 </div>
               </CardContent>
             </Card>
@@ -303,7 +357,7 @@ export default function MonasteryDashboard() {
                         <div className="flex items-start justify-between">
                           <div className="space-y-2">
                             <div className="flex items-center space-x-2">
-                              <h4 className="font-medium">{booking.donor?.full_name}</h4>
+                              <h4 className="font-medium">{booking.food_type}</h4>
                               <Badge className={getStatusColor(booking.status)}>
                                 {booking.status}
                               </Badge>
@@ -312,24 +366,17 @@ export default function MonasteryDashboard() {
                             <div className="text-sm text-gray-600 space-y-1">
                               <div className="flex items-center space-x-4">
                                 <span><strong>Food:</strong> {booking.food_type}</span>
-                                <span><strong>Servings:</strong> {booking.estimated_servings}</span>
+                                <span><strong>Quantity:</strong> {booking.quantity}</span>
                               </div>
                               <div className="flex items-center space-x-1">
                                 <Calendar className="w-4 h-4" />
                                 <span>
-                                  {format(parseISO(booking.donation_slot?.date || ''), 'MMM d, yyyy')}
-                                </span>
-                                <Clock className="w-4 h-4 ml-4" />
-                                <span>
-                                  {format(
-                                    parseISO(`2000-01-01T${booking.donation_slot?.time_slot}`),
-                                    'h:mm a'
-                                  )}
+                                  {format(parseISO(booking.booking_date), 'MMM d, yyyy')}
                                 </span>
                               </div>
-                              {booking.special_notes && (
+                              {booking.special_instructions && (
                                 <div className="bg-gray-50 p-2 rounded text-sm">
-                                  <strong>Notes:</strong> {booking.special_notes}
+                                  <strong>Notes:</strong> {booking.special_instructions}
                                 </div>
                               )}
                             </div>

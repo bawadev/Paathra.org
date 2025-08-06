@@ -255,6 +255,70 @@ export interface Database {
           notes?: string
         }
       }
+      guest_profiles: {
+        Row: {
+          id: string
+          phone: string
+          full_name: string
+          email?: string
+          address?: string
+          notes?: string
+          monastery_id: string
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          phone: string
+          full_name: string
+          email?: string
+          address?: string
+          notes?: string
+          monastery_id: string
+        }
+        Update: {
+          phone?: string
+          full_name?: string
+          email?: string
+          address?: string
+          notes?: string
+          updated_at?: string
+        }
+      }
+      guest_bookings: {
+        Row: {
+          id: string
+          donation_slot_id: string
+          guest_profile_id: string
+          food_type: string
+          estimated_servings: number
+          special_notes?: string
+          contact_phone: string
+          status: 'pending' | 'confirmed' | 'completed' | 'cancelled'
+          created_at: string
+          updated_at: string
+          confirmed_at?: string
+          delivered_at?: string
+        }
+        Insert: {
+          donation_slot_id: string
+          guest_profile_id: string
+          food_type: string
+          estimated_servings: number
+          special_notes?: string
+          contact_phone: string
+          status?: 'pending' | 'confirmed' | 'completed' | 'cancelled'
+        }
+        Update: {
+          food_type?: string
+          estimated_servings?: number
+          special_notes?: string
+          contact_phone?: string
+          status?: 'pending' | 'confirmed' | 'completed' | 'cancelled'
+          updated_at?: string
+          confirmed_at?: string
+          delivered_at?: string
+        }
+      }
     }
   }
 }
@@ -265,6 +329,8 @@ export type Monastery = Tables['monasteries']['Row']
 export type DonationSlot = Tables['donation_slots']['Row']
 export type DonationBooking = Tables['donation_bookings']['Row']
 export type BookingConfirmation = Tables['booking_confirmations']['Row']
+export type GuestProfile = Tables['guest_profiles']['Row']
+export type GuestBooking = Tables['guest_bookings']['Row']
 
 export type UserRole = 'donor' | 'monastery_admin' | 'super_admin'
 export type BookingStatus = 'pending' | 'confirmed' | 'completed' | 'cancelled'

@@ -15,6 +15,8 @@
     "donationSlotsDesc": "Manage available slots",
     "bookings": "Bookings",
     "bookingsDesc": "View and manage bookings",
+    "guestBookings": "Guest Bookings",
+    "guestBookingsDesc": "Phone-based donor reservations",
     "monasteryInfo": "Monastery Info",
     "monasteryInfoDesc": "Update monastery details",
     "admin": "Admin",

@@ -11,7 +11,7 @@ import {
   NavigationMenuList,
   NavigationMenuTrigger,
 } from '@/components/ui/navigation-menu'
-import { Calendar, Users, Building, LogOut, User, Shield, BarChart3 } from 'lucide-react'
+import { Calendar, Users, Building, LogOut, User, Shield, BarChart3, Phone } from 'lucide-react'
 import { hasRole, isSuperAdmin } from '@/types/auth'
 import { useTranslations } from 'next-intl'
 import { LanguageSwitcher } from '@/components/language-switcher'
@@ -136,6 +136,18 @@ export function Navigation() {
                             <div>
                               <div className="font-medium">{t('bookings')}</div>
                               <div className="text-sm text-gray-500">{t('bookingsDesc')}</div>
+                            </div>
+                          </Link>
+                        </NavigationMenuLink>
+                        <NavigationMenuLink asChild>
+                          <Link
+                            href="/manage/guest-bookings"
+                            className="flex flex-row items-center space-x-2 p-3 rounded-md hover:bg-[var(--primary-color)]/10 hover:text-[var(--primary-color)] transition-all duration-300"
+                          >
+                            <Phone className="w-4 h-4 flex-shrink-0 text-[var(--primary-color)]" />
+                            <div>
+                              <div className="font-medium">{t('guestBookings')}</div>
+                              <div className="text-sm text-gray-500">{t('guestBookingsDesc')}</div>
                             </div>
                           </Link>
                         </NavigationMenuLink>
