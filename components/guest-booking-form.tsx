@@ -10,6 +10,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { format } from 'date-fns'
 import { Plus, Check } from 'lucide-react'
 import { toast } from 'sonner'
+import { useTranslations } from 'next-intl'
 
 interface GuestProfile {
   id: string
@@ -36,6 +37,7 @@ interface GuestBookingFormProps {
 }
 
 export function GuestBookingForm({ monasteryId, donationSlots, onBookingComplete }: GuestBookingFormProps) {
+  const t = useTranslations('GuestBookings')
   const [guests, setGuests] = useState<GuestProfile[]>([])
   const [selectedGuest, setSelectedGuest] = useState<GuestProfile | null>(null)
   const [searchQuery, setSearchQuery] = useState('')
@@ -211,21 +213,21 @@ export function GuestBookingForm({ monasteryId, donationSlots, onBookingComplete
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Create Guest Booking</CardTitle>
+        <CardTitle>{t('createBooking')}</CardTitle>
         <CardDescription>
-          Create a booking for a guest donor who called to make a reservation
+          {t('createBookingDesc')}
         </CardDescription>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Guest Selection */}
           <div className="space-y-2">
-            <Label>Select Guest</Label>
+            <Label>{t('selectGuest')}</Label>
             <div className="flex items-center space-x-2">
               <div className="relative flex-1">
                 <Input
                   type="text"
-                  placeholder="Search existing guests by phone or name..."
+                  placeholder={t('searchPlaceholder')}
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   onFocus={() => setShowGuestSearch(true)}
@@ -233,7 +235,7 @@ export function GuestBookingForm({ monasteryId, donationSlots, onBookingComplete
                 {showGuestSearch && searchQuery && (
                   <div className="absolute top-full left-0 right-0 mt-1 bg-white border rounded-md shadow-lg max-h-48 overflow-y-auto z-10">
                     {filteredGuests.length === 0 ? (
-                      <div className="p-2 text-sm text-gray-500">No guests found</div>
+                      <div className="p-2 text-sm text-gray-500">{t('noGuestsFound')}</div>
                     ) : (
                       filteredGuests.map((guest) => (
                         <button
@@ -275,13 +277,13 @@ export function GuestBookingForm({ monasteryId, donationSlots, onBookingComplete
                 }}
               >
                 <Plus className="h-4 w-4" />
-                New Guest
+                {t('newGuest')}
               </Button>
             </div>
             {selectedGuest && (
               <div className="text-sm text-green-600 flex items-center">
                 <Check className="w-4 h-4 mr-1" />
-                Selected: {selectedGuest.full_name} ({selectedGuest.phone})
+                {t('selectedGuest')}: {selectedGuest.full_name} ({selectedGuest.phone})
               </div>
             )}
           </div>
@@ -289,7 +291,7 @@ export function GuestBookingForm({ monasteryId, donationSlots, onBookingComplete
           {/* Guest Details */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="phone">Phone Number *</Label>
+              <Label htmlFor="phone">{t('phoneNumber')} *</Label>
               <Input
                 id="phone"
                 type="tel"
@@ -300,7 +302,7 @@ export function GuestBookingForm({ monasteryId, donationSlots, onBookingComplete
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="fullName">Full Name *</Label>
+              <Label htmlFor="fullName">{t('fullName')} *</Label>
               <Input
                 id="fullName"
                 value={formData.fullName}
@@ -310,7 +312,7 @@ export function GuestBookingForm({ monasteryId, donationSlots, onBookingComplete
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email">{t('guestEmail')}</Label>
               <Input
                 id="email"
                 type="email"
@@ -320,7 +322,7 @@ export function GuestBookingForm({ monasteryId, donationSlots, onBookingComplete
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="address">Address</Label>
+              <Label htmlFor="address">{t('guestAddress')}</Label>
               <Input
                 id="address"
                 value={formData.address}
@@ -331,7 +333,7 @@ export function GuestBookingForm({ monasteryId, donationSlots, onBookingComplete
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="notes">Guest Notes</Label>
+            <Label htmlFor="notes">{t('guestNotes')}</Label>
             <Textarea
               id="notes"
               value={formData.notes}
@@ -344,7 +346,7 @@ export function GuestBookingForm({ monasteryId, donationSlots, onBookingComplete
           {/* Booking Details */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="donationSlot">Donation Slot *</Label>
+              <Label htmlFor="donationSlot">{t('donationSlot')} *</Label>
               <select
                 id="donationSlot"
                 value={formData.donationSlotId}
@@ -352,7 +354,7 @@ export function GuestBookingForm({ monasteryId, donationSlots, onBookingComplete
                 className="w-full p-2 border rounded-md"
                 required
               >
-                <option value="">Select a slot</option>
+                <option value="">{t('selectSlot')}</option>
                 {availableSlots.map((slot) => (
                   <option key={slot.id} value={slot.id}>
                     {format(new Date(slot.date), 'MMM d')} - {slot.meal_type} at {slot.time_slot} 
@@ -362,7 +364,7 @@ export function GuestBookingForm({ monasteryId, donationSlots, onBookingComplete
               </select>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="foodType">Food Type *</Label>
+              <Label htmlFor="foodType">{t('foodType')} *</Label>
               <Input
                 id="foodType"
                 value={formData.foodType}
@@ -372,7 +374,7 @@ export function GuestBookingForm({ monasteryId, donationSlots, onBookingComplete
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="estimatedServings">Estimated Servings *</Label>
+              <Label htmlFor="estimatedServings">{t('estimatedServings')} *</Label>
               <Input
                 id="estimatedServings"
                 type="number"
@@ -385,7 +387,7 @@ export function GuestBookingForm({ monasteryId, donationSlots, onBookingComplete
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="specialNotes">Special Notes</Label>
+            <Label htmlFor="specialNotes">{t('specialNotes')}</Label>
             <Textarea
               id="specialNotes"
               value={formData.specialNotes}
@@ -396,7 +398,7 @@ export function GuestBookingForm({ monasteryId, donationSlots, onBookingComplete
           </div>
 
           <Button type="submit" disabled={loading} className="w-full">
-            {loading ? "Creating Booking..." : "Create Guest Booking"}
+            {loading ? t('loading') : t('createBookingBtn')}
           </Button>
         </form>
       </CardContent>

@@ -9,6 +9,7 @@ import { toast } from 'sonner'
 import { format } from 'date-fns'
 import { CheckCircle, XCircle, Clock, Phone, User, Calendar, MessageSquare } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { useTranslations } from 'next-intl'
 
 interface GuestBooking {
   id: string
@@ -40,6 +41,7 @@ interface ManageGuestBookingsProps {
 }
 
 export function ManageGuestBookings({ monasteryId }: ManageGuestBookingsProps) {
+  const t = useTranslations('GuestBookings')
   const [guestBookings, setGuestBookings] = useState<GuestBooking[]>([])
   const [loading, setLoading] = useState(true)
 
@@ -86,9 +88,9 @@ export function ManageGuestBookings({ monasteryId }: ManageGuestBookingsProps) {
       .eq('id', bookingId)
 
     if (error) {
-      toast.error("Failed to update booking status")
+      toast.error(t('bookingUpdated'))
     } else {
-      toast.success("Booking status updated successfully")
+      toast.success(t('bookingUpdated'))
       fetchGuestBookings()
     }
   }
