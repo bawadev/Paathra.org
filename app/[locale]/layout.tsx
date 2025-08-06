@@ -9,6 +9,7 @@ import AuthErrorBoundary from "@/components/auth-error-boundary";
 import { ErrorProvider } from "@/lib/error-management";
 import { LoadingProvider } from "@/lib/loading-system";
 import { Geist, Geist_Mono } from "next/font/google";
+import { Noto_Sans_Sinhala, Abhaya_Libre } from "next/font/google";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -18,6 +19,22 @@ const geistSans = Geist({
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
+});
+
+const notoSansSinhala = Noto_Sans_Sinhala({
+  variable: "--font-sinhala",
+  subsets: ["sinhala"],
+  weight: ["300", "400", "500", "600", "700"],
+  display: "swap",
+  fallback: ["sans-serif"],
+});
+
+const abhayaLibre = Abhaya_Libre({
+  variable: "--font-sinhala-serif",
+  subsets: ["sinhala", "latin"],
+  weight: ["400", "500", "600", "700", "800"],
+  display: "swap",
+  fallback: ["serif"],
 });
 
 // Generate static params for all locales
@@ -68,7 +85,7 @@ export default async function LocaleLayout({
           crossOrigin=""
         />
       </head>
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+      <body className={`${geistSans.variable} ${geistMono.variable} ${notoSansSinhala.variable} ${abhayaLibre.variable} antialiased`}>
         <NextIntlClientProvider>
           <ErrorProvider enableLogging={process.env.NODE_ENV === 'development'}>
             <LoadingProvider>
