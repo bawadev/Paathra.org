@@ -110,7 +110,32 @@
     "monks": "භික්ෂූන්",
     "website": "වෙබ් අඩවිය",
     "makeDonation": "දානයක් කරන්න",
-    "details": "විස්තර"
+    "details": "විස්තර",
+    "viewPortfolio": "පෝර්ට්ෆෝලියෝ බලන්න"
+  },
+  "monastery": {
+    "portfolio": "පෝර්ට්ෆෝලියෝ",
+    "aboutMonastery": "පන්සල පිළිබඳව",
+    "contact": "සම්බන්ධතාවය",
+    "gallery": "රූප ගැලරිය",
+    "dailySchedule": "දෛනික වේලාව",
+    "rulesGuidelines": "නීති සහ මාර්ගෝපදේශ",
+    "quickStats": "ඉක්මන් සංඛ්‍යාලේඛන",
+    "socialMedia": "සමාජ මාධ්‍ය",
+    "contactPerson": "සම්බන්ධතා පුද්ගලයා",
+    "established": "ස්ථාපිත",
+    "capacity": "ධාරිතාව",
+    "monks": "භික්ෂූන්",
+    "notFound": "පන්සල සොයාගත නොහැක",
+    "noDescription": "මෙම පන්සල පිළිබඳ විස්තර නොමැත.",
+    "morning": "උදෑසන",
+    "afternoon": "දවල්",
+    "evening": "සන්ධ්‍යා",
+    "address": "ලිපිනය",
+    "facilities": "පහසුකම්",
+    "bookDonation": "දානය වෙන්කරවා ගන්න",
+    "viewSlots": "ලබා ගත හැකි කාල පරිච්ඡේද බලන්න",
+    "monasteryLogo": "පන්සල් ලාංඡනය"
   },
   "Monastery": {
     "fetchSuccess": "පන්සල් සාර්ථකව ලබා ගන්නා ලදී",

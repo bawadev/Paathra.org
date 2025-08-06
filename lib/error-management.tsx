@@ -278,10 +278,10 @@ export function withErrorBoundary<P extends object>(
 export function useAsyncError() {
   const { reportError } = useError()
   
-  return useCallback(async <T>(
+  return useCallback(async function<T>(
     operation: () => Promise<T>,
     context?: Record<string, any>
-  ): Promise<T | null> => {
+  ): Promise<T | null> {
     try {
       return await operation()
     } catch (error: any) {

@@ -8,6 +8,7 @@ const nextConfig: NextConfig = {
   trailingSlash: true,
   images: {
     unoptimized: true,
+    domains: ['nosxuzuvckyqbbzpgnsl.supabase.co'],
   },
   eslint: {
     // Disable ESLint during production builds

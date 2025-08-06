@@ -110,7 +110,8 @@
     "monks": "monks",
     "website": "Website",
     "makeDonation": "Make Donation",
-    "details": "Details"
+    "details": "Details",
+    "viewPortfolio": "View Portfolio"
   },
   "Monastery": {
     "fetchSuccess": "Monasteries fetched successfully",
@@ -125,6 +126,30 @@
     "notFound": "Monastery not found",
     "unauthorized": "You are not authorized to perform this action",
     "alreadyExists": "A monastery with this name already exists"
+  },
+  "monastery": {
+    "portfolio": "Portfolio",
+    "aboutMonastery": "About Monastery",
+    "contact": "Contact",
+    "gallery": "Gallery",
+    "dailySchedule": "Daily Schedule",
+    "rulesGuidelines": "Rules & Guidelines",
+    "quickStats": "Quick Stats",
+    "socialMedia": "Social Media",
+    "contactPerson": "Contact Person",
+    "established": "Established",
+    "capacity": "Capacity",
+    "monks": "Monks",
+    "notFound": "Monastery Not Found",
+    "noDescription": "No description available for this monastery.",
+    "morning": "Morning",
+    "afternoon": "Afternoon",
+    "evening": "Evening",
+    "address": "Address",
+    "facilities": "Facilities",
+    "bookDonation": "Book Donation",
+    "viewSlots": "View Available Slots",
+    "monasteryLogo": "Monastery Logo"
   },
   "Booking": {
     "fetchSuccess": "Bookings fetched successfully",

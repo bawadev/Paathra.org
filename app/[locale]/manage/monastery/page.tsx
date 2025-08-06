@@ -12,7 +12,9 @@ import { Textarea } from '@/components/ui/textarea'
 import { Badge } from '@/components/ui/badge'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { supabase, Monastery } from '@/lib/supabase'
-import { Building, Phone, Mail, Globe, MapPin, Users, CheckCircle, X } from 'lucide-react'
+import { ImageUpload } from '@/components/image-upload'
+import { imageUploadService } from '@/lib/services/image-upload'
+import { Building, Phone, Mail, Globe, MapPin, Users, CheckCircle, X, Image as ImageIcon } from 'lucide-react'
 import { hasRole } from '@/types/auth'
 
 const DIETARY_REQUIREMENTS = [
@@ -38,13 +40,34 @@ export default function ManageMonasteryPage() {
   const [formData, setFormData] = useState({
     name: '',
     description: '',
+    portfolio_description: '',
     address: '',
     phone: '',
     email: '',
     website: '',
     capacity: 50,
+    monk_count: 0,
+    established_year: 1900,
+    tradition: '',
+    background_image_url: '',
+    gallery_images: [] as string[],
+    avatar_url: '',
     dietary_requirements: [] as string[],
-    preferred_donation_times: ''
+    preferred_donation_times: '',
+    facilities: [] as string[],
+    rules_guidelines: '',
+    contact_person_name: '',
+    contact_person_role: '',
+    daily_schedule: {
+      morning: '',
+      afternoon: '',
+      evening: ''
+    },
+    social_media: {
+      facebook: '',
+      twitter: '',
+      instagram: ''
+    }
   })
 
   useEffect(() => {
@@ -71,13 +94,34 @@ export default function ManageMonasteryPage() {
       setFormData({
         name: data.name || '',
         description: data.description || '',
+        portfolio_description: data.portfolio_description || '',
         address: data.address || '',
         phone: data.phone || '',
         email: data.email || '',
         website: data.website || '',
         capacity: data.capacity || 50,
+        monk_count: data.monk_count || 0,
+        established_year: data.established_year || 1900,
+        tradition: data.tradition || '',
+        background_image_url: data.background_image_url || '',
+        gallery_images: data.gallery_images || [],
+        avatar_url: data.avatar_url || '',
         dietary_requirements: data.dietary_requirements || [],
-        preferred_donation_times: data.preferred_donation_times || ''
+        preferred_donation_times: data.preferred_donation_times || '',
+        facilities: data.facilities || [],
+        rules_guidelines: data.rules_guidelines || '',
+        contact_person_name: data.contact_person_name || '',
+        contact_person_role: data.contact_person_role || '',
+        daily_schedule: data.daily_schedule || {
+          morning: '',
+          afternoon: '',
+          evening: ''
+        },
+        social_media: data.social_media || {
+          facebook: '',
+          twitter: '',
+          instagram: ''
+        }
       })
     }
     
@@ -93,6 +137,8 @@ export default function ManageMonasteryPage() {
     setMessage('')
 
     try {
+      let monasteryId: string
+
       if (monastery) {
         // Update existing monastery
         const { error } = await supabase
@@ -105,48 +151,67 @@ export default function ManageMonasteryPage() {
 
         if (error) {
           setError(error.message)
-        } else {
-          setMessage('Monastery information updated successfully!')
-          fetchMonastery()
+          setSaving(false)
+          return
         }
+
+        monasteryId = monastery.id
+        setMessage('Monastery information updated successfully!')
       } else {
         // Create new monastery
-        const { error: monasteryError } = await supabase
+        const { data: newMonastery, error: monasteryError } = await supabase
           .from('monasteries')
           .insert({
             ...formData,
             admin_id: user.id
           })
+          .select()
+          .single()
 
         if (monasteryError) {
           setError(monasteryError.message)
-        } else {
-          // Update user profile to add monastery_admin role
-          // First get current user types, then add monastery_admin if not already present
-          const { data: currentProfile } = await supabase
-            .from('user_profiles')
-            .select('user_types')
-            .eq('id', user.id)
-            .single()
-
-          const currentUserTypes = currentProfile?.user_types || ['donor']
-          const updatedUserTypes = currentUserTypes.includes('monastery_admin') 
-            ? currentUserTypes 
-            : [...currentUserTypes, 'monastery_admin']
-
-          const { error: profileError } = await supabase
-            .from('user_profiles')
-            .update({ user_types: updatedUserTypes })
-            .eq('id', user.id)
-
-          if (profileError) {
-            setError('Monastery created but failed to update user role. Please contact support.')
-          } else {
-            setMessage('Monastery created successfully! You are now a monastery administrator.')
-            // Refresh the profile in the auth context
-            window.location.reload()
-          }
+          setSaving(false)
+          return
         }
+
+        monasteryId = newMonastery.id
+
+        // Update user profile to add monastery_admin role
+        const { data: currentProfile } = await supabase
+          .from('user_profiles')
+          .select('user_types')
+          .eq('id', user.id)
+          .single()
+
+        const currentUserTypes = currentProfile?.user_types || ['donor']
+        const updatedUserTypes = currentUserTypes.includes('monastery_admin') 
+          ? currentUserTypes 
+          : [...currentUserTypes, 'monastery_admin']
+
+        const { error: profileError } = await supabase
+          .from('user_profiles')
+          .update({ user_types: updatedUserTypes })
+          .eq('id', user.id)
+
+        if (profileError) {
+          setError('Monastery created but failed to update user role. Please contact support.')
+          setSaving(false)
+          return
+        }
+
+        setMessage('Monastery created successfully! You are now a monastery administrator.')
+      }
+
+      // Ensure storage folder structure exists
+      await imageUploadService.ensureMonasteryFolder(monasteryId)
+      
+      if (!monastery) {
+        // Refresh to get new monastery ID for image uploads
+        setTimeout(() => {
+          fetchMonastery()
+        }, 1000)
+      } else {
+        fetchMonastery()
       }
     } catch (err) {
       setError('An unexpected error occurred')
@@ -331,6 +396,313 @@ export default function ManageMonasteryPage() {
                     value={formData.website}
                     onChange={(e) => handleInputChange('website', e.target.value)}
                     placeholder="https://www.monastery.org"
+                  />
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Portfolio Information */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Portfolio Information</CardTitle>
+                <CardDescription>
+                  Detailed information for your monastery portfolio page
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="established_year">Established Year</Label>
+                    <Input
+                      id="established_year"
+                      type="number"
+                      min="1800"
+                      max={new Date().getFullYear()}
+                      value={formData.established_year}
+                      onChange={(e) => handleInputChange('established_year', parseInt(e.target.value))}
+                      placeholder="1900"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="tradition">Buddhist Tradition</Label>
+                    <Input
+                      id="tradition"
+                      value={formData.tradition}
+                      onChange={(e) => handleInputChange('tradition', e.target.value)}
+                      placeholder="Theravada, Mahayana, etc."
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="monk_count">Number of Monks</Label>
+                    <Input
+                      id="monk_count"
+                      type="number"
+                      min="1"
+                      max="1000"
+                      value={formData.monk_count}
+                      onChange={(e) => handleInputChange('monk_count', parseInt(e.target.value))}
+                      placeholder="50"
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="portfolio_description">Detailed Description</Label>
+                  <Textarea
+                    id="portfolio_description"
+                    value={formData.portfolio_description}
+                    onChange={(e) => handleInputChange('portfolio_description', e.target.value)}
+                    placeholder="Detailed description for your monastery portfolio page..."
+                    rows={4}
+                  />
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Images */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center space-x-2">
+                  <ImageIcon className="w-5 h-5" />
+                  <span>Images</span>
+                </CardTitle>
+                <CardDescription>
+                  Upload photos for your monastery portfolio
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                {/* Monastery Logo/Avatar */}
+                <div className="space-y-2">
+                  <Label>Monastery Logo/Avatar</Label>
+                  <ImageUpload
+                    monasteryId={monastery?.id || 'temp'}
+                    imageType="logo"
+                    multiple={false}
+                    maxImages={1}
+                    currentImages={formData.avatar_url ? [formData.avatar_url] : []}
+                    onImageUploaded={(result) => handleInputChange('avatar_url', result.url)}
+                    onImagesChanged={(urls) => handleInputChange('avatar_url', urls[0] || '')}
+                    onImageRemoved={() => handleInputChange('avatar_url', '')}
+                  />
+                </div>
+
+                {/* Background Image */}
+                <div className="space-y-2">
+                  <Label>Background Image</Label>
+                  <ImageUpload
+                    monasteryId={monastery?.id || 'temp'}
+                    imageType="background"
+                    multiple={false}
+                    maxImages={1}
+                    currentImages={formData.background_image_url ? [formData.background_image_url] : []}
+                    onImageUploaded={(result) => handleInputChange('background_image_url', result.url)}
+                    onImagesChanged={(urls) => handleInputChange('background_image_url', urls[0] || '')}
+                    onImageRemoved={() => handleInputChange('background_image_url', '')}
+                  />
+                </div>
+
+                {/* Gallery Images */}
+                <div className="space-y-2">
+                  <Label>Gallery Images</Label>
+                  <ImageUpload
+                    monasteryId={monastery?.id || 'temp'}
+                    imageType="gallery"
+                    multiple={true}
+                    maxImages={10}
+                    currentImages={formData.gallery_images}
+                    onImageUploaded={(result) => {
+                      const newGallery = [...formData.gallery_images, result.url]
+                      handleInputChange('gallery_images', newGallery)
+                    }}
+                    onImagesChanged={(urls) => handleInputChange('gallery_images', urls)}
+                    onImageRemoved={(index) => {
+                      const newGallery = formData.gallery_images.filter((_, i) => i !== index)
+                      handleInputChange('gallery_images', newGallery)
+                    }}
+                  />
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Contact Person */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Contact Person</CardTitle>
+                <CardDescription>
+                  Primary contact for monastery inquiries
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="contact_person_name">Full Name</Label>
+                    <Input
+                      id="contact_person_name"
+                      value={formData.contact_person_name}
+                      onChange={(e) => handleInputChange('contact_person_name', e.target.value)}
+                      placeholder="Ven. Name"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="contact_person_role">Role/Title</Label>
+                    <Input
+                      id="contact_person_role"
+                      value={formData.contact_person_role}
+                      onChange={(e) => handleInputChange('contact_person_role', e.target.value)}
+                      placeholder="Abbot, Secretary, etc."
+                    />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Facilities */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Facilities</CardTitle>
+                <CardDescription>
+                  Available facilities at your monastery
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-2">
+                  <Label htmlFor="facilities">Facilities (comma-separated)</Label>
+                  <Textarea
+                    id="facilities"
+                    value={formData.facilities.join(', ')}
+                    onChange={(e) => handleInputChange('facilities', 
+                      e.target.value.split(',').map(facility => facility.trim()).filter(facility => facility)
+                    )}
+                    placeholder="Meditation hall, library, guest house, dining hall, etc."
+                    rows={2}
+                  />
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Daily Schedule */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Daily Schedule</CardTitle>
+                <CardDescription>
+                  Typical daily routine at the monastery
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="morning_schedule">Morning Schedule</Label>
+                  <Textarea
+                    id="morning_schedule"
+                    value={formData.daily_schedule.morning}
+                    onChange={(e) => handleInputChange('daily_schedule', {
+                      ...formData.daily_schedule,
+                      morning: e.target.value
+                    })}
+                    placeholder="4:30 AM - Morning chanting, 6:00 AM - Breakfast..."
+                    rows={2}
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="afternoon_schedule">Afternoon Schedule</Label>
+                  <Textarea
+                    id="afternoon_schedule"
+                    value={formData.daily_schedule.afternoon}
+                    onChange={(e) => handleInputChange('daily_schedule', {
+                      ...formData.daily_schedule,
+                      afternoon: e.target.value
+                    })}
+                    placeholder="12:00 PM - Lunch, 1:00 PM - Rest period..."
+                    rows={2}
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="evening_schedule">Evening Schedule</Label>
+                  <Textarea
+                    id="evening_schedule"
+                    value={formData.daily_schedule.evening}
+                    onChange={(e) => handleInputChange('daily_schedule', {
+                      ...formData.daily_schedule,
+                      evening: e.target.value
+                    })}
+                    placeholder="5:00 PM - Evening chanting, 6:00 PM - Dinner..."
+                    rows={2}
+                  />
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Rules & Guidelines */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Rules & Guidelines</CardTitle>
+                <CardDescription>
+                  Important rules and guidelines for visitors and donors
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-2">
+                  <Label htmlFor="rules_guidelines">Rules and Guidelines</Label>
+                  <Textarea
+                    id="rules_guidelines"
+                    value={formData.rules_guidelines}
+                    onChange={(e) => handleInputChange('rules_guidelines', e.target.value)}
+                    placeholder="Dress code, visiting hours, donation guidelines..."
+                    rows={4}
+                  />
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Social Media */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Social Media</CardTitle>
+                <CardDescription>
+                  Links to your monastery's social media profiles
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="facebook">Facebook</Label>
+                  <Input
+                    id="facebook"
+                    value={formData.social_media.facebook}
+                    onChange={(e) => handleInputChange('social_media', {
+                      ...formData.social_media,
+                      facebook: e.target.value
+                    })}
+                    placeholder="https://facebook.com/monastery"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="twitter">Twitter</Label>
+                  <Input
+                    id="twitter"
+                    value={formData.social_media.twitter}
+                    onChange={(e) => handleInputChange('social_media', {
+                      ...formData.social_media,
+                      twitter: e.target.value
+                    })}
+                    placeholder="https://twitter.com/monastery"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="instagram">Instagram</Label>
+                  <Input
+                    id="instagram"
+                    value={formData.social_media.instagram}
+                    onChange={(e) => handleInputChange('social_media', {
+                      ...formData.social_media,
+                      instagram: e.target.value
+                    })}
+                    placeholder="https://instagram.com/monastery"
                   />
                 </div>
               </CardContent>

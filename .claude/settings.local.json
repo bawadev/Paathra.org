@@ -28,7 +28,14 @@
       "Bash(npm run build:*)",
       "mcp__supabase-mcp__apply_migration",
       "Bash(npm run)",
-      "Bash(npm run lint)"
+      "Bash(npm run lint)",
+      "mcp__supabase-mcp__generate_typescript_types",
+      "mcp__playwright-mcp__browser_snapshot",
+      "mcp__playwright-mcp__browser_click",
+      "Bash(npx tsc --noEmit)",
+      "Bash(npx tsc:*)",
+      "Bash(sed:*)",
+      "mcp__ide__executeCode"
     ],
     "deny": []
   }

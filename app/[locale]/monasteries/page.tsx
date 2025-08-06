@@ -32,10 +32,8 @@ export default function MonasteriesPage() {
   const [showLocationSettings, setShowLocationSettings] = useState(false)
 
   useEffect(() => {
-    if (user) {
-      initializeLocationAndMonasteries()
-    }
-  }, [user])
+    initializeLocationAndMonasteries()
+  }, [])
 
   useEffect(() => {
     filterAndSortMonasteries()
@@ -44,7 +42,7 @@ export default function MonasteriesPage() {
   const initializeLocationAndMonasteries = async () => {
     setLoading(true)
     
-    // Try to get user location from profile first
+    // Try to get user location from profile first (if logged in)
     let currentLocation: { latitude: number; longitude: number; address?: string } | null = null
     if (profile?.latitude && profile?.longitude) {
       currentLocation = {
@@ -129,10 +127,6 @@ export default function MonasteriesPage() {
         <div className="text-lg text-[var(--text-light)]">{tCommon('loading')}</div>
       </div>
     )
-  }
-
-  if (!user) {
-    return <AuthForm />
   }
 
   return (
@@ -368,9 +362,14 @@ export default function MonasteriesPage() {
                           {t('makeDonation')}
                         </Button>
                       </Link>
-                      <Button variant="outline" size="sm">
-                        {t('details')}
-                      </Button>
+                      <Link
+                        href={`/monasteries/${monastery.id}`}
+                        className="flex-1"
+                      >
+                        <Button variant="outline" className="w-full">
+                          {t('viewPortfolio')}
+                        </Button>
+                      </Link>
                     </div>
                   </CardContent>
                 </Card>

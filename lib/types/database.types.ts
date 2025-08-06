@@ -47,6 +47,7 @@ export interface Database {
           website?: string
           admin_id?: string
           image_url?: string
+          avatar_url?: string
           capacity?: number
           dietary_requirements?: string[]
           preferred_donation_times?: string
@@ -65,6 +66,27 @@ export interface Database {
           breakfast_time?: string
           lunch_time?: string
           dinner_time?: string
+          // Portfolio fields
+          portfolio_description?: string
+          background_image_url?: string
+          gallery_images?: string[]
+          established_year?: number
+          tradition?: string
+          monk_count?: number
+          daily_schedule?: {
+            morning?: string
+            afternoon?: string
+            evening?: string
+          }
+          facilities?: string[]
+          rules_guidelines?: string
+          contact_person_name?: string
+          contact_person_role?: string
+          social_media?: {
+            facebook?: string
+            twitter?: string
+            instagram?: string
+          }
         }
         Insert: {
           name: string
@@ -75,6 +97,7 @@ export interface Database {
           website?: string
           admin_id?: string
           image_url?: string
+          avatar_url?: string
           capacity?: number
           dietary_requirements?: string[]
           preferred_donation_times?: string
@@ -91,6 +114,19 @@ export interface Database {
           breakfast_time?: string
           lunch_time?: string
           dinner_time?: string
+          // Portfolio fields
+          portfolio_description?: string
+          background_image_url?: string
+          gallery_images?: string[]
+          established_year?: number
+          tradition?: string
+          monk_count?: number
+          daily_schedule?: any
+          facilities?: string[]
+          rules_guidelines?: string
+          contact_person_name?: string
+          contact_person_role?: string
+          social_media?: any
         }
         Update: {
           name?: string
@@ -100,6 +136,7 @@ export interface Database {
           email?: string
           website?: string
           image_url?: string
+          avatar_url?: string
           capacity?: number
           dietary_requirements?: string[]
           preferred_donation_times?: string
@@ -117,6 +154,19 @@ export interface Database {
           lunch_time?: string
           dinner_time?: string
           updated_at?: string
+          // Portfolio fields
+          portfolio_description?: string
+          background_image_url?: string
+          gallery_images?: string[]
+          established_year?: number
+          tradition?: string
+          monk_count?: number
+          daily_schedule?: any
+          facilities?: string[]
+          rules_guidelines?: string
+          contact_person_name?: string
+          contact_person_role?: string
+          social_media?: any
         }
       }
       donation_slots: {
@@ -210,7 +260,6 @@ export interface Database {
 }
 
 export type Tables = Database['public']['Tables']
-
 export type UserProfile = Tables['user_profiles']['Row']
 export type Monastery = Tables['monasteries']['Row']
 export type DonationSlot = Tables['donation_slots']['Row']
