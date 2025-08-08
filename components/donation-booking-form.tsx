@@ -82,7 +82,7 @@ export function DonationBookingForm({ slot, onSuccess, onCancel }: DonationBooki
           estimated_servings: parseInt(data.estimated_servings),
           monks_to_feed: monksToFeed,
           special_notes: data.special_notes || null,
-          contact_phone: data.contact_phone || null,
+          contact_phone: data.contact_phone,
         })
         .select()
         .single()
@@ -184,6 +184,7 @@ export function DonationBookingForm({ slot, onSuccess, onCancel }: DonationBooki
               label="Contact Phone"
               type="tel"
               placeholder="Your phone number for coordination"
+              required
             />
 
             <TextareaField

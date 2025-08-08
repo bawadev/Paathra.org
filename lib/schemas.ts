@@ -28,8 +28,7 @@ export const donationBookingSchema = z.object({
   special_notes: z.string().optional(),
   contact_phone: z.string()
     .regex(/^\+?[\d\s\-\(\)]+$/, 'Please enter a valid phone number')
-    .optional()
-    .or(z.literal('')),
+    .min(1, 'Contact phone is required'),
 })
 
 // Monastery creation schema
