@@ -48,7 +48,7 @@ export default function ManageSlotsPage() {
     time_slot: '',
     monks_capacity: 10,
     max_donors: 5,
-    special_requirements: ''
+    booking_notes: ''
   })
 
   // Form state for editing slots
@@ -58,7 +58,7 @@ export default function ManageSlotsPage() {
     time_slot: '',
     monks_capacity: 10,
     max_donors: 5,
-    special_requirements: ''
+    booking_notes: ''
   })
 
   useEffect(() => {
@@ -148,7 +148,7 @@ export default function ManageSlotsPage() {
         meal_type: formData.meal_type,
         monks_capacity: formData.monks_capacity,
         max_donors: formData.max_donors,
-        special_requirements: formData.special_requirements || null,
+        booking_notes: formData.booking_notes || null,
         is_available: true,
         monks_fed: 0,
         current_bookings: 0,
@@ -175,7 +175,8 @@ export default function ManageSlotsPage() {
         time_slot: '',
         monks_capacity: 10,
         max_donors: 5,
-        special_requirements: ''
+        special_requirements: '',
+        booking_notes: ''
       })
       fetchData()
     }
@@ -185,9 +186,9 @@ export default function ManageSlotsPage() {
     if (!monastery || !selectedDate) return
 
     const mealSlots = [
-      { time: '07:00', meal_type: 'breakfast', special_req: 'Breakfast donations - simple meals preferred' },
-      { time: '11:30', meal_type: 'lunch', special_req: 'Lunch donations - main meals welcome' },
-      { time: '17:00', meal_type: 'dinner', special_req: 'Dinner donations - light meals preferred' }
+      { time: '07:00', meal_type: 'breakfast' },
+      { time: '11:30', meal_type: 'lunch' },
+      { time: '17:00', meal_type: 'dinner' }
     ]
     const slots = []
 
@@ -206,7 +207,7 @@ export default function ManageSlotsPage() {
           meal_type: mealSlot.meal_type,
           monks_capacity: monastery.capacity || 10,
           max_donors: 5,
-          special_requirements: mealSlot.special_req,
+          booking_notes: null,
           is_available: true,
           monks_fed: 0,
           current_bookings: 0,
@@ -257,7 +258,8 @@ export default function ManageSlotsPage() {
       time_slot: slot.time_slot,
       monks_capacity: slot.monks_capacity,
       max_donors: slot.max_donors,
-      special_requirements: slot.special_requirements || ''
+      special_requirements: slot.special_requirements || '',
+      booking_notes: slot.booking_notes || ''
     })
     setIsEditDialogOpen(true)
   }
@@ -274,7 +276,7 @@ export default function ManageSlotsPage() {
         meal_type: editFormData.meal_type,
         monks_capacity: editFormData.monks_capacity,
         max_donors: editFormData.max_donors,
-        special_requirements: editFormData.special_requirements || null,
+        booking_notes: editFormData.booking_notes || null,
         updated_at: new Date().toISOString()
       })
       .eq('id', editingSlot.id)
@@ -448,13 +450,16 @@ export default function ManageSlotsPage() {
                         </div>
 
                         <div className="space-y-2">
-                          <Label htmlFor="special_requirements">Special Requirements</Label>
+                          <Label htmlFor="booking_notes">Important Notes for Donors</Label>
                           <Textarea
-                            id="special_requirements"
-                            value={formData.special_requirements}
-                            onChange={(e) => setFormData(prev => ({ ...prev, special_requirements: e.target.value }))}
-                            placeholder="Any special requirements for this time slot..."
+                            id="booking_notes"
+                            value={formData.booking_notes}
+                            onChange={(e) => setFormData(prev => ({ ...prev, booking_notes: e.target.value }))}
+                            placeholder="Important notes that donors should see when booking this slot..."
                           />
+                          <p className="text-xs text-muted-foreground">
+                            These notes will be prominently displayed to donors when they book this slot
+                          </p>
                         </div>
 
                         <Button type="submit" className="w-full">
@@ -533,13 +538,6 @@ export default function ManageSlotsPage() {
                                     {slot.monks_capacity - slot.monks_fed} monks remaining
                                   </div>
                                 </div>
-
-                                {slot.special_requirements && (
-                                  <div className="text-sm text-blue-600 bg-blue-50 p-2 rounded">
-                                    <AlertCircle className="w-4 h-4 inline mr-1" />
-                                    {slot.special_requirements}
-                                  </div>
-                                )}
                               </div>
 
                               <div className="flex space-x-2">
@@ -661,13 +659,16 @@ export default function ManageSlotsPage() {
                     </div>
 
                     <div className="space-y-2">
-                      <Label htmlFor="edit-special_requirements">Special Requirements</Label>
+                      <Label htmlFor="edit-booking_notes">Important Notes for Donors</Label>
                       <Textarea
-                        id="edit-special_requirements"
-                        value={editFormData.special_requirements}
-                        onChange={(e) => setEditFormData(prev => ({ ...prev, special_requirements: e.target.value }))}
-                        placeholder="Any special requirements for this time slot..."
+                        id="edit-booking_notes"
+                        value={editFormData.booking_notes}
+                        onChange={(e) => setEditFormData(prev => ({ ...prev, booking_notes: e.target.value }))}
+                        placeholder="Important notes that donors should see when booking this slot..."
                       />
+                      <p className="text-xs text-muted-foreground">
+                        These notes will be prominently displayed to donors when they book this slot
+                      </p>
                     </div>
 
                     <div className="flex space-x-2">

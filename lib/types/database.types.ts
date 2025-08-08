@@ -87,6 +87,7 @@ export interface Database {
             twitter?: string
             instagram?: string
           }
+          special_requirements?: string
         }
         Insert: {
           name: string
@@ -127,6 +128,7 @@ export interface Database {
           contact_person_name?: string
           contact_person_role?: string
           social_media?: any
+          special_requirements?: string
         }
         Update: {
           name?: string
@@ -167,6 +169,7 @@ export interface Database {
           contact_person_name?: string
           contact_person_role?: string
           social_media?: any
+          special_requirements?: string
         }
       }
       donation_slots: {
@@ -179,6 +182,7 @@ export interface Database {
           current_bookings: number
           is_available: boolean
           special_requirements?: string
+          booking_notes?: string
           meal_type?: string
           monks_capacity: number
           monks_fed: number
@@ -194,6 +198,7 @@ export interface Database {
           current_bookings?: number
           is_available?: boolean
           special_requirements?: string
+          booking_notes?: string
           meal_type?: string
           monks_capacity?: number
           monks_fed?: number
@@ -204,6 +209,7 @@ export interface Database {
           current_bookings?: number
           is_available?: boolean
           special_requirements?: string
+          booking_notes?: string
           meal_type?: string
           monks_capacity?: number
           monks_fed?: number

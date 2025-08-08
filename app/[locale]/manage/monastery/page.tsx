@@ -56,6 +56,7 @@ export default function ManageMonasteryPage() {
     preferred_donation_times: '',
     facilities: [] as string[],
     rules_guidelines: '',
+    special_requirements: '',
     contact_person_name: '',
     contact_person_role: '',
     daily_schedule: {
@@ -110,6 +111,7 @@ export default function ManageMonasteryPage() {
         preferred_donation_times: data.preferred_donation_times || '',
         facilities: data.facilities || [],
         rules_guidelines: data.rules_guidelines || '',
+        special_requirements: data.special_requirements || '',
         contact_person_name: data.contact_person_name || '',
         contact_person_role: data.contact_person_role || '',
         daily_schedule: data.daily_schedule || {
@@ -772,7 +774,7 @@ export default function ManageMonasteryPage() {
                   Let donors know your preferred donation times and any special instructions
                 </CardDescription>
               </CardHeader>
-              <CardContent>
+              <CardContent className="space-y-4">
                 <div className="space-y-2">
                   <Label htmlFor="preferred_donation_times">Preferred Donation Times</Label>
                   <Textarea
@@ -782,6 +784,20 @@ export default function ManageMonasteryPage() {
                     placeholder="e.g., Mornings 7-9 AM, Lunch 11 AM - 1 PM, Evenings 5-7 PM"
                     rows={3}
                   />
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="special_requirements">Special Requirements for Donations</Label>
+                  <Textarea
+                    id="special_requirements"
+                    value={formData.special_requirements}
+                    onChange={(e) => handleInputChange('special_requirements', e.target.value)}
+                    placeholder="e.g., Breakfast donations - simple meals preferred; Dinner donations - light meals preferred; Lunch donations - main meals welcome"
+                    rows={4}
+                  />
+                  <p className="text-sm text-muted-foreground">
+                    These special requirements will be shown to donors when they book any donation slot at your monastery
+                  </p>
                 </div>
               </CardContent>
             </Card>
