@@ -252,7 +252,7 @@ export function Navigation() {
                       <Avatar className="w-8 h-8">
                         <AvatarImage src={profile?.avatar_url} />
                         <AvatarFallback>
-                          {profile?.full_name?.split(' ').map(n => n[0]).join('') || 'U'}
+                          {profile?.full_name?.split(' ').map((n: string) => n[0]).join('') || 'U'}
                         </AvatarFallback>
                       </Avatar>
                       <span className="text-base font-bold">{profile?.full_name}</span>
@@ -272,7 +272,7 @@ export function Navigation() {
                       <NavigationMenuLink asChild>
                         <Link
                           href="/"
-                          onClick={async (e) => {
+                          onClick={async (e: React.MouseEvent<HTMLAnchorElement>) => {
                             e.preventDefault();
                             await signOut();
                             if (typeof window !== 'undefined') {
