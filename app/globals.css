@@ -353,6 +353,137 @@ body {
   box-shadow: 0 8px 25px rgba(212, 175, 55, 0.4);
 }
 
+.btn-gradient-hover {
+  transition: var(--transition);
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-gradient-hover:hover {
+  background: linear-gradient(135deg, var(--primary-color), var(--accent-color)) !important;
+  color: white !important;
+  border-color: transparent !important;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
+}
+
+.btn-outline-gradient {
+  border: 2px solid var(--primary-color);
+  background: transparent;
+  color: var(--primary-color);
+  transition: var(--transition);
+}
+
+.btn-outline-gradient:hover {
+  background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+  color: white;
+  border-color: transparent;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
+}
+
+/* Comprehensive Navigation Color Theme */
+
+/* Navigation base styling */
+.navbar-fixed {
+  --nav-text-primary: oklch(0.35 0.09 45); /* Rich warm brown */
+  --nav-text-secondary: oklch(0.55 0.08 50); /* Medium warm brown */
+  --nav-text-light: oklch(0.65 0.12 85); /* Gold */
+  --nav-hover-bg: oklch(0.97 0.02 85); /* Very subtle warm background */
+  --nav-hover-text: oklch(0.74 0.12 85); /* Primary gold */
+  --nav-active-bg: oklch(0.74 0.12 85); /* Primary gold */
+  --nav-active-text: oklch(1 0 0); /* White */
+  --nav-dropdown-bg: oklch(0.99 0.01 85); /* Clean white with warm tint */
+  --nav-dropdown-hover: oklch(0.94 0.03 85); /* Soft warm gold */
+  --nav-dropdown-text: oklch(0.45 0.09 45); /* Rich brown */
+  --nav-dropdown-hover-text: oklch(0.74 0.12 85); /* Primary gold */
+  --nav-shadow: 0 2px 8px rgba(212, 175, 55, 0.15);
+}
+
+/* Navigation text colors */
+.navbar-fixed a,
+.navbar-fixed button,
+.navbar-fixed [class*="NavigationMenuTrigger"] {
+  color: var(--nav-text-primary) !important;
+  transition: all 0.2s ease;
+}
+
+.navbar-fixed a:hover,
+.navbar-fixed button:hover,
+.navbar-fixed [class*="NavigationMenuTrigger"]:hover {
+  color: var(--nav-hover-text) !important;
+}
+
+/* Main navigation triggers - gradient for emphasis */
+.navbar-fixed [class*="NavigationMenuTrigger"] {
+  font-weight: 600;
+}
+
+.navbar-fixed [class*="NavigationMenuTrigger"]:hover {
+  background: linear-gradient(135deg, var(--primary-color), var(--accent-color)) !important;
+  color: white !important;
+  border-color: transparent !important;
+  transform: translateY(-1px);
+  box-shadow: var(--nav-shadow);
+}
+
+/* Dropdown items - high contrast with better readability */
+.navbar-fixed [data-radix-collection-item] {
+  color: var(--nav-dropdown-text) !important;
+  transition: all 0.2s ease;
+  border-radius: 6px;
+  margin: 1px 0;
+}
+
+.navbar-fixed [data-radix-collection-item]:hover {
+  background: var(--nav-dropdown-hover) !important;
+  color: var(--nav-dropdown-hover-text) !important;
+  box-shadow: 0 1px 4px rgba(212, 175, 55, 0.1);
+}
+
+/* Dropdown links */
+.navbar-fixed .dropdown-item-hover {
+  color: var(--nav-dropdown-text) !important;
+  transition: all 0.2s ease;
+  border-radius: 6px;
+  margin: 1px 0;
+}
+
+.navbar-fixed .dropdown-item-hover:hover {
+  background: var(--nav-dropdown-hover) !important;
+  color: var(--nav-dropdown-hover-text) !important;
+  box-shadow: 0 1px 4px rgba(212, 175, 55, 0.1);
+}
+
+/* Language selector - consistent styling */
+.navbar-fixed .language-selector {
+  color: var(--nav-text-secondary) !important;
+}
+
+.navbar-fixed .language-selector:hover {
+  background: var(--nav-hover-bg) !important;
+  color: var(--nav-hover-text) !important;
+}
+
+/* Fix for glass effect background */
+.navbar-fixed {
+  background: oklch(0.98 0.005 85 / 0.95) !important;
+}
+
+/* Ensure proper text contrast */
+.navbar-fixed .text-gray-500 {
+  color: oklch(0.55 0.08 50) !important;
+}
+
+.navbar-fixed .text-gray-600 {
+  color: oklch(0.45 0.09 45) !important;
+}
+
+/* Remove conflicting styles */
+.navbar-fixed [data-radix-collection-item]:hover .text-gray-500 {
+  color: var(--nav-dropdown-hover-text) !important;
+}
+
 .btn-dana-primary.large {
   padding: 1.25rem 2.5rem;
   font-size: 1.1rem;

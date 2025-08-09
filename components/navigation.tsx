@@ -41,7 +41,7 @@ export function Navigation() {
                       <NavigationMenuLink asChild>
                         <Link
                           href="/donate"
-                          className="flex flex-row items-center space-x-2 p-3 rounded-md hover:bg-[var(--primary-color)]/10 hover:text-[var(--primary-color)] transition-all duration-300"
+                          className="flex flex-row items-center space-x-2 p-3 rounded-md dropdown-item-hover transition-all duration-300"
                         >
                           <Calendar className="w-4 h-4 flex-shrink-0 text-[var(--primary-color)]" />
                           <div>
@@ -53,7 +53,7 @@ export function Navigation() {
                       <NavigationMenuLink asChild>
                         <Link
                           href="/my-donations"
-                          className="flex flex-row items-center space-x-2 p-3 rounded-md hover:bg-[var(--primary-color)]/10 hover:text-[var(--primary-color)] transition-all duration-300"
+                          className="flex flex-row items-center space-x-2 p-3 rounded-md dropdown-item-hover transition-all duration-300"
                         >
                           <User className="w-4 h-4 flex-shrink-0 text-[var(--primary-color)]" />
                           <div>
@@ -67,15 +67,13 @@ export function Navigation() {
                 </NavigationMenuItem>
 
                 <NavigationMenuItem>
-                  <NavigationMenuTrigger className="text-lg font-bold">
-                    {t('monasteries')}
-                  </NavigationMenuTrigger>
+                  <NavigationMenuTrigger className="text-lg font-bold">{t('monasteries')}</NavigationMenuTrigger>
                   <NavigationMenuContent>
                     <div className="grid gap-3 p-6 w-[250px]">
                       <NavigationMenuLink asChild>
                         <Link
                           href="/monasteries"
-                          className="flex flex-row items-center space-x-2 p-3 rounded-md hover:bg-[var(--primary-color)]/10 hover:text-[var(--primary-color)] transition-all duration-300"
+                          className="flex flex-row items-center space-x-2 p-3 rounded-md dropdown-item-hover transition-all duration-300"
                         >
                           <Building className="w-4 h-4 flex-shrink-0 text-[var(--primary-color)]" />
                           <div>
@@ -91,7 +89,7 @@ export function Navigation() {
                 {!hasRole(profile, 'monastery_admin') && (
                   <NavigationMenuItem>
                     <NavigationMenuLink asChild>
-                      <Link href="/manage/monastery" className="px-3 py-2 text-lg font-bold rounded-md hover:bg-[var(--primary-color)]/10 hover:text-[var(--primary-color)] text-[var(--primary-color)] transition-all duration-300">
+                      <Link href="/manage/monastery" className="px-3 py-2 text-lg font-bold rounded-md dropdown-item-hover transition-all duration-300">
                         {t('createMonastery')}
                       </Link>
                     </NavigationMenuLink>
@@ -106,7 +104,7 @@ export function Navigation() {
                         <NavigationMenuLink asChild>
                           <Link
                             href="/monastery-admin/upcoming-bookings"
-                            className="flex flex-row items-center space-x-2 p-3 rounded-md hover:bg-[var(--primary-color)]/10 hover:text-[var(--primary-color)] transition-all duration-300"
+                            className="flex flex-row items-center space-x-2 p-3 rounded-md dropdown-item-hover transition-all duration-300"
                           >
                             <Calendar className="w-4 h-4 flex-shrink-0 text-[var(--primary-color)]" />
                             <div>
@@ -118,7 +116,7 @@ export function Navigation() {
                         <NavigationMenuLink asChild>
                           <Link
                             href="/manage/slots"
-                            className="flex flex-row items-center space-x-2 p-3 rounded-md hover:bg-[var(--primary-color)]/10 hover:text-[var(--primary-color)] transition-all duration-300"
+                            className="flex flex-row items-center space-x-2 p-3 rounded-md dropdown-item-hover transition-all duration-300"
                           >
                             <Calendar className="w-4 h-4 flex-shrink-0 text-[var(--primary-color)]" />
                             <div>
@@ -130,7 +128,7 @@ export function Navigation() {
                         <NavigationMenuLink asChild>
                           <Link
                             href="/manage/bookings"
-                            className="flex flex-row items-center space-x-2 p-3 rounded-md hover:bg-[var(--primary-color)]/10 hover:text-[var(--primary-color)] transition-all duration-300"
+                            className="flex flex-row items-center space-x-2 p-3 rounded-md dropdown-item-hover transition-all duration-300"
                           >
                             <Users className="w-4 h-4 flex-shrink-0 text-[var(--primary-color)]" />
                             <div>
@@ -142,7 +140,7 @@ export function Navigation() {
                         <NavigationMenuLink asChild>
                           <Link
                             href="/manage/guest-bookings"
-                            className="flex flex-row items-center space-x-2 p-3 rounded-md hover:bg-[var(--primary-color)]/10 hover:text-[var(--primary-color)] transition-all duration-300"
+                            className="flex flex-row items-center space-x-2 p-3 rounded-md dropdown-item-hover transition-all duration-300"
                           >
                             <Phone className="w-4 h-4 flex-shrink-0 text-[var(--primary-color)]" />
                             <div>
@@ -154,7 +152,7 @@ export function Navigation() {
                         <NavigationMenuLink asChild>
                           <Link
                             href="/manage/monastery"
-                            className="flex flex-row items-center space-x-2 p-3 rounded-md hover:bg-[var(--primary-color)]/10 hover:text-[var(--primary-color)] transition-all duration-300"
+                            className="flex flex-row items-center space-x-2 p-3 rounded-md dropdown-item-hover transition-all duration-300"
                           >
                             <Building className="w-4 h-4 flex-shrink-0 text-[var(--primary-color)]" />
                             <div>
@@ -176,7 +174,7 @@ export function Navigation() {
                         <NavigationMenuLink asChild>
                           <Link
                             href="/admin/dashboard"
-                            className="flex flex-row items-center space-x-2 p-3 rounded-md hover:bg-[var(--primary-color)]/10 hover:text-[var(--primary-color)] transition-all duration-300"
+                            className="flex flex-row items-center space-x-2 p-3 rounded-md dropdown-item-hover transition-all duration-300"
                           >
                             <BarChart3 className="w-4 h-4 flex-shrink-0 text-[var(--primary-color)]" />
                             <div>
@@ -188,7 +186,7 @@ export function Navigation() {
                         <NavigationMenuLink asChild>
                           <Link
                             href="/admin/users"
-                            className="flex flex-row items-center space-x-2 p-3 rounded-md hover:bg-[var(--primary-color)]/10 hover:text-[var(--primary-color)] transition-all duration-300"
+                            className="flex flex-row items-center space-x-2 p-3 rounded-md dropdown-item-hover transition-all duration-300"
                           >
                             <Users className="w-4 h-4 flex-shrink-0 text-[var(--primary-color)]" />
                             <div>
@@ -200,7 +198,7 @@ export function Navigation() {
                         <NavigationMenuLink asChild>
                           <Link
                             href="/admin/monasteries"
-                            className="flex flex-row items-center space-x-2 p-3 rounded-md hover:bg-[var(--primary-color)]/10 hover:text-[var(--primary-color)] transition-all duration-300"
+                            className="flex flex-row items-center space-x-2 p-3 rounded-md dropdown-item-hover transition-all duration-300"
                           >
                             <Building className="w-4 h-4 flex-shrink-0 text-[var(--primary-color)]" />
                             <div>
@@ -212,7 +210,7 @@ export function Navigation() {
                         <NavigationMenuLink asChild>
                           <Link
                             href="/admin/analytics"
-                            className="flex flex-row items-center space-x-2 p-3 rounded-md hover:bg-[var(--primary-color)]/10 hover:text-[var(--primary-color)] transition-all duration-300"
+                            className="flex flex-row items-center space-x-2 p-3 rounded-md dropdown-item-hover transition-all duration-300"
                           >
                             <BarChart3 className="w-4 h-4 flex-shrink-0 text-[var(--primary-color)]" />
                             <div>
@@ -224,7 +222,7 @@ export function Navigation() {
                         <NavigationMenuLink asChild>
                           <Link
                             href="/admin/settings"
-                            className="flex flex-row items-center space-x-2 p-3 rounded-md hover:bg-[var(--primary-color)]/10 hover:text-[var(--primary-color)] transition-all duration-300"
+                            className="flex flex-row items-center space-x-2 p-3 rounded-md dropdown-item-hover transition-all duration-300"
                           >
                             <Shield className="w-4 h-4 flex-shrink-0 text-[var(--primary-color)]" />
                             <div>
@@ -263,7 +261,7 @@ export function Navigation() {
                       <NavigationMenuLink asChild>
                         <Link
                           href="/profile"
-                          className="flex items-center space-x-2 p-3 rounded-md hover:bg-[var(--primary-color)]/10 hover:text-[var(--primary-color)] transition-all duration-300"
+                          className="flex items-center space-x-2 p-3 rounded-md dropdown-item-hover transition-all duration-300"
                         >
                           <User className="w-4 h-4 flex-shrink-0 text-[var(--primary-color)]" />
                           <span>{t('myProfile')}</span>
@@ -279,7 +277,7 @@ export function Navigation() {
                               window.location.href = '/';
                             }
                           }}
-                          className="flex items-center space-x-2 p-3 rounded-md hover:bg-[var(--primary-color)]/10 hover:text-[var(--primary-color)] transition-all duration-300"
+                          className="flex items-center space-x-2 p-3 rounded-md dropdown-item-hover transition-all duration-300"
                         >
                           <LogOut className="w-4 h-4 flex-shrink-0 text-[var(--primary-color)]" />
                           <span>{t('signOut')}</span>
