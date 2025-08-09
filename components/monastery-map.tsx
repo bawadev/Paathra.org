@@ -103,10 +103,27 @@ export function MonasteryMap({
         });
 
         const monasteryIcon = L.divIcon({
-          html: `<div style="background-color: #dc2626; width: 24px; height: 24px; border-radius: 50%; border: 3px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.3);"></div>`,
-          className: 'custom-marker',
-          iconSize: [24, 24],
-          iconAnchor: [12, 12]
+          html: `
+            <div style="
+              width: 30px;
+              height: 30px;
+              background-color: #D4AF37;
+              border-radius: 50%;
+              border: 3px solid white;
+              box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              color: white;
+              font-weight: bold;
+              font-size: 14px;
+            ">
+              M
+            </div>
+          `,
+          className: 'custom-marker monastery-marker',
+          iconSize: [30, 30],
+          iconAnchor: [15, 30]
         });
 
         // Add user location marker
@@ -125,24 +142,71 @@ export function MonasteryMap({
         const bounds = L.latLngBounds([]);
         let hasValidLocations = false;
 
+        console.log('Monasteries data:', monasteries);
+        console.log('Monasteries with coordinates:', monasteries.filter(m => m.latitude && m.longitude));
+
         monasteries.forEach((monastery) => {
           if (monastery.latitude && monastery.longitude) {
+            console.log('Adding marker for:', monastery.name, 'at', monastery.latitude, monastery.longitude);
             hasValidLocations = true;
             const latLng = L.latLng(monastery.latitude, monastery.longitude);
             bounds.extend(latLng);
 
             const marker = L.marker([monastery.latitude, monastery.longitude], { icon: monasteryIcon })
-              .addTo(map)
-              .bindPopup(`
-                <div class="p-3 min-w-[200px]">
-                  <h3 class="font-semibold text-gray-900 mb-2">🏛️ ${monastery.name}</h3>
-                  <p class="text-sm text-gray-600 mb-2">${monastery.address || 'Address not provided'}</p>
-                  ${monastery.distance ? `<p class="text-sm font-medium text-blue-600">📍 ${monastery.distance.toFixed(1)} km away</p>` : ''}
-                  ${monastery.capacity ? `<p class="text-sm text-gray-500">👥 Capacity: ${monastery.capacity} monks</p>` : ''}
-                  ${monastery.description ? `<p class="text-sm text-gray-700 mt-2">${monastery.description}</p>` : ''}
-                </div>
-              `);
+              .addTo(map);
 
+            // Create enhanced popup content with monastery portfolio
+            const popupContent = `
+              <div class="p-4 min-w-[280px] max-w-[320px]">
+                <div class="flex items-start space-x-3">
+                  ${monastery.image_url ? `
+                    <img src="${monastery.image_url}" alt="${monastery.name}" class="w-16 h-16 rounded-lg object-cover flex-shrink-0" />
+                  ` : `
+                    <div class="w-16 h-16 rounded-lg bg-gray-200 flex items-center justify-center flex-shrink-0">
+                      <span class="text-2xl">🏛️</span>
+                    </div>
+                  `}
+                  <div class="flex-1">
+                    <h3 class="font-bold text-gray-900 text-lg mb-1">${monastery.name}</h3>
+                    <p class="text-sm text-gray-600 mb-2">${monastery.address || 'Address not provided'}</p>
+                    ${monastery.distance ? `<p class="text-sm font-medium text-blue-600 mb-2">📍 ${monastery.distance.toFixed(1)} km away</p>` : ''}
+                  </div>
+                </div>
+                
+                ${monastery.description ? `
+                  <div class="mt-3">
+                    <p class="text-sm text-gray-700 line-clamp-3">${monastery.description}</p>
+                  </div>
+                ` : ''}
+                
+                <div class="mt-3 space-y-1">
+                  ${monastery.capacity ? `<p class="text-sm text-gray-600"><strong>Capacity:</strong> ${monastery.capacity} monks</p>` : ''}
+                  ${monastery.email ? `<p class="text-sm text-gray-600"><strong>Email:</strong> ${monastery.email}</p>` : ''}
+                  ${monastery.phone ? `<p class="text-sm text-gray-600"><strong>Phone:</strong> ${monastery.phone}</p>` : ''}
+                  ${monastery.tradition ? `<p class="text-sm text-gray-600"><strong>Tradition:</strong> ${monastery.tradition}</p>` : ''}
+                  ${monastery.established_year ? `<p class="text-sm text-gray-600"><strong>Established:</strong> ${monastery.established_year}</p>` : ''}
+                </div>
+                
+                <div class="mt-4 pt-3 border-t border-gray-200">
+                  <button onclick="window.location.href='/en/monasteries/${monastery.id}'" class="inline-flex items-center px-3 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 transition-colors cursor-pointer border-none">
+                    View Full Portfolio →
+                  </button>
+                </div>
+              </div>
+            `;
+
+            marker.bindPopup(popupContent, {
+              maxWidth: 350,
+              className: 'monastery-popup'
+            });
+
+            // Show popup on hover
+            marker.on('mouseover', function(e) {
+              const target = e.target as L.Marker;
+              target.openPopup();
+            });
+
+            // Keep popup open on click for mobile
             if (onMonasterySelect) {
               marker.on('click', () => onMonasterySelect(monastery));
             }
@@ -218,7 +282,7 @@ export function MonasteryMap({
             <span>Your Location</span>
           </div>
           <div className="flex items-center space-x-1">
-            <div className="w-4 h-4 bg-red-600 rounded-full border-2 border-white"></div>
+            <div className="w-4 h-4 bg-[#D4AF37] rounded-full border-2 border-white flex items-center justify-center text-white text-[8px]">M</div>
             <span>Monasteries</span>
           </div>
         </div>
