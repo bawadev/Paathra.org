@@ -340,3 +340,8 @@ export type GuestBooking = Tables['guest_bookings']['Row']
 
 export type UserRole = 'donor' | 'monastery_admin' | 'super_admin'
 export type BookingStatus = 'pending' | 'confirmed' | 'completed' | 'cancelled'
+
+// Extended types for location-based functionality
+export type MonasteryWithDistance = Monastery & {
+  distance?: number
+}

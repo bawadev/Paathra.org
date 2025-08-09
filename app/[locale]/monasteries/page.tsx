@@ -9,7 +9,8 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { getMonasteriesWithDistance, MonasteryWithDistance } from '@/lib/supabase'
+import { getMonasteriesWithDistance } from '@/lib/supabase'
+import { MonasteryWithDistance } from '@/lib/types/database.types'
 import { LocationSettings } from '@/components/location-settings'
 import { MonasteryMap } from '@/components/monastery-map'
 import { getUserLocation, formatDistance } from '@/lib/location-utils'
@@ -30,10 +31,13 @@ export default function MonasteriesPage() {
   const [sortBy, setSortBy] = useState<'distance' | 'name' | 'capacity'>('distance')
   const [maxDistance, setMaxDistance] = useState<number>(100)
   const [showLocationSettings, setShowLocationSettings] = useState(false)
+  const [savingLocation, setSavingLocation] = useState(false)
 
   useEffect(() => {
-    initializeLocationAndMonasteries()
-  }, [])
+    if (!authLoading) {
+      initializeLocationAndMonasteries()
+    }
+  }, [authLoading, user, profile])
 
   useEffect(() => {
     filterAndSortMonasteries()
@@ -44,15 +48,27 @@ export default function MonasteriesPage() {
     
     // Try to get user location from profile first (if logged in)
     let currentLocation: { latitude: number; longitude: number; address?: string } | null = null
-    if (profile?.latitude && profile?.longitude) {
-      currentLocation = {
-        latitude: profile.latitude,
-        longitude: profile.longitude,
-        ...(profile.address && { address: profile.address })
+    
+    if (user && profile) {
+      // Always prioritize saved profile location for logged-in users
+      if (profile.latitude && profile.longitude) {
+        currentLocation = {
+          latitude: profile.latitude,
+          longitude: profile.longitude,
+          ...(profile.address && { address: profile.address })
+        }
+        setUserLocation(currentLocation)
+      } else {
+        // For logged-in users without saved location, try to detect but DON'T auto-save
+        const detectedLocation = await getUserLocation()
+        if (detectedLocation) {
+          // Only use detected location, don't save to database
+          setUserLocation(detectedLocation)
+          currentLocation = detectedLocation
+        }
       }
-      setUserLocation(currentLocation)
     } else {
-      // Try to get current location
+      // For non-logged-in users, use detected location (not saved)
       const detectedLocation = await getUserLocation()
       if (detectedLocation) {
         setUserLocation(detectedLocation)
@@ -112,6 +128,13 @@ export default function MonasteriesPage() {
 
   const handleLocationUpdate = async (location: { latitude: number; longitude: number; address?: string }) => {
     setUserLocation(location)
+    
+    // Save to database if user is logged in
+    if (user?.id) {
+      const { updateUserLocation } = await import('@/lib/supabase')
+      await updateUserLocation(user.id, location.latitude, location.longitude, location.address)
+    }
+    
     await fetchMonasteries(location)
     setShowLocationSettings(false)
   }
@@ -251,7 +274,7 @@ export default function MonasteriesPage() {
         {showLocationSettings && (
           <div className="mb-6">
             <LocationSettings
-              userId={user?.id}
+              userId={user?.id || undefined}
               currentLocation={userLocation}
               onLocationUpdate={handleLocationUpdate}
             />

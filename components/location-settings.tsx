@@ -13,7 +13,7 @@ import { updateUserLocation } from '@/lib/supabase'
 import { DualModeLocationPicker } from '@/components/interactive-location-picker'
 
 interface LocationSettingsProps {
-  userId?: string;
+  userId?: string | undefined;
   currentLocation?: { latitude: number; longitude: number; address?: string } | null;
   onLocationUpdate?: (location: { latitude: number; longitude: number; address?: string }) => void;
   showDistance?: boolean;
