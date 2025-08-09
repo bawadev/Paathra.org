@@ -16,6 +16,7 @@ import { ImageUpload } from '@/components/image-upload'
 import { imageUploadService } from '@/lib/services/image-upload'
 import { Building, Phone, Mail, Globe, MapPin, Users, CheckCircle, X, Image as ImageIcon } from 'lucide-react'
 import { hasRole } from '@/types/auth'
+import { MonasteryLocationPicker } from '@/components/monastery-location-picker'
 
 const DIETARY_REQUIREMENTS = [
   'vegetarian',
@@ -59,6 +60,8 @@ export default function ManageMonasteryPage() {
     special_requirements: '',
     contact_person_name: '',
     contact_person_role: '',
+    latitude: null as number | null,
+    longitude: null as number | null,
     daily_schedule: {
       morning: '',
       afternoon: '',
@@ -114,6 +117,8 @@ export default function ManageMonasteryPage() {
         special_requirements: data.special_requirements || '',
         contact_person_name: data.contact_person_name || '',
         contact_person_role: data.contact_person_role || '',
+        latitude: data.latitude || null,
+        longitude: data.longitude || null,
         daily_schedule: data.daily_schedule || {
           morning: '',
           afternoon: '',
@@ -347,6 +352,30 @@ export default function ManageMonasteryPage() {
                 </div>
               </CardContent>
             </Card>
+
+            {/* Location Information */}
+            {monastery && (
+              <MonasteryLocationPicker
+                monasteryId={monastery.id}
+                currentLocation={
+                  formData.latitude && formData.longitude
+                    ? {
+                        latitude: formData.latitude,
+                        longitude: formData.longitude,
+                        address: formData.address
+                      }
+                    : null
+                }
+                onLocationUpdate={(location) => {
+                  setFormData(prev => ({
+                    ...prev,
+                    latitude: location.latitude,
+                    longitude: location.longitude,
+                    address: location.address || prev.address
+                  }))
+                }}
+              />
+            )}
 
             {/* Contact Information */}
             <Card>

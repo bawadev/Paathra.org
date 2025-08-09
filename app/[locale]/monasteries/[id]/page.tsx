@@ -231,6 +231,11 @@ export default async function MonasteryPortfolioPage({ params }: MonasteryPortfo
                   <div>
                     <p className="font-medium">{t('address')}</p>
                     <p className="text-sm text-gray-600">{monastery.address}</p>
+                    {monastery.latitude && monastery.longitude && (
+                      <p className="text-xs text-gray-500 mt-1">
+                        Coordinates: {monastery.latitude.toFixed(6)}, {monastery.longitude.toFixed(6)}
+                      </p>
+                    )}
                   </div>
                 </div>
 
