@@ -3,6 +3,7 @@
 import { useAuth } from '@/lib/auth-context'
 import { AuthForm } from '@/components/auth-form'
 import { Navigation } from '@/components/navigation'
+import { ContentSlider } from '@/components/content-slider'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Link } from '@/src/i18n/navigation'
@@ -71,94 +72,10 @@ export default function HomePage() {
       {/* Main Content */}
       <main className="container-dana px-5 pb-20">
         {/* Quick Actions */}
-        <div className={`grid ${hasRole(profile, 'monastery_admin') ? 'md:grid-cols-3' : 'md:grid-cols-4'} gap-6 mb-12`}>
-          <Card className="card-dana text-center group">
-            <CardHeader>
-              <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-r from-[var(--primary-color)] to-[var(--accent-color)] rounded-2xl flex items-center justify-center transform group-hover:scale-110 transition-transform">
-                <Calendar className="w-8 h-8 text-white" />
-              </div>
-              <CardTitle className="text-[var(--text-dark)]">{t('makeDonation')}</CardTitle>
-              <CardDescription className="text-[var(--text-light)]">
-                {t('makeDonationDesc')}
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Link href="/monasteries">
-                <Button className="w-full btn-dana-primary">{t('bookDonation')}</Button>
-              </Link>
-            </CardContent>
-          </Card>
+        
 
-          <Card className="card-dana text-center group">
-            <CardHeader>
-              <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-r from-[var(--secondary-color)] to-[var(--primary-color)] rounded-2xl flex items-center justify-center transform group-hover:scale-110 transition-transform">
-                <Heart className="w-8 h-8 text-white" />
-              </div>
-              <CardTitle className="text-[var(--text-dark)]">{t('myDonations')}</CardTitle>
-              <CardDescription className="text-[var(--text-light)]">
-                {t('myDonationsDesc')}
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Link href="/my-donations">
-                <Button variant="outline" className="w-full btn-dana-secondary">{t('viewHistory')}</Button>
-              </Link>
-            </CardContent>
-          </Card>
-
-          <Card className="card-dana text-center group">
-            <CardHeader>
-              <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-r from-[var(--accent-color)] to-[var(--primary-color)] rounded-2xl flex items-center justify-center transform group-hover:scale-110 transition-transform">
-                <Building className="w-8 h-8 text-white" />
-              </div>
-              <CardTitle className="text-[var(--text-dark)]">{t('monasteries')}</CardTitle>
-              <CardDescription className="text-[var(--text-light)]">
-                {t('monasteriesDesc')}
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Link href="/monasteries">
-                <Button variant="outline" className="w-full btn-dana-secondary">{t('explore')}</Button>
-              </Link>
-            </CardContent>
-          </Card>
-
-          {hasRole(profile, 'monastery_admin') && (
-            <Card className="card-dana text-center group">
-              <CardHeader>
-                <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-r from-[var(--primary-color)] to-[var(--secondary-color)] rounded-2xl flex items-center justify-center transform group-hover:scale-110 transition-transform">
-                  <Users className="w-8 h-8 text-white" />
-                </div>
-                <CardTitle className="text-[var(--text-dark)]">{t('manageMonastery')}</CardTitle>
-                <CardDescription className="text-[var(--text-light)]">
-                  {t('manageMonasteryDesc')}
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <Link href="/manage">
-                  <Button className="w-full btn-dana-primary">{t('manage')}</Button>
-                </Link>
-              </CardContent>
-            </Card>
-          )}
-
-          {!hasRole(profile, 'monastery_admin') && (
-            <Card className="card-dana text-center group">
-              <CardHeader>
-                <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-r from-[var(--text-light)] to-[var(--text-dark)] rounded-2xl flex items-center justify-center transform group-hover:scale-110 transition-transform">
-                  <Users className="w-8 h-8 text-white" />
-                </div>
-                <CardTitle className="text-[var(--text-dark)]">{t('joinCommunity')}</CardTitle>
-                <CardDescription className="text-[var(--text-light)]">
-                  {t('joinCommunityDesc')}
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <Button variant="outline" className="w-full btn-dana-secondary">{t('comingSoon')}</Button>
-              </CardContent>
-            </Card>
-          )}
-        </div>
+        {/* Content Slider */}
+        <ContentSlider />
 
         {/* Welcome Message */}
         <Card className="card-dana gradient-primary text-white">

@@ -60,7 +60,21 @@
     "welcomeDescription": "Your journey of compassion starts here. Every donation you make helps sustain spiritual communities and their practice.",
     "mealsDonated": "Meals Donated",
     "monasteriesSupported": "Monasteries Supported",
-    "happyDonors": "Happy Donors"
+    "happyDonors": "Happy Donors",
+    "slider": {
+      "title1": "Support Buddhist Monasteries",
+      "description1": "Connect with monasteries and provide nourishing meals to monks through our easy-to-use platform.",
+      "button1": "Start Donating »",
+      "title2": "Simple Scheduling",
+      "description2": "Book donation slots with just a few clicks. Choose your preferred date and time that works for you.",
+      "button2": "View Available Slots »",
+      "title3": "Track Your Impact",
+      "description3": "Monitor your donations and see how many monks you've helped feed. Every meal makes a difference.",
+      "button3": "My Donations »",
+      "title4": "Join Our Community",
+      "description4": "Become part of a community dedicated to supporting Buddhist traditions and monastic life.",
+      "button4": "Get Started »"
+    }
   },
   "Auth": {
     "signIn": "Sign In",

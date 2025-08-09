@@ -44,8 +44,8 @@ export function LanguageSwitcher() {
                   onSelect={() => handleLocaleChange(loc)}
                 >
                   <div 
-                    className={`flex items-center p-3 rounded-md hover:bg-[var(--primary-color)]/10 hover:text-[var(--primary-color)] transition-all duration-300 ${
-                      locale === loc ? 'bg-[var(--primary-color)]/10 text-[var(--primary-color)]' : ''
+                    className={`flex items-center p-3 rounded-md hover:bg-gradient-to-r hover:from-[var(--primary-color)] hover:to-[var(--accent-color)] hover:text-white hover:shadow-lg hover:shadow-[var(--primary-color)]/30 transition-all duration-300 ${
+                      locale === loc ? 'bg-gradient-to-r from-[var(--primary-color)] to-[var(--accent-color)] text-white' : ''
                     }`}
                   >
                     {localeNames[loc as keyof typeof localeNames]}
