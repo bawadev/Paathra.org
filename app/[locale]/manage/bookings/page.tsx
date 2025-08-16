@@ -11,6 +11,7 @@ import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Textarea } from '@/components/ui/textarea'
+import { CalendarBookingView } from '@/components/calendar-booking-view'
 import { supabase } from '@/lib/supabase'
 import { executeBookingTransition } from '@/lib/services/booking-workflow'
 import { format, parseISO } from 'date-fns'
@@ -284,196 +285,13 @@ export default function ManageBookingsPage() {
               </CardContent>
             </Card>
 
-            {/* Bookings List */}
-            <Card>
-              <CardHeader>
-                <CardTitle>
-                  Donation Bookings ({filteredBookings.length})
-                </CardTitle>
-                <CardDescription>
-                  All donation requests for your monastery
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                {filteredBookings.length === 0 ? (
-                  <div className="text-center py-12 text-gray-500">
-                    <Utensils className="w-16 h-16 mx-auto mb-4 text-gray-300" />
-                    <h3 className="text-lg font-medium mb-2">No bookings found</h3>
-                    <p>
-                      {searchTerm || statusFilter !== 'all' 
-                        ? 'Try adjusting your search or filters'
-                        : 'No donation bookings yet'
-                      }
-                    </p>
-                  </div>
-                ) : (
-                  <div className="space-y-4">
-                    {filteredBookings.map((booking) => (
-                      <div key={booking.id} className="border rounded-lg p-6 hover:bg-gray-50 transition-colors">
-                        <div className="flex items-start justify-between">
-                          <div className="flex-1 space-y-4">
-                            {/* Header */}
-                            <div className="flex items-center justify-between">
-                              <div className="flex items-center space-x-3">
-                                <h3 className="text-lg font-medium">{booking.user_profiles?.full_name}</h3>
-                                <Badge className={getStatusColor(booking.status)}>
-                                  <div className="flex items-center space-x-1">
-                                    {getStatusIcon(booking.status)}
-                                    <span>{booking.status.charAt(0).toUpperCase() + booking.status.slice(1)}</span>
-                                  </div>
-                                </Badge>
-                              </div>
-                              
-                              <div className="text-sm text-gray-500">
-                                Booked {format(parseISO(booking.created_at), 'MMM d, yyyy h:mm a')}
-                              </div>
-                            </div>
-
-                            {/* Donation Details */}
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                              <div className="space-y-2">
-                                <div className="flex items-center text-sm">
-                                  <Calendar className="w-4 h-4 mr-2 text-gray-400" />
-                                  <span>
-                                    <strong>Date:</strong> {format(parseISO(booking.donation_slots?.date || ''), 'MMMM d, yyyy')}
-                                  </span>
-                                </div>
-                                
-                                <div className="flex items-center text-sm">
-                                  <Clock className="w-4 h-4 mr-2 text-gray-400" />
-                                  <span>
-                                    <strong>Time:</strong> {format(
-                                      parseISO(`2000-01-01T${booking.donation_slots?.time_slot}`),
-                                      'h:mm a'
-                                    )}
-                                  </span>
-                                </div>
-
-                                <div className="flex items-center text-sm">
-                                  <Utensils className="w-4 h-4 mr-2 text-gray-400" />
-                                  <span><strong>Food:</strong> {booking.food_type}</span>
-                                </div>
-
-                                <div className="flex items-center text-sm">
-                                  <Users className="w-4 h-4 mr-2 text-gray-400" />
-                                  <span><strong>Quantity:</strong> {booking.quantity}</span>
-                                </div>
-                              </div>
-
-                              <div className="space-y-2">
-                                <div className="flex items-center text-sm">
-                                  <Mail className="w-4 h-4 mr-2 text-gray-400" />
-                                  <span><strong>Email:</strong> {booking.user_profiles?.email}</span>
-                                </div>
-
-                                {booking.contact_phone && (
-                                  <div className="flex items-center text-sm">
-                                    <Phone className="w-4 h-4 mr-2 text-gray-400" />
-                                    <span><strong>Phone:</strong> {booking.contact_phone}</span>
-                                  </div>
-                                )}
-
-                              </div>
-                            </div>
-
-                            {/* Special Instructions */}
-                            {booking.special_instructions && (
-                              <div className="bg-blue-50 p-3 rounded-md">
-                                <strong className="text-sm text-blue-800">Special Instructions:</strong>
-                                <p className="text-sm text-blue-700 mt-1">{booking.special_instructions}</p>
-                              </div>
-                            )}
-
-                            {/* Special Requirements for the slot */}
-                            {booking.donation_slots?.special_requirements && (
-                              <div className="bg-yellow-50 p-3 rounded-md">
-                                <strong className="text-sm text-yellow-800">Slot Requirements:</strong>
-                                <p className="text-sm text-yellow-700 mt-1">{booking.donation_slots.special_requirements}</p>
-                              </div>
-                            )}
-                          </div>
-
-                          {/* Action Buttons */}
-                          <div className="ml-6 flex flex-col space-y-2">
-                            {booking.status === 'pending' && (
-                              <>
-                                <Button
-                                  size="sm"
-                                  onClick={() => updateBookingStatus(booking.id, 'approve')}
-                                  className="bg-green-600 hover:bg-green-700"
-                                >
-                                  <CheckCircle className="w-4 h-4 mr-2" />
-                                  Approve
-                                </Button>
-                                <Button
-                                  size="sm"
-                                  variant="destructive"
-                                  onClick={() => updateBookingStatus(booking.id, 'cancel')}
-                                >
-                                  <XCircle className="w-4 h-4 mr-2" />
-                                  Decline
-                                </Button>
-                              </>
-                            )}
-
-                            {booking.status === 'monastery_approved' && (
-                              <div className="text-sm text-blue-600 bg-blue-50 p-2 rounded text-center">
-                                Waiting for donor confirmation
-                              </div>
-                            )}
-
-                            {booking.status === 'confirmed' && (
-                              <>
-                                <Button
-                                  size="sm"
-                                  onClick={() => openReceivedStatusDialog(booking.id, 'delivered')}
-                                  className="bg-green-600 hover:bg-green-700"
-                                >
-                                  <CheckCircle className="w-4 h-4 mr-2" />
-                                  Mark Received
-                                </Button>
-                                <Button
-                                  size="sm"
-                                  variant="outline"
-                                  onClick={() => openReceivedStatusDialog(booking.id, 'not_delivered')}
-                                >
-                                  <XCircle className="w-4 h-4 mr-2" />
-                                  Not Received
-                                </Button>
-                              </>
-                            )}
-
-                            {(booking.status === 'delivered' || booking.status === 'not_delivered') && (
-                              <div className="space-y-2">
-                                <Badge className={getStatusColor(booking.status)}>
-                                  {booking.status === 'delivered' ? 'Delivered' : 'Not Delivered'}
-                                </Badge>
-                                {booking.delivery_notes && (
-                                  <div className="text-xs text-gray-600 bg-gray-50 p-2 rounded">
-                                    <strong>Notes:</strong> {booking.delivery_notes}
-                                  </div>
-                                )}
-                              </div>
-                            )}
-
-                            {booking.status === 'cancelled' && booking.created_at > new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString() && (
-                              <Button
-                                size="sm"
-                                variant="outline"
-                                onClick={() => updateBookingStatus(booking.id, 'reopen')}
-                              >
-                                <AlertCircle className="w-4 h-4 mr-2" />
-                                Reopen
-                              </Button>
-                            )}
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </CardContent>
-            </Card>
+            {/* Calendar View */}
+            <CalendarBookingView 
+              monasteryId={monastery.id}
+              bookings={filteredBookings}
+              onBookingAction={(bookingId, action) => updateBookingStatus(bookingId, action as any)}
+            />
+          </div>
           </div>
         )}
       </main>

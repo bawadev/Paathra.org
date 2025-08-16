@@ -6,15 +6,49 @@ import { supabaseConfig } from './env'
 // Function to get Supabase client safely
 export const getSupabaseClient = () => {
   if (!supabaseConfig.url || !supabaseConfig.anonKey) {
-    throw new Error('Missing Supabase environment variables. Please check NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY')
+    console.warn('Supabase environment variables not configured. Some features may not work.')
+    // Return a mock client that prevents null errors
+    return {
+      auth: {
+        getUser: () => Promise.resolve({ data: { user: null }, error: null }),
+        signOut: () => Promise.resolve({ error: null }),
+        onAuthStateChange: () => ({ data: { subscription: null }, error: null }),
+      },
+      from: () => ({
+        select: () => ({ data: [], error: null }),
+        insert: () => ({ data: null, error: new Error('Supabase not configured') }),
+        update: () => ({ data: null, error: new Error('Supabase not configured') }),
+        delete: () => ({ data: null, error: new Error('Supabase not configured') }),
+      }),
+    } as any
   }
   return createClient(supabaseConfig.url, supabaseConfig.anonKey)
 }
 
-// Client-side Supabase client - only initialize if environment variables are available
-export const supabase = supabaseConfig.url && supabaseConfig.anonKey
-  ? createClient(supabaseConfig.url, supabaseConfig.anonKey)
-  : null
+// Client-side Supabase client - always return a client (real or mock)
+export const supabase = (() => {
+  if (supabaseConfig.url && supabaseConfig.anonKey) {
+    return createClient(supabaseConfig.url, supabaseConfig.anonKey)
+  }
+  
+  // Return mock client to prevent null errors
+  console.warn('Supabase environment variables not configured. Using mock client.')
+  return {
+    auth: {
+      getUser: () => Promise.resolve({ data: { user: null }, error: null }),
+      signOut: () => Promise.resolve({ error: null }),
+      onAuthStateChange: () => ({ data: { subscription: null }, error: null }),
+    },
+    from: () => ({
+      select: () => Promise.resolve({ data: [], error: null }),
+      insert: () => Promise.resolve({ data: null, error: new Error('Supabase not configured') }),
+      update: () => Promise.resolve({ data: null, error: new Error('Supabase not configured') }),
+      delete: () => Promise.resolve({ data: null, error: new Error('Supabase not configured') }),
+      eq: function() { return this },
+      not: function() { return this },
+    }),
+  } as any
+})()
 
 // Server-side Supabase client for middleware and server components
 export const createSupabaseServerClient = (request: NextRequest, response: NextResponse) => {
