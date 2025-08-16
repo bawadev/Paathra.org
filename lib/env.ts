@@ -49,11 +49,14 @@ const envSchema = z.object({
 
 // Parse and validate environment variables
 function createEnv() {
-  // In development, use a more lenient validation approach
-  if (process.env.NODE_ENV === 'development') {
-    // Create a development-friendly configuration
-    const devConfig = {
-      NODE_ENV: 'development' as const,
+  // Check if we're in a build context (static generation)
+  const isBuildTime = process.env.NODE_ENV === 'production' && !process.env.VERCEL && !process.env.RAILWAY_ENVIRONMENT && !process.env.RENDER
+  
+  // In development or build time, use a more lenient validation approach
+  if (process.env.NODE_ENV === 'development' || isBuildTime) {
+    // Create a development/build-friendly configuration
+    const config = {
+      NODE_ENV: (process.env.NODE_ENV || 'development') as 'development' | 'production' | 'test',
       NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL || '',
       NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '',
       NEXT_PUBLIC_APP_NAME: process.env.NEXT_PUBLIC_APP_NAME || 'Dhaana',
@@ -75,10 +78,10 @@ function createEnv() {
       NEXTAUTH_URL: process.env.NEXTAUTH_URL,
     }
     
-    return devConfig
+    return config
   }
   
-  // In production, use strict validation
+  // In production runtime, use strict validation
   const parsed = envSchema.safeParse(process.env)
   
   if (!parsed.success) {

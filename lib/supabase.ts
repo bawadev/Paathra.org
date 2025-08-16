@@ -1,32 +1,30 @@
 import { createClient } from '@supabase/supabase-js'
 import { createServerClient } from '@supabase/ssr'
 import { NextRequest, NextResponse } from 'next/server'
-
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+import { supabaseConfig } from './env'
 
 // Function to get Supabase client safely
 export const getSupabaseClient = () => {
-  if (!supabaseUrl || !supabaseAnonKey) {
+  if (!supabaseConfig.url || !supabaseConfig.anonKey) {
     throw new Error('Missing Supabase environment variables. Please check NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY')
   }
-  return createClient(supabaseUrl, supabaseAnonKey)
+  return createClient(supabaseConfig.url, supabaseConfig.anonKey)
 }
 
 // Client-side Supabase client - only initialize if environment variables are available
-export const supabase = supabaseUrl && supabaseAnonKey 
-  ? createClient(supabaseUrl, supabaseAnonKey)
+export const supabase = supabaseConfig.url && supabaseConfig.anonKey
+  ? createClient(supabaseConfig.url, supabaseConfig.anonKey)
   : null
 
 // Server-side Supabase client for middleware and server components
 export const createSupabaseServerClient = (request: NextRequest, response: NextResponse) => {
-  if (!supabaseUrl || !supabaseAnonKey) {
+  if (!supabaseConfig.url || !supabaseConfig.anonKey) {
     throw new Error('Missing Supabase environment variables. Please check NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY')
   }
   
   return createServerClient(
-    supabaseUrl,
-    supabaseAnonKey,
+    supabaseConfig.url,
+    supabaseConfig.anonKey,
     {
       cookies: {
         get(name: string) {
