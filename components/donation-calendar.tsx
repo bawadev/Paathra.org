@@ -45,7 +45,7 @@ export function DonationCalendar({ onSlotSelect }: DonationCalendarProps) {
 
   const getEffectiveCapacity = (slot: DonationSlot) => {
     // Use monastery capacity if available, otherwise fall back to slot capacity
-    return slot.monastery?.capacity || slot.monks_capacity || 0
+    return (slot as any).monastery?.capacity || slot.monks_capacity || 0
   }
 
   const getSlotsForDate = (date: Date) => {
@@ -125,6 +125,7 @@ export function DonationCalendar({ onSlotSelect }: DonationCalendarProps) {
             <div className="space-y-4">
               {selectedDateSlots.map((slot) => {
                 const effectiveCapacity = getEffectiveCapacity(slot)
+                const monasteryData = (slot as any).monastery
                 return (
                 <div
                   key={slot.id}
@@ -133,7 +134,7 @@ export function DonationCalendar({ onSlotSelect }: DonationCalendarProps) {
                 >
                   <div className="flex items-start justify-between">
                     <div className="space-y-2">
-                      <h3 className="font-medium">{slot.monastery?.name}</h3>
+                      <h3 className="font-medium">{monasteryData?.name || 'Monastery'}</h3>
                       
                       <div className="flex items-center text-sm text-gray-600 space-x-4">
                         <div className="flex items-center space-x-1">
@@ -144,8 +145,8 @@ export function DonationCalendar({ onSlotSelect }: DonationCalendarProps) {
                         <div className="flex items-center space-x-1">
                           <Users className="w-4 h-4" />
                           <span>
-                            {effectiveCapacity > 0 
-                              ? `${slot.monks_fed}/${effectiveCapacity} monks fed`
+                            {effectiveCapacity > 0
+                              ? `${slot.monks_fed || 0}/${effectiveCapacity} servings used`
                               : 'Open capacity'
                             }
                           </span>
@@ -156,13 +157,13 @@ export function DonationCalendar({ onSlotSelect }: DonationCalendarProps) {
                       {effectiveCapacity > 0 && (
                         <div className="mb-2">
                           <div className="w-full bg-gray-200 rounded-full h-1.5">
-                            <div 
-                              className="bg-green-600 h-1.5 rounded-full transition-all duration-300" 
-                              style={{ width: `${(slot.monks_fed / effectiveCapacity) * 100}%` }}
+                            <div
+                              className="bg-green-600 h-1.5 rounded-full transition-all duration-300"
+                              style={{ width: `${((slot.monks_fed || 0) / effectiveCapacity) * 100}%` }}
                             ></div>
                           </div>
                           <div className="text-xs text-gray-500 mt-1">
-                            {effectiveCapacity - slot.monks_fed} monks remaining
+                            {effectiveCapacity - (slot.monks_fed || 0)} servings remaining
                           </div>
                         </div>
                       )}
@@ -177,7 +178,7 @@ export function DonationCalendar({ onSlotSelect }: DonationCalendarProps) {
 
                       <div className="flex items-center text-sm text-gray-600">
                         <MapPin className="w-4 h-4 mr-1" />
-                        <span>{slot.monastery?.address}</span>
+                        <span>{monasteryData?.address || 'Address not provided'}</span>
                       </div>
 
                       {slot.special_requirements && (
@@ -186,9 +187,9 @@ export function DonationCalendar({ onSlotSelect }: DonationCalendarProps) {
                         </div>
                       )}
 
-                      {slot.monastery?.dietary_requirements && (
+                      {monasteryData?.dietary_requirements && (
                         <div className="flex flex-wrap gap-1">
-                          {slot.monastery.dietary_requirements.map((req) => (
+                          {monasteryData.dietary_requirements.map((req: string) => (
                             <Badge key={req} variant="secondary" className="text-xs">
                               {req.replace('_', ' ')}
                             </Badge>

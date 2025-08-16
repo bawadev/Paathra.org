@@ -13,8 +13,20 @@ import { TextField, TextareaField } from '@/components/forms/FormFields'
 import { format, parseISO } from 'date-fns'
 import { Clock, MapPin, Users } from 'lucide-react'
 
+// Extended slot type with monastery data
+interface ExtendedDonationSlot extends DonationSlot {
+  monastery?: {
+    name: string
+    capacity: number
+    address: string
+    special_requirements?: string
+  }
+  monastery_name?: string
+  monastery_address?: string
+}
+
 interface DonationBookingFormProps {
-  slot: DonationSlot
+  slot: ExtendedDonationSlot
   onSuccess: (bookingData: any) => void
   onCancel: () => void
 }
@@ -29,7 +41,6 @@ export function DonationBookingForm({ slot, onSuccess, onCancel }: DonationBooki
     defaultValues: {
       food_type: '',
       estimated_servings: '',
-      monks_to_feed: '',
       special_notes: '',
       contact_phone: '',
     },
@@ -42,12 +53,14 @@ export function DonationBookingForm({ slot, onSuccess, onCancel }: DonationBooki
     setError('')
 
     try {
-      const monksToFeed = parseInt(data.monks_to_feed)
+      const estimatedServings = parseInt(data.estimated_servings)
       
-      // Check if there's enough capacity left
-      const remainingCapacity = slot.monks_capacity - slot.monks_fed
-      if (monksToFeed > remainingCapacity) {
-        setError(`Only ${remainingCapacity} monks can be fed for this slot. Please reduce the number or check other available slots.`)
+      // Get the effective capacity (monastery capacity or slot capacity)
+      const effectiveCapacity = slot.monastery?.capacity || slot.monks_capacity || 0
+      const remainingCapacity = effectiveCapacity - (slot.monks_fed || 0)
+      
+      if (estimatedServings > remainingCapacity) {
+        setError(`Only ${remainingCapacity} servings capacity remaining for this slot. Please reduce the servings or check other available slots.`)
         setLoading(false)
         return
       }
@@ -55,7 +68,11 @@ export function DonationBookingForm({ slot, onSuccess, onCancel }: DonationBooki
       // Optimistic check: re-fetch slot data to ensure it hasn't changed
       const { data: currentSlot, error: fetchError } = await supabase
         .from('donation_slots')
-        .select('monks_capacity, monks_fed')
+        .select(`
+          monks_capacity,
+          monks_fed,
+          monastery:monasteries(capacity)
+        `)
         .eq('id', slot.id)
         .single()
 
@@ -65,27 +82,25 @@ export function DonationBookingForm({ slot, onSuccess, onCancel }: DonationBooki
         return
       }
 
-      const currentRemainingCapacity = currentSlot.monks_capacity - currentSlot.monks_fed
-      if (monksToFeed > currentRemainingCapacity) {
-        setError(`This slot was just updated! Only ${currentRemainingCapacity} monks can be fed now. Please adjust your donation or try another slot.`)
+      const currentEffectiveCapacity = (currentSlot as any).monastery?.capacity || currentSlot.monks_capacity || 0
+      const currentRemainingCapacity = currentEffectiveCapacity - (currentSlot.monks_fed || 0)
+      
+      if (estimatedServings > currentRemainingCapacity) {
+        setError(`This slot was just updated! Only ${currentRemainingCapacity} servings capacity remaining now. Please adjust your donation or try another slot.`)
         setLoading(false)
         return
       }
 
-      const { data: bookingData, error: bookingError } = await supabase
-        .from('donation_bookings')
-        .insert({
-          donation_slot_id: slot.id,
-          donor_id: user.id,
-          donation_date: slot.date,
-          food_type: data.food_type,
-          estimated_servings: parseInt(data.estimated_servings),
-          monks_to_feed: monksToFeed,
-          special_notes: data.special_notes || null,
-          contact_phone: data.contact_phone,
-        })
-        .select()
-        .single()
+      // Use a transaction to ensure both booking creation and slot update happen atomically
+      const { data: bookingData, error: bookingError } = await supabase.rpc('create_booking_with_slot_update', {
+        p_donation_slot_id: slot.id,
+        p_donor_id: user.id,
+        p_donation_date: slot.date,
+        p_food_type: data.food_type,
+        p_estimated_servings: estimatedServings,
+        p_contact_phone: data.contact_phone,
+        p_special_notes: data.special_notes || null
+      })
 
       if (bookingError) {
         setError(bookingError.message)
@@ -110,7 +125,7 @@ export function DonationBookingForm({ slot, onSuccess, onCancel }: DonationBooki
       <CardContent>
         {/* Slot Details */}
         <div className="bg-gray-50 p-4 rounded-lg mb-6">
-          <h3 className="font-medium mb-2">{slot.monastery?.name}</h3>
+          <h3 className="font-medium mb-2">{slot.monastery?.name || slot.monastery_name || 'Monastery'}</h3>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm text-gray-600">
             <div className="flex items-center space-x-1">
@@ -123,30 +138,30 @@ export function DonationBookingForm({ slot, onSuccess, onCancel }: DonationBooki
             
             <div className="flex items-center space-x-1">
               <Users className="w-4 h-4" />
-              <span>{slot.monks_fed}/{slot.monks_capacity} monks fed</span>
+              <span>{slot.monks_fed || 0}/{slot.monastery?.capacity || slot.monks_capacity || 0} servings capacity used</span>
             </div>
             
             <div className="flex items-center space-x-1">
               <MapPin className="w-4 h-4" />
-              <span>{slot.monastery?.address}</span>
+              <span>{slot.monastery?.address || slot.monastery_address || 'Address not provided'}</span>
             </div>
           </div>
 
           {/* Capacity Progress Bar */}
           <div className="mt-4">
             <div className="flex justify-between text-sm mb-1">
-              <span>Feeding Progress</span>
-              <span>{slot.monks_capacity - slot.monks_fed} monks remaining</span>
+              <span>Capacity Usage</span>
+              <span>{(slot.monastery?.capacity || slot.monks_capacity || 0) - (slot.monks_fed || 0)} servings capacity remaining</span>
             </div>
             <div className="w-full bg-gray-200 rounded-full h-2">
               <div 
                 className="bg-green-600 h-2 rounded-full transition-all duration-300" 
-                style={{ width: `${(slot.monks_fed / slot.monks_capacity) * 100}%` }}
+                style={{ width: `${((slot.monks_fed || 0) / (slot.monastery?.capacity || slot.monks_capacity || 1)) * 100}%` }}
               ></div>
             </div>
           </div>
 
-          {slot.monastery?.special_requirements && (
+          {(slot.monastery?.special_requirements || slot.special_requirements) && (
             <div className="mt-3 text-sm text-blue-600 bg-blue-50 p-3 rounded-lg border border-blue-200">
               <div className="flex items-start">
                 <div className="flex-shrink-0">
@@ -155,8 +170,8 @@ export function DonationBookingForm({ slot, onSuccess, onCancel }: DonationBooki
                   </svg>
                 </div>
                 <div className="ml-3">
-                  <h4 className="text-sm font-medium text-blue-800">Special Requirements for {slot.monastery?.name}</h4>
-                  <p className="mt-1 text-sm text-blue-700">{slot.monastery.special_requirements}</p>
+                  <h4 className="text-sm font-medium text-blue-800">Special Requirements for {slot.monastery?.name || slot.monastery_name || 'the monastery'}</h4>
+                  <p className="mt-1 text-sm text-blue-700">{slot.monastery?.special_requirements || slot.special_requirements}</p>
                 </div>
               </div>
             </div>
@@ -171,7 +186,7 @@ export function DonationBookingForm({ slot, onSuccess, onCancel }: DonationBooki
                   </svg>
                 </div>
                 <div className="ml-3">
-                  <h4 className="text-sm font-medium text-amber-800">Important Notes from {slot.monastery?.name}</h4>
+                  <h4 className="text-sm font-medium text-amber-800">Important Notes from {slot.monastery?.name || slot.monastery_name || 'the monastery'}</h4>
                   <p className="mt-1 text-sm text-amber-700">{slot.booking_notes}</p>
                 </div>
               </div>
@@ -182,7 +197,7 @@ export function DonationBookingForm({ slot, onSuccess, onCancel }: DonationBooki
         {/* Booking Form */}
         <FormProvider {...form}>
           <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <TextField
                 name="food_type"
                 label="Type of Food"
@@ -193,14 +208,7 @@ export function DonationBookingForm({ slot, onSuccess, onCancel }: DonationBooki
               <TextField
                 name="estimated_servings"
                 label="Estimated Servings"
-                placeholder="Number of people this will serve"
-                required
-              />
-
-              <TextField
-                name="monks_to_feed"
-                label="Monks to Feed"
-                placeholder={`Max ${slot.monks_capacity - slot.monks_fed} remaining`}
+                placeholder={`Max ${(slot.monastery?.capacity || slot.monks_capacity || 0) - (slot.monks_fed || 0)} servings remaining`}
                 required
               />
             </div>

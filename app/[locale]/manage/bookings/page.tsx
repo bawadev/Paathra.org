@@ -4,9 +4,8 @@ import { useEffect, useState } from 'react'
 import { useAuth } from '@/lib/auth-context'
 import { Navigation } from '@/components/navigation'
 import { AuthForm } from '@/components/auth-form'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
@@ -19,18 +18,12 @@ import { format, parseISO } from 'date-fns'
 const hasRole = (profile: any, role: string) => {
   return profile?.user_types?.includes(role) ?? false
 }
-import { 
-  Calendar, 
-  Clock, 
-  Users, 
-  CheckCircle, 
-  XCircle, 
-  AlertCircle,
+import {
   Search,
   Filter,
-  Phone,
-  Mail,
-  Utensils
+  CheckCircle,
+  AlertCircle,
+  XCircle
 } from 'lucide-react'
 
 export default function ManageBookingsPage() {
@@ -82,7 +75,15 @@ export default function ManageBookingsPage() {
         .from('donation_bookings')
         .select(`
           *,
-          donation_slots!inner(*),
+          donation_slots!inner(
+            id,
+            date,
+            time_slot,
+            monks_capacity,
+            monks_fed,
+            special_requirements,
+            monastery_id
+          ),
           user_profiles!inner(full_name, email, phone)
         `)
         .eq('donation_slots.monastery_id', monasteryData.id)
@@ -286,12 +287,14 @@ export default function ManageBookingsPage() {
             </Card>
 
             {/* Calendar View */}
-            <CalendarBookingView 
+            <CalendarBookingView
               monasteryId={monastery.id}
-              bookings={filteredBookings}
+              bookings={filteredBookings.map(booking => ({
+                ...booking,
+                monasteries: { capacity: monastery.capacity }
+              }))}
               onBookingAction={(bookingId, action) => updateBookingStatus(bookingId, action as any)}
             />
-          </div>
           </div>
         )}
       </main>

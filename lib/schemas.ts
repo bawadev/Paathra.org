@@ -20,11 +20,6 @@ export const donationBookingSchema = z.object({
     .refine((val) => !isNaN(Number(val)) && Number(val) > 0, {
       message: 'Estimated servings must be a positive number',
     }),
-  monks_to_feed: z.string()
-    .min(1, 'Please enter number of monks to feed')
-    .refine((val) => !isNaN(Number(val)) && Number(val) > 0, {
-      message: 'Number of monks must be a positive number',
-    }),
   special_notes: z.string().optional(),
   contact_phone: z.string()
     .regex(/^\+?[\d\s\-\(\)]+$/, 'Please enter a valid phone number')

@@ -15,7 +15,7 @@ import { Calendar, ChevronLeft, ChevronRight, MapPin, Clock, Users } from 'lucid
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, isSameDay, isToday } from 'date-fns'
 
 // Enhanced imports
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/lib/component-composition'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { LoadingOverlay, useOperationLoading } from '@/lib/loading-system'
@@ -167,7 +167,7 @@ function RefactoredDonationCalendarComponent({
   return (
     <div className={cn('space-y-6', className)} data-testid="donation-calendar">
       {/* Calendar Header */}
-      <Card variant="elevated">
+      <Card>
         <CardHeader>
           <div className="flex items-center justify-between">
             <div>
@@ -329,9 +329,7 @@ const SlotCard = createMemoizedComponent<{
   const availableSpots = slot.capacity - slot.current_bookings
   
   return (
-    <Card 
-      variant={isSelected ? "elevated" : "default"}
-      interactive={isAvailable}
+    <Card
       className={cn(
         'transition-all duration-200',
         isSelected && 'ring-2 ring-primary',

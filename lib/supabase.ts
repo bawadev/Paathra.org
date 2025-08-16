@@ -104,10 +104,10 @@ export const createSupabaseServerClient = (request: NextRequest, response: NextR
 }
 
 // Re-export types from centralized location
-export * from './types'
+export * from './types/'
 
 // Import specific types
-import type { MonasteryWithDistance } from './types/database.types'
+import type { Monastery, MonasteryWithDistance } from './types/database.types'
 
 // Location-based functions
 import { calculateDistance } from './location-utils'
@@ -139,14 +139,14 @@ export async function getMonasteriesWithDistance(
   if (userLat && userLon) {
     // Calculate distances and sort
     const monasteriesWithDistance = data
-      .map(monastery => ({
+      .map((monastery: Monastery) => ({
         ...monastery,
-        distance: monastery.latitude && monastery.longitude 
+        distance: monastery.latitude && monastery.longitude
           ? calculateDistance(userLat, userLon, monastery.latitude, monastery.longitude)
           : undefined
       }))
-      .filter(m => !m.distance || m.distance <= maxDistance)
-      .sort((a, b) => (a.distance || Infinity) - (b.distance || Infinity));
+      .filter((m: MonasteryWithDistance) => !m.distance || m.distance <= maxDistance)
+      .sort((a: MonasteryWithDistance, b: MonasteryWithDistance) => (a.distance || Infinity) - (b.distance || Infinity));
     
     return monasteriesWithDistance;
   }
@@ -210,10 +210,10 @@ export async function getMonasteriesInRadius(
   if (error || !data) return [];
 
   return data
-    .map(monastery => ({
+    .map((monastery: Monastery) => ({
       ...monastery,
       distance: calculateDistance(centerLat, centerLon, monastery.latitude!, monastery.longitude!)
     }))
-    .filter(m => m.distance <= radiusKm)
-    .sort((a, b) => a.distance - b.distance);
+    .filter((m: MonasteryWithDistance) => m.distance !== undefined && m.distance <= radiusKm)
+    .sort((a: MonasteryWithDistance, b: MonasteryWithDistance) => (a.distance || 0) - (b.distance || 0));
 }
