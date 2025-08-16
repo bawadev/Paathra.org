@@ -12,6 +12,7 @@ interface AuthContextType {
   loading: boolean
   error: string | null
   signIn: (email: string, password: string) => Promise<any>
+  signInWithSocial: (provider: 'google' | 'facebook' | 'twitter') => Promise<any>
   signUp: (email: string, password: string, fullName: string) => Promise<any>
   signOut: () => Promise<void>
   updateProfile: (updates: Partial<UserProfile>) => Promise<void>
@@ -37,13 +38,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         
         if (error) {
           console.error('Error getting session:', error)
-          if (error.message.includes('refresh') || error.message.includes('token')) {
+          
+          // Handle specific refresh token errors
+          if (error.message.toLowerCase().includes('invalid refresh token') || 
+              error.message.toLowerCase().includes('refresh token not found')) {
+            console.log('Refresh token error detected, clearing session')
+            await supabase.auth.signOut()
+            setError('Your session has expired. Please sign in again.')
+          } else if (error.message.includes('refresh') || error.message.includes('token')) {
             // Clear invalid session
             await supabase.auth.signOut()
             setError('Your session has expired. Please sign in again.')
           } else {
             setError('Authentication error. Please try again.')
           }
+          
           if (mounted) {
             setSession(null)
             setUser(null)
@@ -124,9 +133,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
               setLoading(false)
             }
         }
-      } catch (err) {
+      } catch (err: any) {
         console.error('Error handling auth state change:', err)
-        setError('Authentication error occurred. Please refresh the page.')
+        
+        // Handle refresh token errors specifically
+        if (err?.message?.toLowerCase().includes('invalid refresh token') || 
+            err?.message?.toLowerCase().includes('refresh token not found')) {
+          console.log('Refresh token error in auth state change, clearing session')
+          await supabase.auth.signOut()
+          setError('Your session has expired. Please sign in again.')
+          setSession(null)
+          setUser(null)
+          setProfile(null)
+        } else {
+          setError('Authentication error occurred. Please refresh the page.')
+        }
         setLoading(false)
       }
     })
@@ -163,6 +184,35 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       password,
     })
     if (error) {
+      setError(error.message)
+    } else {
+      setError(null)
+    }
+    return { data, error }
+  }
+
+  const signInWithSocial = async (provider: 'google' | 'facebook' | 'twitter') => {
+    // Get current locale from the URL path
+    const currentPath = window.location.pathname
+    const locale = currentPath.split('/')[1] || 'en' // Default to 'en' if no locale found
+    
+    // Store locale in localStorage so we can redirect properly after auth
+    localStorage.setItem('auth_redirect_locale', locale)
+    
+    console.log('OAuth starting for provider:', provider)
+    console.log('Current path:', currentPath)
+    console.log('Detected locale:', locale)
+    
+    const { data, error } = await supabase.auth.signInWithOAuth({
+      provider,
+      // Don't set custom redirectTo - let Supabase handle the callback
+      // We'll handle the locale redirect in the callback route
+    })
+    
+    console.log('OAuth response:', { data, error })
+    
+    if (error) {
+      console.error('OAuth error:', error)
       setError(error.message)
     } else {
       setError(null)
@@ -216,6 +266,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     loading,
     error,
     signIn,
+    signInWithSocial,
     signUp,
     signOut,
     updateProfile,

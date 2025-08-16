@@ -1,0 +1,43 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(rm:*)",
+      "Bash(mkdir:*)",
+      "Bash(npm run dev:*)",
+      "Bash(curl:*)",
+      "mcp__playwright-mcp__browser_navigate",
+      "Bash(pkill:*)",
+      "Bash(true)",
+      "Bash(cat:*)",
+      "mcp__playwright-mcp__browser_console_messages",
+      "mcp__playwright-mcp__browser_evaluate",
+      "Bash(npm run test:*)",
+      "mcp__playwright-mcp__browser_network_requests",
+      "mcp__playwright-mcp__browser_wait_for",
+      "mcp__playwright-mcp__browser_close",
+      "mcp__supabase-mcp__list_tables",
+      "Bash(grep:*)",
+      "mcp__supabase-mcp__execute_sql",
+      "Bash(git checkout:*)",
+      "mcp__supabase-mcp__list_projects",
+      "mcp__supabase-mcp__get_project",
+      "mcp__supabase-mcp__search_docs",
+      "Bash(chmod:*)",
+      "mcp__ide__getDiagnostics",
+      "Bash(npm run typecheck:*)",
+      "Bash(npm run build:*)",
+      "mcp__supabase-mcp__apply_migration",
+      "Bash(npm run)",
+      "Bash(npm run lint)",
+      "mcp__supabase-mcp__generate_typescript_types",
+      "mcp__playwright-mcp__browser_snapshot",
+      "mcp__playwright-mcp__browser_click",
+      "Bash(npx tsc --noEmit)",
+      "Bash(npx tsc:*)",
+      "Bash(sed:*)",
+      "mcp__ide__executeCode",
+      "Bash(npm run:*)"
+    ],
+    "deny": []
+  }
+}

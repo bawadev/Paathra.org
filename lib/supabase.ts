@@ -57,64 +57,106 @@ export const createSupabaseServerClient = (request: NextRequest, response: NextR
   )
 }
 
-// Types for our database
-export interface UserProfile {
-  id: string
-  full_name: string
-  email: string
-  phone?: string
-  user_types: ('donor' | 'monastery_admin' | 'super_admin')[]
-  avatar_url?: string
-  address?: string
-  created_at: string
-  updated_at: string
+// Re-export types from centralized location
+export * from './types'
+
+// Location-based functions
+import { calculateDistance } from './location-utils'
+
+/**
+ * Get monasteries sorted by distance from user location
+ */
+export async function getMonasteriesWithDistance(
+  userLat?: number, 
+  userLon?: number,
+  maxDistance = 100 // km
+): Promise<MonasteryWithDistance[]> {
+  let query = supabase
+    .from('monasteries')
+    .select('*')
+    .eq('is_active', true)
+
+  const { data, error } = await query;
+  
+  if (error) {
+    console.error('Error fetching monasteries:', error);
+    return [];
+  }
+
+  if (!data) return [];
+
+  if (userLat && userLon) {
+    // Calculate distances and sort
+    const monasteriesWithDistance = data
+      .map(monastery => ({
+        ...monastery,
+        distance: monastery.latitude && monastery.longitude 
+          ? calculateDistance(userLat, userLon, monastery.latitude, monastery.longitude)
+          : undefined
+      }))
+      .filter(m => !m.distance || m.distance <= maxDistance)
+      .sort((a, b) => (a.distance || Infinity) - (b.distance || Infinity));
+    
+    return monasteriesWithDistance;
+  }
+
+  return data;
 }
 
-export interface Monastery {
-  id: string
-  name: string
-  description?: string
-  address: string
-  phone?: string
-  email?: string
-  website?: string
-  admin_id?: string
-  image_url?: string
-  capacity: number
-  dietary_requirements: string[]
-  preferred_donation_times?: string
-  status?: 'pending' | 'approved' | 'rejected'
-  created_at: string
-  updated_at: string
+/**
+ * Update user location in profile
+ */
+export async function updateUserLocation(userId: string, latitude: number, longitude: number, address?: string) {
+  const { error } = await supabase
+    .from('user_profiles')
+    .update({
+      latitude,
+      longitude,
+      address
+    })
+    .eq('id', userId);
+  
+  return { error };
 }
 
-export interface DonationSlot {
-  id: string
-  monastery_id: string
-  date: string
-  time_slot: string
-  max_donors: number
-  current_bookings: number
-  special_requirements?: string
-  is_available: boolean
-  created_by?: string
-  created_at: string
-  updated_at: string
-  monastery?: Monastery
+/**
+ * Update monastery location
+ */
+export async function updateMonasteryLocation(monasteryId: string, latitude: number, longitude: number, address?: string) {
+  const { error } = await supabase
+    .from('monasteries')
+    .update({
+      latitude,
+      longitude,
+      address
+    })
+    .eq('id', monasteryId);
+  
+  return { error };
 }
 
-export interface DonationBooking {
-  id: string
-  donation_slot_id: string
-  donor_id: string
-  food_type: string
-  estimated_servings: number
-  special_notes?: string
-  contact_phone?: string
-  status: 'pending' | 'confirmed' | 'cancelled' | 'completed'
-  confirmed_at?: string
-  created_at: string
-  updated_at: string
-  donation_slot?: DonationSlot
-  donor?: UserProfile
+/**
+ * Get monasteries within a specific radius
+ */
+export async function getMonasteriesInRadius(
+  centerLat: number,
+  centerLon: number,
+  radiusKm: number = 50
+): Promise<MonasteryWithDistance[]> {
+  const { data, error } = await supabase
+    .from('monasteries')
+    .select('*')
+    .eq('is_active', true)
+    .not('latitude', 'is', null)
+    .not('longitude', 'is', null);
+
+  if (error || !data) return [];
+
+  return data
+    .map(monastery => ({
+      ...monastery,
+      distance: calculateDistance(centerLat, centerLon, monastery.latitude!, monastery.longitude!)
+    }))
+    .filter(m => m.distance <= radiusKm)
+    .sort((a, b) => a.distance - b.distance);
 }

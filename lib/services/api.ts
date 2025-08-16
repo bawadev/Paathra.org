@@ -351,10 +351,17 @@ export const donationBookingService = {
     }
   },
 
-  updateStatus: async (id: string, status: 'confirmed' | 'cancelled' | 'completed'): Promise<ApiResponse<DonationBooking>> => {
+  updateStatus: async (id: string, status: 'monastery_approved' | 'confirmed' | 'delivered' | 'not_delivered' | 'cancelled'): Promise<ApiResponse<DonationBooking>> => {
+    const updateData: any = { status }
+    
+    // Set appropriate timestamps based on status
+    if (status === 'confirmed') {
+      updateData.confirmed_at = new Date().toISOString()
+    }
+
     const { data, error } = await supabase
       .from('donation_bookings')
-      .update({ status })
+      .update(updateData)
       .eq('id', id)
       .select()
       .single()
@@ -363,6 +370,10 @@ export const donationBookingService = {
       data,
       error: error?.message || null,
     }
+  },
+
+  confirmBooking: async (id: string): Promise<ApiResponse<DonationBooking>> => {
+    return donationBookingService.updateStatus(id, 'confirmed')
   },
 
   cancel: async (id: string): Promise<ApiResponse<DonationBooking>> => {

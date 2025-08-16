@@ -5,7 +5,7 @@ import { Calendar } from '@/components/ui/calendar'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { supabase, DonationSlot, Monastery } from '@/lib/supabase'
+import { supabase, DonationSlot } from '@/lib/supabase'
 import { format, parseISO, isSameDay } from 'date-fns'
 import { Clock, Users, MapPin } from 'lucide-react'
 
@@ -16,26 +16,11 @@ interface DonationCalendarProps {
 export function DonationCalendar({ onSlotSelect }: DonationCalendarProps) {
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date())
   const [slots, setSlots] = useState<DonationSlot[]>([])
-  const [monasteries, setMonasteries] = useState<Monastery[]>([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    fetchMonasteries()
     fetchSlots()
   }, [])
-
-  const fetchMonasteries = async () => {
-    const { data, error } = await supabase
-      .from('monasteries')
-      .select('*')
-      .order('name')
-
-    if (error) {
-      console.error('Error fetching monasteries:', error)
-    } else {
-      setMonasteries(data || [])
-    }
-  }
 
   const fetchSlots = async () => {
     setLoading(true)
@@ -58,16 +43,27 @@ export function DonationCalendar({ onSlotSelect }: DonationCalendarProps) {
     setLoading(false)
   }
 
+  const getEffectiveCapacity = (slot: DonationSlot) => {
+    // Use monastery capacity if available, otherwise fall back to slot capacity
+    return slot.monastery?.capacity || slot.monks_capacity || 0
+  }
+
   const getSlotsForDate = (date: Date) => {
-    return slots.filter(slot => 
-      isSameDay(parseISO(slot.date), date) && 
-      slot.current_bookings < slot.max_donors
-    )
+    return slots.filter(slot => {
+      const effectiveCapacity = getEffectiveCapacity(slot)
+      return isSameDay(parseISO(slot.date), date) && 
+             slot.is_available &&
+             (effectiveCapacity === 0 || slot.monks_fed < effectiveCapacity)
+    })
   }
 
   const getAvailableDates = () => {
     const availableDates = slots
-      .filter(slot => slot.current_bookings < slot.max_donors)
+      .filter(slot => {
+        const effectiveCapacity = getEffectiveCapacity(slot)
+        return slot.is_available &&
+               (effectiveCapacity === 0 || slot.monks_fed < effectiveCapacity)
+      })
       .map(slot => parseISO(slot.date))
     
     return availableDates
@@ -76,8 +72,8 @@ export function DonationCalendar({ onSlotSelect }: DonationCalendarProps) {
   const selectedDateSlots = selectedDate ? getSlotsForDate(selectedDate) : []
 
   return (
-    <div className="grid-dana grid-cols-1 md:grid-cols-2">
-      <Card className="card-dana fade-in">
+    <div className="grid gap-6 md:grid-cols-2">
+      <Card>
         <CardHeader>
           <CardTitle>Select Date</CardTitle>
           <CardDescription>
@@ -101,12 +97,12 @@ export function DonationCalendar({ onSlotSelect }: DonationCalendarProps) {
         </CardContent>
       </Card>
 
-      <Card className="card-dana fade-in-2">
+      <Card>
         <CardHeader>
           <CardTitle>
             Available Slots
             {selectedDate && (
-              <span className="text-sm font-normal text-[var(--text-light)] ml-2">
+              <span className="text-sm font-normal text-gray-500 ml-2">
                 for {format(selectedDate, 'MMMM d, yyyy')}
               </span>
             )}
@@ -117,12 +113,9 @@ export function DonationCalendar({ onSlotSelect }: DonationCalendarProps) {
         </CardHeader>
         <CardContent>
           {loading ? (
-            <div className="flex flex-col items-center space-y-4 py-8">
-              <div className="w-16 h-16 bg-gradient-to-r from-[var(--primary-color)] to-[var(--accent-color)] rounded-full pulse"></div>
-              <div className="text-lg text-[var(--text-light)] fade-in">Loading slots...</div>
-            </div>
+            <div className="text-center py-8">Loading slots...</div>
           ) : selectedDateSlots.length === 0 ? (
-            <div className="text-center py-8 text-[var(--text-light)] fade-in">
+            <div className="text-center py-8 text-gray-500">
               {selectedDate 
                 ? 'No available slots for this date' 
                 : 'Please select a date to view available slots'
@@ -130,35 +123,65 @@ export function DonationCalendar({ onSlotSelect }: DonationCalendarProps) {
             </div>
           ) : (
             <div className="space-y-4">
-              {selectedDateSlots.map((slot) => (
+              {selectedDateSlots.map((slot) => {
+                const effectiveCapacity = getEffectiveCapacity(slot)
+                return (
                 <div
                   key={slot.id}
-                  className="card-dana group overflow-hidden fade-in p-4 cursor-pointer"
+                  className="border rounded-lg p-4 hover:bg-gray-50 cursor-pointer transition-colors"
                   onClick={() => onSlotSelect(slot)}
                 >
                   <div className="flex items-start justify-between">
                     <div className="space-y-2">
                       <h3 className="font-medium">{slot.monastery?.name}</h3>
                       
-                      <div className="flex items-center text-sm text-[var(--text-light)] space-x-4">
+                      <div className="flex items-center text-sm text-gray-600 space-x-4">
                         <div className="flex items-center space-x-1">
-                          <Clock className="w-4 h-4 text-[var(--primary-color)]" />
+                          <Clock className="w-4 h-4" />
                           <span>{format(parseISO(`2000-01-01T${slot.time_slot}`), 'h:mm a')}</span>
                         </div>
                         
                         <div className="flex items-center space-x-1">
-                          <Users className="w-4 h-4 text-[var(--primary-color)]" />
-                          <span>{slot.current_bookings}/{slot.max_donors}</span>
+                          <Users className="w-4 h-4" />
+                          <span>
+                            {effectiveCapacity > 0 
+                              ? `${slot.monks_fed}/${effectiveCapacity} monks fed`
+                              : 'Open capacity'
+                            }
+                          </span>
                         </div>
                       </div>
 
-                      <div className="flex items-center text-sm text-[var(--text-light)]">
-                        <MapPin className="w-4 h-4 mr-1 text-[var(--primary-color)]" />
+                      {/* Progress Bar */}
+                      {effectiveCapacity > 0 && (
+                        <div className="mb-2">
+                          <div className="w-full bg-gray-200 rounded-full h-1.5">
+                            <div 
+                              className="bg-green-600 h-1.5 rounded-full transition-all duration-300" 
+                              style={{ width: `${(slot.monks_fed / effectiveCapacity) * 100}%` }}
+                            ></div>
+                          </div>
+                          <div className="text-xs text-gray-500 mt-1">
+                            {effectiveCapacity - slot.monks_fed} monks remaining
+                          </div>
+                        </div>
+                      )}
+
+                      {effectiveCapacity === 0 && (
+                        <div className="mb-2">
+                          <div className="text-xs text-blue-600 bg-blue-50 px-2 py-1 rounded">
+                            Flexible capacity - Contact monastery for details
+                          </div>
+                        </div>
+                      )}
+
+                      <div className="flex items-center text-sm text-gray-600">
+                        <MapPin className="w-4 h-4 mr-1" />
                         <span>{slot.monastery?.address}</span>
                       </div>
 
                       {slot.special_requirements && (
-                        <div className="text-sm text-[var(--primary-color)] bg-[var(--primary-color)]/5 p-2 rounded">
+                        <div className="text-sm text-blue-600 bg-blue-50 p-2 rounded">
                           {slot.special_requirements}
                         </div>
                       )}
@@ -166,8 +189,7 @@ export function DonationCalendar({ onSlotSelect }: DonationCalendarProps) {
                       {slot.monastery?.dietary_requirements && (
                         <div className="flex flex-wrap gap-1">
                           {slot.monastery.dietary_requirements.map((req) => (
-                            <Badge key={req} variant="secondary"
-                                   className="text-xs bg-[var(--accent-color)]/10 text-[var(--accent-color)]">
+                            <Badge key={req} variant="secondary" className="text-xs">
                               {req.replace('_', ' ')}
                             </Badge>
                           ))}
@@ -175,12 +197,13 @@ export function DonationCalendar({ onSlotSelect }: DonationCalendarProps) {
                       )}
                     </div>
 
-                    <Button size="sm" className="btn-dana btn-dana-primary">
+                    <Button size="sm">
                       Book Slot
                     </Button>
                   </div>
                 </div>
-              ))}
+                )
+              })}
             </div>
           )}
         </CardContent>

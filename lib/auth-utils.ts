@@ -28,17 +28,63 @@ export async function refreshAuthSession() {
     
     if (error) {
       console.error('Session refresh failed:', error)
-      // If refresh fails, clear everything and redirect to login
+      
+      // Handle specific refresh token errors
+      if (isRefreshTokenError(error)) {
+        console.log('Refresh token error detected during refresh attempt')
+        await clearAuthState()
+        return { 
+          success: false, 
+          error, 
+          shouldRedirect: true,
+          message: 'Your session has expired. Please sign in again.'
+        }
+      }
+      
+      // If refresh fails for other reasons, clear everything and redirect to login
       await clearAuthState()
       return { success: false, error }
     }
     
     console.log('Session refreshed successfully')
     return { success: true, data }
-  } catch (error) {
+  } catch (error: any) {
     console.error('Unexpected error during session refresh:', error)
+    
+    // Check if it's a refresh token error
+    if (isRefreshTokenError(error)) {
+      console.log('Refresh token error caught during refresh attempt')
+      await clearAuthState()
+      return { 
+        success: false, 
+        error, 
+        shouldRedirect: true,
+        message: 'Your session has expired. Please sign in again.'
+      }
+    }
+    
     await clearAuthState()
     return { success: false, error }
+  }
+}
+
+// Function to handle any auth-related API call with automatic refresh token error handling
+export async function withAuthErrorHandling<T>(
+  apiCall: () => Promise<T>,
+  onRefreshTokenError?: () => void
+): Promise<T | null> {
+  try {
+    return await apiCall()
+  } catch (error: any) {
+    if (isRefreshTokenError(error)) {
+      console.log('Refresh token error detected in API call')
+      await clearAuthState()
+      if (onRefreshTokenError) {
+        onRefreshTokenError()
+      }
+      return null
+    }
+    throw error // Re-throw non-refresh-token errors
   }
 }
 
@@ -52,29 +98,59 @@ export function isTokenError(error: any): boolean {
     'invalid',
     'unauthorized',
     'authentication',
-    'session'
+    'session',
+    'refresh token not found',
+    'invalid refresh token'
   ]
   
   const message = error.message.toLowerCase()
   return tokenErrorPatterns.some(pattern => message.includes(pattern))
 }
 
+export function isRefreshTokenError(error: any): boolean {
+  if (!error?.message) return false
+  
+  const refreshTokenPatterns = [
+    'invalid refresh token',
+    'refresh token not found',
+    'refresh token expired',
+    'authapierror'
+  ]
+  
+  const message = error.message.toLowerCase()
+  return refreshTokenPatterns.some(pattern => message.includes(pattern))
+}
+
 export async function handleAuthError(error: any) {
   console.error('Handling auth error:', error)
   
+  // Handle specific refresh token errors
+  if (isRefreshTokenError(error)) {
+    console.log('Refresh token error detected, clearing auth state and redirecting')
+    await clearAuthState()
+    
+    return {
+      shouldRedirect: true,
+      message: 'Your session has expired. Please sign in again.',
+      errorType: 'refresh_token'
+    }
+  }
+  
+  // Handle general token-related errors
   if (isTokenError(error)) {
     console.log('Token-related error detected, clearing auth state')
     await clearAuthState()
     
-    // Optionally show a user-friendly message
     return {
       shouldRedirect: true,
-      message: 'Your session has expired. Please sign in again.'
+      message: 'Your session has expired. Please sign in again.',
+      errorType: 'token'
     }
   }
   
   return {
     shouldRedirect: false,
-    message: 'An authentication error occurred. Please try again.'
+    message: 'An authentication error occurred. Please try again.',
+    errorType: 'general'
   }
 }
