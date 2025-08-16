@@ -256,6 +256,7 @@
     "selectSlot": "Select a slot",
     "foodType": "Food Type",
     "estimatedServings": "Estimated Servings",
+    "specialRequirements": "Special Requirements",
     "specialNotes": "Special Notes",
     "createBookingBtn": "Create Guest Booking",
     "manageBookings": "Manage Bookings",
