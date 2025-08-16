@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getLocaleFromHeaders, getServerMessages, formatApiError } from '@/lib/api-locale-context'
-import { supabase } from '@/lib/supabase'
+import { getSupabaseClient } from '@/lib/supabase'
 
 export async function GET(request: NextRequest) {
   try {
@@ -8,6 +8,9 @@ export async function GET(request: NextRequest) {
     
     // Get localized messages for API responses
     const messages = await getServerMessages('Monastery')
+    
+    // Get Supabase client safely
+    const supabase = getSupabaseClient()
     
     // Example: Get monasteries with locale context
     const { data: monasteries, error } = await supabase
@@ -62,6 +65,9 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       )
     }
+    
+    // Get Supabase client safely
+    const supabase = getSupabaseClient()
     
     // Create monastery with locale context
     const { data: monastery, error } = await supabase

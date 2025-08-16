@@ -2,14 +2,28 @@ import { createClient } from '@supabase/supabase-js'
 import { createServerClient } from '@supabase/ssr'
 import { NextRequest, NextResponse } from 'next/server'
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 
-// Client-side Supabase client
-export const supabase = createClient(supabaseUrl, supabaseAnonKey)
+// Function to get Supabase client safely
+export const getSupabaseClient = () => {
+  if (!supabaseUrl || !supabaseAnonKey) {
+    throw new Error('Missing Supabase environment variables. Please check NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY')
+  }
+  return createClient(supabaseUrl, supabaseAnonKey)
+}
+
+// Client-side Supabase client - only initialize if environment variables are available
+export const supabase = supabaseUrl && supabaseAnonKey 
+  ? createClient(supabaseUrl, supabaseAnonKey)
+  : null
 
 // Server-side Supabase client for middleware and server components
 export const createSupabaseServerClient = (request: NextRequest, response: NextResponse) => {
+  if (!supabaseUrl || !supabaseAnonKey) {
+    throw new Error('Missing Supabase environment variables. Please check NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY')
+  }
+  
   return createServerClient(
     supabaseUrl,
     supabaseAnonKey,
@@ -60,6 +74,9 @@ export const createSupabaseServerClient = (request: NextRequest, response: NextR
 // Re-export types from centralized location
 export * from './types'
 
+// Import specific types
+import type { MonasteryWithDistance } from './types/database.types'
+
 // Location-based functions
 import { calculateDistance } from './location-utils'
 
@@ -71,7 +88,9 @@ export async function getMonasteriesWithDistance(
   userLon?: number,
   maxDistance = 100 // km
 ): Promise<MonasteryWithDistance[]> {
-  let query = supabase
+  const client = getSupabaseClient();
+  
+  let query = client
     .from('monasteries')
     .select('*')
     .eq('is_active', true)
@@ -107,7 +126,9 @@ export async function getMonasteriesWithDistance(
  * Update user location in profile
  */
 export async function updateUserLocation(userId: string, latitude: number, longitude: number, address?: string) {
-  const { error } = await supabase
+  const client = getSupabaseClient();
+  
+  const { error } = await client
     .from('user_profiles')
     .update({
       latitude,
@@ -123,7 +144,9 @@ export async function updateUserLocation(userId: string, latitude: number, longi
  * Update monastery location
  */
 export async function updateMonasteryLocation(monasteryId: string, latitude: number, longitude: number, address?: string) {
-  const { error } = await supabase
+  const client = getSupabaseClient();
+  
+  const { error } = await client
     .from('monasteries')
     .update({
       latitude,
@@ -143,7 +166,9 @@ export async function getMonasteriesInRadius(
   centerLon: number,
   radiusKm: number = 50
 ): Promise<MonasteryWithDistance[]> {
-  const { data, error } = await supabase
+  const client = getSupabaseClient();
+  
+  const { data, error } = await client
     .from('monasteries')
     .select('*')
     .eq('is_active', true)
