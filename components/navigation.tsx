@@ -115,18 +115,6 @@ export function Navigation() {
                         </NavigationMenuLink>
                         <NavigationMenuLink asChild>
                           <Link
-                            href="/manage/slots"
-                            className="flex flex-row items-center space-x-2 p-3 rounded-md dropdown-item-hover transition-all duration-300"
-                          >
-                            <Calendar className="w-4 h-4 flex-shrink-0 text-[var(--primary-color)]" />
-                            <div>
-                              <div className="font-medium">{t('donationSlots')}</div>
-                              <div className="text-sm text-gray-500">{t('donationSlotsDesc')}</div>
-                            </div>
-                          </Link>
-                        </NavigationMenuLink>
-                        <NavigationMenuLink asChild>
-                          <Link
                             href="/manage/bookings"
                             className="flex flex-row items-center space-x-2 p-3 rounded-md dropdown-item-hover transition-all duration-300"
                           >
@@ -134,18 +122,6 @@ export function Navigation() {
                             <div>
                               <div className="font-medium">{t('bookings')}</div>
                               <div className="text-sm text-gray-500">{t('bookingsDesc')}</div>
-                            </div>
-                          </Link>
-                        </NavigationMenuLink>
-                        <NavigationMenuLink asChild>
-                          <Link
-                            href="/manage/guest-bookings"
-                            className="flex flex-row items-center space-x-2 p-3 rounded-md dropdown-item-hover transition-all duration-300"
-                          >
-                            <Phone className="w-4 h-4 flex-shrink-0 text-[var(--primary-color)]" />
-                            <div>
-                              <div className="font-medium">{t('guestBookings')}</div>
-                              <div className="text-sm text-gray-500">{t('guestBookingsDesc')}</div>
                             </div>
                           </Link>
                         </NavigationMenuLink>

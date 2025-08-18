@@ -25,7 +25,7 @@ export const BOOKING_WORKFLOW: Record<string, BookingWorkflowTransition> = {
   
   // Monastery can mark confirmed donations as delivered
   markDelivered: {
-    from: ['confirmed'],
+    from: ['confirmed', 'monastery_approved'],
     to: 'delivered',
     allowedRoles: ['monastery_admin', 'super_admin'],
     requiresData: ['delivery_confirmed_by'],
@@ -33,7 +33,7 @@ export const BOOKING_WORKFLOW: Record<string, BookingWorkflowTransition> = {
   
   // Monastery can mark confirmed donations as not delivered
   markNotDelivered: {
-    from: ['confirmed'],
+    from: ['confirmed', 'monastery_approved'],
     to: 'not_delivered',
     allowedRoles: ['monastery_admin', 'super_admin'],
     requiresData: ['delivery_confirmed_by'],

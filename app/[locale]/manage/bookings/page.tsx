@@ -11,7 +11,7 @@ import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Textarea } from '@/components/ui/textarea'
-import { CalendarBookingView } from '@/components/calendar-booking-view'
+import { CalendarSlotView } from '@/components/calendar-slot-view'
 import { supabase } from '@/lib/supabase'
 import { executeBookingTransition } from '@/lib/services/booking-workflow'
 import { format, parseISO } from 'date-fns'
@@ -305,11 +305,15 @@ export default function ManageBookingsPage() {
               </CardContent>
             </Card>
 
-            {/* Calendar View */}
-            <CalendarBookingView
+            {/* Calendar View with Slot Management */}
+            <CalendarSlotView
               monasteryId={monastery.id}
               bookings={filteredBookings.map(booking => ({
                 ...booking,
+                donation_slots: {
+                  ...booking.donation_slots,
+                  capacity: monastery.capacity
+                },
                 monasteries: { capacity: monastery.capacity }
               }))}
               onBookingAction={(bookingId, action) => updateBookingStatus(bookingId, action as any)}

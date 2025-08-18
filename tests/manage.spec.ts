@@ -36,8 +36,8 @@ test.describe('Management Pages', () => {
     await page.screenshot({ path: 'test-results/manage-monastery.png' });
   });
 
-  test('should load manage slots page', async ({ page }) => {
-    await page.goto('/manage/slots');
+  test('should load manage bookings page with slot management', async ({ page }) => {
+    await page.goto('/manage/bookings');
     await page.waitForLoadState('networkidle');
     
     // Check for basic page functionality
@@ -45,6 +45,6 @@ test.describe('Management Pages', () => {
     expect(bodyText).not.toContain('404');
     expect(bodyText).not.toContain('This page could not be found');
     
-    await page.screenshot({ path: 'test-results/manage-slots.png' });
+    await page.screenshot({ path: 'test-results/manage-bookings-with-slots.png' });
   });
 });
