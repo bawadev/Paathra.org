@@ -90,6 +90,14 @@ export function CalendarSlotView({ monasteryId, bookings, onBookingAction, onCre
   })
   const [creatingBooking, setCreatingBooking] = useState(false)
 
+  // Phone lookup state
+  const [phoneLookup, setPhoneLookup] = useState({
+    loading: false,
+    found: false,
+    error: '',
+    isGuest: false
+  })
+
   // Fetch monastery details
   useEffect(() => {
     const fetchMonastery = async () => {
@@ -343,12 +351,119 @@ export function CalendarSlotView({ monasteryId, bookings, onBookingAction, onCre
     return donationSlots.filter(slot => slot.is_available && slot.date === format(selectedDate, 'yyyy-MM-dd'))
   }
 
-  const createBooking = async () => {
+  // Phone-based donor lookup
+  const handlePhoneLookup = async () => {
+    const phone = bookingFormData.donor_phone.trim();
+    if (!phone) return;
+
+    setPhoneLookup({
+      loading: true,
+      found: false,
+      error: '',
+      isGuest: false
+    });
+
+    try {
+      // First, search in user_profiles
+      const { data: userProfile } = await supabase
+        .from('user_profiles')
+        .select('full_name, email')
+        .eq('phone', phone)
+        .single();
+
+      if (userProfile) {
+        setBookingFormData(prev => ({
+          ...prev,
+          donor_name: userProfile.full_name,
+          donor_email: userProfile.email
+        }));
+        setPhoneLookup({
+          loading: false,
+          found: true,
+          error: '',
+          isGuest: false
+        });
+        return;
+      }
+
+      // Then, search in guest_profiles
+      const { data: guestProfile } = await supabase
+        .from('guest_profiles')
+        .select('full_name, email')
+        .eq('phone', phone)
+        .single();
+
+      if (guestProfile) {
+        setBookingFormData(prev => ({
+          ...prev,
+          donor_name: guestProfile.full_name,
+          donor_email: guestProfile.email
+        }));
+        setPhoneLookup({
+          loading: false,
+          found: true,
+          error: '',
+          isGuest: true
+        });
+        return;
+      }
+
+      // No existing profile found
+      setPhoneLookup({
+        loading: false,
+        found: false,
+        error: 'New donor - please complete details',
+        isGuest: false
+      });
+    } catch (error) {
+      console.error('Phone lookup error:', error);
+      setPhoneLookup({
+        loading: false,
+        found: false,
+        error: 'Error looking up phone number',
+        isGuest: false
+      });
+    }
+  };
+
+const createBooking = async () => {
     if (!selectedDate || !monastery) return
 
     setCreatingBooking(true)
 
     try {
+      let guestId = null;
+
+      // Handle new donor creation if phone doesn't exist in either table
+      if (!phoneLookup.found && bookingFormData.donor_phone) {
+        const { data: existingGuest } = await supabase
+          .from('guest_profiles')
+          .select('id')
+          .eq('phone', bookingFormData.donor_phone)
+          .single();
+
+        if (existingGuest) {
+          guestId = existingGuest.id;
+        } else {
+          // Create new guest profile
+          const { data: newGuest } = await supabase
+            .from('guest_profiles')
+            .insert({
+              phone: bookingFormData.donor_phone,
+              full_name: bookingFormData.donor_name,
+              email: bookingFormData.donor_email,
+              monastery_id: monasteryId,
+              created_at: new Date().toISOString()
+            })
+            .select()
+            .single();
+          
+          if (newGuest) {
+            guestId = newGuest.id;
+          }
+        }
+      }
+
       // Find or create slot for the selected time
       let slotId = bookingFormData.selected_slot_id
       
@@ -388,7 +503,8 @@ export function CalendarSlotView({ monasteryId, bookings, onBookingAction, onCre
           guest_email: bookingFormData.donor_email,
           guest_phone: bookingFormData.donor_phone,
           status: 'monastery_approved', // Auto-approved for monastery admin bookings
-          confirmed_at: new Date().toISOString()
+          confirmed_at: new Date().toISOString(),
+          guest_profile_id: guestId
         })
 
       if (bookingError) throw bookingError
@@ -405,6 +521,12 @@ export function CalendarSlotView({ monasteryId, bookings, onBookingAction, onCre
         selected_slot_id: '',
         selected_time: ''
       })
+      setPhoneLookup({
+        loading: false,
+        found: false,
+        error: '',
+        isGuest: false
+      })
 
       // Refresh slots and bookings
       fetchSlotsForDate(selectedDate)
@@ -420,7 +542,7 @@ export function CalendarSlotView({ monasteryId, bookings, onBookingAction, onCre
   const openBookingDialog = () => {
     if (!selectedDate) return
     
-    // Reset form with default values
+    // Reset form and phone lookup state
     setBookingFormData({
       donor_name: '',
       donor_email: '',
@@ -430,6 +552,13 @@ export function CalendarSlotView({ monasteryId, bookings, onBookingAction, onCre
       special_notes: '',
       selected_slot_id: '',
       selected_time: ''
+    })
+    
+    setPhoneLookup({
+      loading: false,
+      found: false,
+      error: '',
+      isGuest: false
     })
     
     setBookingDialogOpen(true)
@@ -1042,7 +1171,46 @@ export function CalendarSlotView({ monasteryId, bookings, onBookingAction, onCre
           </DialogHeader>
           
           <div className="space-y-4">
-            {/* Donor Information */}
+            {/* Phone Number Lookup - First Field */}
+            <div className="space-y-2">
+              <Label>Donor Phone *</Label>
+              <div className="flex gap-2">
+                <Input
+                  type="tel"
+                  value={bookingFormData.donor_phone}
+                  onChange={(e) => setBookingFormData(prev => ({ ...prev, donor_phone: e.target.value }))}
+                  onBlur={() => handlePhoneLookup()}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      e.preventDefault();
+                      handlePhoneLookup();
+                    }
+                  }}
+                  placeholder="Enter phone number to auto-fill details"
+                  required
+                  className="flex-1"
+                />
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={handlePhoneLookup}
+                  disabled={!bookingFormData.donor_phone || phoneLookup.loading}
+                >
+                  {phoneLookup.loading ? 'Searching...' : 'Lookup'}
+                </Button>
+              </div>
+              {phoneLookup.error && (
+                <p className="text-sm text-red-600">{phoneLookup.error}</p>
+              )}
+              {phoneLookup.found && (
+                <Badge variant="outline" className="bg-green-50 text-green-700">
+                  ✓ Donor found
+                </Badge>
+              )}
+            </div>
+
+            {/* Donor Name */}
             <div className="space-y-2">
               <Label>Donor Name *</Label>
               <Input
@@ -1053,6 +1221,7 @@ export function CalendarSlotView({ monasteryId, bookings, onBookingAction, onCre
               />
             </div>
 
+            {/* Donor Email */}
             <div className="space-y-2">
               <Label>Donor Email *</Label>
               <Input
@@ -1061,16 +1230,6 @@ export function CalendarSlotView({ monasteryId, bookings, onBookingAction, onCre
                 onChange={(e) => setBookingFormData(prev => ({ ...prev, donor_email: e.target.value }))}
                 placeholder="Enter donor email"
                 required
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label>Donor Phone</Label>
-              <Input
-                type="tel"
-                value={bookingFormData.donor_phone}
-                onChange={(e) => setBookingFormData(prev => ({ ...prev, donor_phone: e.target.value }))}
-                placeholder="Enter donor phone"
               />
             </div>
 

@@ -42,7 +42,8 @@
       "Bash(.claude/hooks/branch-manager.sh:*)",
       "Bash(git branch:*)",
       "Bash(node:*)",
-      "mcp__playwright-mcp__browser_type"
+      "mcp__playwright-mcp__browser_type",
+      "Bash(lsof:*)"
     ],
     "deny": []
   }
