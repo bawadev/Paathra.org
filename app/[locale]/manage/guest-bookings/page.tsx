@@ -9,6 +9,7 @@ import { ManageGuestBookings } from '@/components/manage-guest-bookings'
 import { supabase, Monastery, DonationSlot } from '@/lib/supabase'
 import { hasRole } from '@/types/auth'
 import { Card, CardContent } from '@/components/ui/card'
+import { format } from 'date-fns'
 
 export default function GuestBookingsPage() {
   const { user, profile, loading: authLoading } = useAuth()
@@ -16,10 +17,29 @@ export default function GuestBookingsPage() {
   const [donationSlots, setDonationSlots] = useState<DonationSlot[]>([])
   const [loading, setLoading] = useState(true)
   const [activeTab, setActiveTab] = useState<'create' | 'manage'>('create')
+  const [preselectedData, setPreselectedData] = useState<{
+    selectedDate?: string
+    availableSlots?: any[]
+    monasteryId?: string
+    monasteryName?: string
+  } | null>(null)
 
   useEffect(() => {
     if (user && hasRole(profile, 'monastery_admin')) {
       fetchMonasteryData()
+    }
+    
+    // Check for preselected booking data from calendar
+    const storedData = sessionStorage.getItem('guestBookingPreselection')
+    if (storedData) {
+      try {
+        const parsedData = JSON.parse(storedData)
+        setPreselectedData(parsedData)
+        // Clear the stored data after using it
+        sessionStorage.removeItem('guestBookingPreselection')
+      } catch (error) {
+        console.error('Error parsing preselected booking data:', error)
+      }
     }
   }, [user, profile])
 
@@ -103,6 +123,21 @@ export default function GuestBookingsPage() {
           <p className="text-gray-600">
             Create and manage bookings for guests who call to make reservations.
           </p>
+          {preselectedData && preselectedData.selectedDate && (
+            <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+              <div className="flex items-center">
+                <svg className="h-5 w-5 text-blue-600 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+                </svg>
+                <div>
+                  <h4 className="text-sm font-medium text-blue-800">Pre-selected Date</h4>
+                  <p className="text-sm text-blue-700">
+                    Creating booking for {format(new Date(preselectedData.selectedDate), 'MMMM d, yyyy')}
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
 
         {loading ? (
@@ -150,10 +185,11 @@ export default function GuestBookingsPage() {
             
             {activeTab === 'create' && (
               <div>
-                <GuestBookingForm 
-                  monasteryId={monastery.id} 
-                  donationSlots={donationSlots}
+                <GuestBookingForm
+                  monasteryId={monastery.id}
+                  donationSlots={preselectedData?.availableSlots || donationSlots}
                   onBookingComplete={refreshData}
+                  preselectedDate={preselectedData?.selectedDate}
                 />
               </div>
             )}

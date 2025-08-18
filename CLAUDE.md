@@ -21,7 +21,7 @@ npm run test:headed  # Run tests with visible browser
 npm run test:debug   # Run tests in debug mode
 npm run test:report  # View test report
 
-# Database
+# Databasef
 npm run db:reset     # Reset Supabase local development database
 npm run db:types     # Generate TypeScript types from database
 npm run db:studio    # Open Supabase Studio
@@ -294,3 +294,16 @@ npm run test:debug -- --headed --project=chromium
 # Check build
 npm run build:ci
 ```
+
+# Workflow
+
+You need to follow below rules with every action
+- Use supabase mcp when you have doubts on db structure and tasks involve db. 
+- Makesure to ask permission before changing db structure always
+- After every task you need to test the feature using playwrite mcp. don't use the screenshot feature, just analyse only from console and text form of dom
+- Use credentials in .creds to login when you use playwrite mcp
+- Dont assume task is success, instead test through the playwite mcp and verify.
+- If you need to read documantion use context7 mcp or do a web search.
+- If you keep running into same issue do a web search
+- Alway use ide provided tools to tasks like detect errors or warnings after any implementation.
+- might be is not good enough. try to validate and come to a solid conclution as much as possible in the planing phase

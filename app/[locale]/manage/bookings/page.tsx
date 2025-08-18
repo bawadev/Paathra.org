@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { useRouter, usePathname } from 'next/navigation'
 import { useAuth } from '@/lib/auth-context'
 import { Navigation } from '@/components/navigation'
 import { AuthForm } from '@/components/auth-form'
@@ -28,6 +29,8 @@ import {
 
 export default function ManageBookingsPage() {
   const { user, profile, loading: authLoading } = useAuth()
+  const router = useRouter()
+  const pathname = usePathname()
   const [monastery, setMonastery] = useState<any | null>(null)
   const [bookings, setBookings] = useState<any[]>([])
   const [filteredBookings, setFilteredBookings] = useState<any[]>([])
@@ -222,6 +225,22 @@ export default function ManageBookingsPage() {
     }
   }
 
+  const handleCreateGuestBooking = (date: Date, availableSlots: any[]) => {
+    // Store the selected date and slots in sessionStorage for the guest booking page
+    const bookingData = {
+      selectedDate: date.toISOString(),
+      availableSlots: availableSlots,
+      monasteryId: monastery?.id,
+      monasteryName: monastery?.name
+    }
+    
+    sessionStorage.setItem('guestBookingPreselection', JSON.stringify(bookingData))
+    
+    // Extract locale from current pathname and navigate to guest bookings page
+    const locale = pathname.split('/')[1] // Get locale from /[locale]/manage/bookings
+    router.push(`/${locale}/manage/guest-bookings`)
+  }
+
   if (authLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -294,6 +313,7 @@ export default function ManageBookingsPage() {
                 monasteries: { capacity: monastery.capacity }
               }))}
               onBookingAction={(bookingId, action) => updateBookingStatus(bookingId, action as any)}
+              onCreateGuestBooking={handleCreateGuestBooking}
             />
           </div>
         )}

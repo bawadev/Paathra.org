@@ -34,9 +34,10 @@ interface GuestBookingFormProps {
   monasteryId: string
   donationSlots: DonationSlot[]
   onBookingComplete?: () => void
+  preselectedDate?: string | undefined
 }
 
-export function GuestBookingForm({ monasteryId, donationSlots, onBookingComplete }: GuestBookingFormProps) {
+export function GuestBookingForm({ monasteryId, donationSlots, onBookingComplete, preselectedDate }: GuestBookingFormProps) {
   const t = useTranslations('GuestBookings')
   const [guests, setGuests] = useState<GuestProfile[]>([])
   const [selectedGuest, setSelectedGuest] = useState<GuestProfile | null>(null)
@@ -141,6 +142,33 @@ export function GuestBookingForm({ monasteryId, donationSlots, onBookingComplete
 
     try {
       let guestProfileId = selectedGuest?.id
+      let actualSlotId = formData.donationSlotId
+
+      // Check if we need to create a new slot (for slots with temporary IDs)
+      if (formData.donationSlotId.startsWith('new-')) {
+        const selectedSlot = availableSlots.find(slot => slot.id === formData.donationSlotId)
+        if (selectedSlot) {
+          // Create the donation slot first
+          const { data: newSlot, error: slotError } = await supabase
+            .from('donation_slots')
+            .insert({
+              monastery_id: monasteryId,
+              date: selectedSlot.date,
+              time_slot: selectedSlot.time_slot,
+              max_donors: selectedSlot.max_donors,
+              current_bookings: 0,
+              is_available: true,
+              meal_type: selectedSlot.meal_type,
+              monks_capacity: (selectedSlot as any).monks_capacity || 50,
+              monks_fed: 0
+            })
+            .select()
+            .single()
+
+          if (slotError) throw slotError
+          actualSlotId = newSlot.id
+        }
+      }
 
       // Create or update guest profile
       if (!selectedGuest) {
@@ -159,7 +187,7 @@ export function GuestBookingForm({ monasteryId, donationSlots, onBookingComplete
 
         if (guestError) throw guestError
         guestProfileId = newGuest.id
-      } else if (formData.phone !== selectedGuest.phone || 
+      } else if (formData.phone !== selectedGuest.phone ||
                  formData.fullName !== selectedGuest.full_name ||
                  formData.email !== selectedGuest.email ||
                  formData.address !== selectedGuest.address ||
@@ -183,7 +211,7 @@ export function GuestBookingForm({ monasteryId, donationSlots, onBookingComplete
       const { error: bookingError } = await supabase
         .from('guest_bookings')
         .insert({
-          donation_slot_id: formData.donationSlotId,
+          donation_slot_id: actualSlotId,
           guest_profile_id: guestProfileId,
           food_type: formData.foodType,
           estimated_servings: formData.estimatedServings,
@@ -223,18 +251,49 @@ export function GuestBookingForm({ monasteryId, donationSlots, onBookingComplete
   }
 
   const filteredGuests = searchGuests(searchQuery)
-  const availableSlots = donationSlots.filter(slot => 
-    slot.current_bookings < slot.max_donors && 
-    new Date(slot.date) >= new Date()
-  )
+  
+  // Filter slots based on preselected date if provided
+  const availableSlots = donationSlots.filter(slot => {
+    // Compare dates only (ignore time) for availability check
+    const today = new Date()
+    today.setHours(0, 0, 0, 0)
+    const slotDate = new Date(slot.date)
+    slotDate.setHours(0, 0, 0, 0)
+    
+    // For preselected dates from CalendarBookingView, use the provided current_bookings
+    // For database slots, use the provided current_bookings (which may be calculated)
+    const isAvailable = slot.current_bookings < slot.max_donors && slotDate >= today
+    
+    if (preselectedDate) {
+      const preselectedDateOnly = preselectedDate.split('T')[0] // Get just the date part
+      return isAvailable && slot.date === preselectedDateOnly
+    }
+    
+    return isAvailable
+  })
 
   return (
     <Card>
       <CardHeader>
         <CardTitle>{t('createBooking')}</CardTitle>
         <CardDescription>
-          {t('createBookingDesc')}
+          {preselectedDate
+            ? `Creating booking for ${format(new Date(preselectedDate), 'MMMM d, yyyy')}`
+            : t('createBookingDesc')
+          }
         </CardDescription>
+        {preselectedDate && (
+          <div className="mt-2 p-3 bg-green-50 border border-green-200 rounded-lg">
+            <div className="flex items-center">
+              <svg className="h-4 w-4 text-green-600 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+              </svg>
+              <span className="text-sm font-medium text-green-800">
+                Date pre-selected from calendar - {availableSlots.length} slot(s) available
+              </span>
+            </div>
+          </div>
+        )}
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-6">
@@ -375,8 +434,8 @@ export function GuestBookingForm({ monasteryId, donationSlots, onBookingComplete
                 <option value="">{t('selectSlot')}</option>
                 {availableSlots.map((slot) => (
                   <option key={slot.id} value={slot.id}>
-                    {format(new Date(slot.date), 'MMM d')} - {slot.meal_type} at {slot.time_slot} 
-                    ({slot.current_bookings}/{slot.max_donors} booked)
+                    {format(new Date(slot.date), 'MMM d')} - {slot.meal_type || 'Meal'} at {slot.time_slot}
+                    ({slot.current_bookings || 0}/{slot.max_donors || 0} booked)
                   </option>
                 ))}
               </select>

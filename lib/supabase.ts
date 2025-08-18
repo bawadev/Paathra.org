@@ -5,8 +5,9 @@ import { supabaseConfig } from './env'
 
 // Function to get Supabase client safely
 export const getSupabaseClient = () => {
-  if (!supabaseConfig.url || !supabaseConfig.anonKey) {
-    console.warn('Supabase environment variables not configured. Some features may not work.')
+  // Validate URL format before creating client
+  if (!supabaseConfig.url || !supabaseConfig.anonKey || !isValidUrl(supabaseConfig.url)) {
+    console.warn('Supabase environment variables not configured properly. Some features may not work.')
     // Return a mock client that prevents null errors
     return {
       auth: {
@@ -15,24 +16,37 @@ export const getSupabaseClient = () => {
         onAuthStateChange: () => ({ data: { subscription: null }, error: null }),
       },
       from: () => ({
-        select: () => ({ data: [], error: null }),
-        insert: () => ({ data: null, error: new Error('Supabase not configured') }),
-        update: () => ({ data: null, error: new Error('Supabase not configured') }),
-        delete: () => ({ data: null, error: new Error('Supabase not configured') }),
+        select: () => Promise.resolve({ data: [], error: null }),
+        insert: () => Promise.resolve({ data: null, error: new Error('Supabase not configured') }),
+        update: () => Promise.resolve({ data: null, error: new Error('Supabase not configured') }),
+        delete: () => Promise.resolve({ data: null, error: new Error('Supabase not configured') }),
+        eq: function() { return this },
+        not: function() { return this },
+        order: function() { return this },
       }),
     } as any
   }
   return createClient(supabaseConfig.url, supabaseConfig.anonKey)
 }
 
+// Helper function to validate URL
+function isValidUrl(string: string): boolean {
+  try {
+    new URL(string)
+    return true
+  } catch (_) {
+    return false
+  }
+}
+
 // Client-side Supabase client - always return a client (real or mock)
 export const supabase = (() => {
-  if (supabaseConfig.url && supabaseConfig.anonKey) {
+  if (supabaseConfig.url && supabaseConfig.anonKey && isValidUrl(supabaseConfig.url)) {
     return createClient(supabaseConfig.url, supabaseConfig.anonKey)
   }
   
   // Return mock client to prevent null errors
-  console.warn('Supabase environment variables not configured. Using mock client.')
+  console.warn('Supabase environment variables not configured properly. Using mock client.')
   return {
     auth: {
       getUser: () => Promise.resolve({ data: { user: null }, error: null }),
@@ -46,14 +60,31 @@ export const supabase = (() => {
       delete: () => Promise.resolve({ data: null, error: new Error('Supabase not configured') }),
       eq: function() { return this },
       not: function() { return this },
+      order: function() { return this },
     }),
   } as any
 })()
 
 // Server-side Supabase client for middleware and server components
 export const createSupabaseServerClient = (request: NextRequest, response: NextResponse) => {
-  if (!supabaseConfig.url || !supabaseConfig.anonKey) {
-    throw new Error('Missing Supabase environment variables. Please check NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY')
+  if (!supabaseConfig.url || !supabaseConfig.anonKey || !isValidUrl(supabaseConfig.url)) {
+    console.warn('Missing or invalid Supabase environment variables. Please check NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY')
+    // Return a mock server client instead of throwing
+    return {
+      auth: {
+        getUser: () => Promise.resolve({ data: { user: null }, error: null }),
+        signOut: () => Promise.resolve({ error: null }),
+      },
+      from: () => ({
+        select: () => Promise.resolve({ data: [], error: null }),
+        insert: () => Promise.resolve({ data: null, error: new Error('Supabase not configured') }),
+        update: () => Promise.resolve({ data: null, error: new Error('Supabase not configured') }),
+        delete: () => Promise.resolve({ data: null, error: new Error('Supabase not configured') }),
+        eq: function() { return this },
+        not: function() { return this },
+        order: function() { return this },
+      }),
+    } as any
   }
   
   return createServerClient(

@@ -36,7 +36,13 @@
       "Bash(npx tsc:*)",
       "Bash(sed:*)",
       "mcp__ide__executeCode",
-      "Bash(npm run:*)"
+      "Bash(npm run:*)",
+      "WebSearch",
+      "WebFetch(domain:docs.anthropic.com)",
+      "Bash(.claude/hooks/branch-manager.sh:*)",
+      "Bash(git branch:*)",
+      "Bash(node:*)",
+      "mcp__playwright-mcp__browser_type"
     ],
     "deny": []
   }
