@@ -9,7 +9,7 @@ import { DonationSlot } from '@/lib/supabase'
 import { supabase } from '@/lib/supabase'
 import { AuthForm } from '@/components/auth-form'
 import { Button } from '@/components/ui/button'
-import { CheckCircle, Heart, Users, Gift } from 'lucide-react'
+import { Heart, Users, Gift } from 'lucide-react'
 import { BookingConfirmationDialog } from '@/components/booking-confirmation-dialog'
 
 export default function DonatePage() {

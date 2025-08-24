@@ -8,7 +8,7 @@ export interface UserProfile {
   email: string
   phone?: string
   user_types: UserType[]
-  avatar_url?: string
+  avatar_url?: string | undefined
   address?: string
   created_at: string
   updated_at: string

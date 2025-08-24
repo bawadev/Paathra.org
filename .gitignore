@@ -45,3 +45,13 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# claude code
+.claude/
+.creds
+
+# playwright mcp screenshots
+.playwright-mcp/
+
+# temporary test files
+test-slot-creation.js

@@ -26,14 +26,13 @@ import {
   Dialog,
   DialogContent,
   DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog'
 import { supabase, UserProfile } from '@/lib/supabase'
 import { LoadingSpinner } from '@/components/loading'
-import { Search, Edit, Trash2, UserPlus, Filter } from 'lucide-react'
+import { Search, Edit, Trash2, Filter } from 'lucide-react'
 import { toast } from 'sonner'
 import { UserType, hasRole, getUserTypeDisplayName } from '@/types/auth'
 
@@ -43,8 +42,6 @@ export default function UserManagement() {
   const [loading, setLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState('')
   const [filterType, setFilterType] = useState<string>('all')
-  const [selectedUser, setSelectedUser] = useState<UserProfile | null>(null)
-  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
 
   // Helper function to get the primary user type (highest priority)
   const getPrimaryUserType = (user: UserProfile): UserType => {

@@ -1,0 +1,25 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "type": "command",
+        "command": ".claude/hooks/branch-manager.sh start",
+        "timeout": 10
+      }
+    ],
+    "Stop": [
+      {
+        "type": "command",
+        "command": ".claude/hooks/auto-commit.sh",
+        "timeout": 30
+      }
+    ]
+  },
+  "git": {
+    "autoCommit": true,
+    "protectedBranches": ["main", "master", "develop", "deployement-branch"],
+    "branchPrefix": "claude-development-",
+    "commitTemplate": "feat: {task_name} - {change_summary}",
+    "dryRun": false
+  }
+}

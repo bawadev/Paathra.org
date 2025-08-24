@@ -8,7 +8,7 @@ import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { format } from 'date-fns'
-import { Plus, Check } from 'lucide-react'
+import { Plus, Check, UserCheck } from 'lucide-react'
 import { toast } from 'sonner'
 import { useTranslations } from 'next-intl'
 
@@ -34,15 +34,18 @@ interface GuestBookingFormProps {
   monasteryId: string
   donationSlots: DonationSlot[]
   onBookingComplete?: () => void
+  preselectedDate?: string | undefined
 }
 
-export function GuestBookingForm({ monasteryId, donationSlots, onBookingComplete }: GuestBookingFormProps) {
+export function GuestBookingForm({ monasteryId, donationSlots, onBookingComplete, preselectedDate }: GuestBookingFormProps) {
   const t = useTranslations('GuestBookings')
   const [guests, setGuests] = useState<GuestProfile[]>([])
   const [selectedGuest, setSelectedGuest] = useState<GuestProfile | null>(null)
   const [searchQuery, setSearchQuery] = useState('')
   const [showGuestSearch, setShowGuestSearch] = useState(false)
   const [loading, setLoading] = useState(false)
+  const [registeredUser, setRegisteredUser] = useState<any>(null)
+  const [showRegisteredUserAlert, setShowRegisteredUserAlert] = useState(false)
 
   const [formData, setFormData] = useState({
     phone: '',
@@ -126,12 +129,45 @@ export function GuestBookingForm({ monasteryId, donationSlots, onBookingComplete
     setShowGuestSearch(false)
   }
 
+  const checkForRegisteredUser = async (phone: string) => {
+    if (!phone || phone.length < 10) {
+      setRegisteredUser(null)
+      setShowRegisteredUserAlert(false)
+      return
+    }
+
+    try {
+      const { data, error } = await supabase
+        .from('user_profiles')
+        .select('id, full_name, email, phone, address')
+        .eq('phone', phone)
+        .single()
+
+      if (data && !error) {
+        setRegisteredUser(data)
+        setShowRegisteredUserAlert(true)
+      } else {
+        setRegisteredUser(null)
+        setShowRegisteredUserAlert(false)
+      }
+    } catch (error) {
+      console.error('Error checking registered user:', error)
+      setRegisteredUser(null)
+      setShowRegisteredUserAlert(false)
+    }
+  }
+
   const handleInputChange = (field: string, value: string | number) => {
     setFormData({ ...formData, [field]: value })
     
     // If phone is being changed and doesn't match selected guest, clear selection
     if (field === 'phone' && selectedGuest && selectedGuest.phone !== value) {
       setSelectedGuest(null)
+    }
+    
+    // Check for registered user when phone changes
+    if (field === 'phone') {
+      checkForRegisteredUser(value as string)
     }
   }
 
@@ -140,61 +176,113 @@ export function GuestBookingForm({ monasteryId, donationSlots, onBookingComplete
     setLoading(true)
 
     try {
-      let guestProfileId = selectedGuest?.id
-
-      // Create or update guest profile
-      if (!selectedGuest) {
-        const { data: newGuest, error: guestError } = await supabase
-          .from('guest_profiles')
+      // Check if this is a registered user
+      if (registeredUser) {
+        // Create donor booking instead of guest booking
+        const { data: booking, error: bookingError } = await supabase
+          .from('donation_bookings')
           .insert({
-            phone: formData.phone,
-            full_name: formData.fullName,
-            email: formData.email || null,
-            address: formData.address || null,
-            notes: formData.notes || null,
-            monastery_id: monasteryId
+            donation_slot_id: formData.donationSlotId,
+            donor_id: registeredUser.id,
+            food_type: formData.foodType,
+            estimated_servings: formData.estimatedServings,
+            special_notes: formData.specialNotes,
+            contact_phone: formData.phone,
+            status: 'monastery_approved', // Auto-approve since monastery admin is creating it
+            monastery_approved_at: new Date().toISOString(),
+            initiated_by: 'monastery_admin'
           })
           .select()
           .single()
 
-        if (guestError) throw guestError
-        guestProfileId = newGuest.id
-      } else if (formData.phone !== selectedGuest.phone || 
-                 formData.fullName !== selectedGuest.full_name ||
-                 formData.email !== selectedGuest.email ||
-                 formData.address !== selectedGuest.address ||
-                 formData.notes !== selectedGuest.notes) {
-        // Update existing guest
-        const { error: updateError } = await supabase
-          .from('guest_profiles')
-          .update({
-            phone: formData.phone,
-            full_name: formData.fullName,
-            email: formData.email || null,
-            address: formData.address || null,
-            notes: formData.notes || null
+        if (bookingError) throw bookingError
+
+        toast.success(`Booking created for registered user ${registeredUser.full_name}! Auto-approved by monastery.`)
+      } else {
+        // Original guest booking logic
+        let guestProfileId = selectedGuest?.id
+        let actualSlotId = formData.donationSlotId
+
+        // Check if we need to create a new slot (for slots with temporary IDs)
+        if (formData.donationSlotId.startsWith('new-')) {
+          const selectedSlot = availableSlots.find(slot => slot.id === formData.donationSlotId)
+          if (selectedSlot) {
+            // Create the donation slot first
+            const { data: newSlot, error: slotError } = await supabase
+              .from('donation_slots')
+              .insert({
+                monastery_id: monasteryId,
+                date: selectedSlot.date,
+                time_slot: selectedSlot.time_slot,
+                max_donors: selectedSlot.max_donors,
+                current_bookings: 0,
+                is_available: true,
+                meal_type: selectedSlot.meal_type,
+                monks_capacity: (selectedSlot as any).monks_capacity || 50,
+                monks_fed: 0
+              })
+              .select()
+              .single()
+
+            if (slotError) throw slotError
+            actualSlotId = newSlot.id
+          }
+        }
+
+        // Create or update guest profile
+        if (!selectedGuest) {
+          const { data: newGuest, error: guestError } = await supabase
+            .from('guest_profiles')
+            .insert({
+              phone: formData.phone,
+              full_name: formData.fullName,
+              email: formData.email || null,
+              address: formData.address || null,
+              notes: formData.notes || null,
+              monastery_id: monasteryId
+            })
+            .select()
+            .single()
+
+          if (guestError) throw guestError
+          guestProfileId = newGuest.id
+        } else if (formData.phone !== selectedGuest.phone ||
+                   formData.fullName !== selectedGuest.full_name ||
+                   formData.email !== selectedGuest.email ||
+                   formData.address !== selectedGuest.address ||
+                   formData.notes !== selectedGuest.notes) {
+          // Update existing guest
+          const { error: updateError } = await supabase
+            .from('guest_profiles')
+            .update({
+              phone: formData.phone,
+              full_name: formData.fullName,
+              email: formData.email || null,
+              address: formData.address || null,
+              notes: formData.notes || null
+            })
+            .eq('id', selectedGuest.id)
+
+          if (updateError) throw updateError
+        }
+
+        // Create guest booking
+        const { error: bookingError } = await supabase
+          .from('guest_bookings')
+          .insert({
+            donation_slot_id: actualSlotId,
+            guest_profile_id: guestProfileId,
+            food_type: formData.foodType,
+            estimated_servings: formData.estimatedServings,
+            special_notes: formData.specialNotes,
+            contact_phone: formData.phone,
+            status: 'pending'
           })
-          .eq('id', selectedGuest.id)
 
-        if (updateError) throw updateError
+        if (bookingError) throw bookingError
+
+        toast.success("Guest booking created successfully!")
       }
-
-      // Create guest booking
-      const { error: bookingError } = await supabase
-        .from('guest_bookings')
-        .insert({
-          donation_slot_id: formData.donationSlotId,
-          guest_profile_id: guestProfileId,
-          food_type: formData.foodType,
-          estimated_servings: formData.estimatedServings,
-          special_notes: formData.specialNotes,
-          contact_phone: formData.phone,
-          status: 'pending'
-        })
-
-      if (bookingError) throw bookingError
-
-      toast.success("Guest booking created successfully!")
 
       // Reset form
       setFormData({
@@ -209,35 +297,94 @@ export function GuestBookingForm({ monasteryId, donationSlots, onBookingComplete
         notes: ''
       })
       setSelectedGuest(null)
+      setRegisteredUser(null)
+      setShowRegisteredUserAlert(false)
+
+      // Store the selected date for restoration when returning to calendar
+      if (preselectedDate) {
+        const restoreData = {
+          selectedDate: preselectedDate,
+          monasteryId: monasteryId,
+          timestamp: new Date().toISOString()
+        }
+        sessionStorage.setItem('guestBookingPreselection', JSON.stringify(restoreData))
+      }
 
       if (onBookingComplete) {
         onBookingComplete()
       }
 
     } catch (error) {
-      console.error('Error creating guest booking:', error)
-      toast.error("Failed to create guest booking. Please try again.")
+      console.error('Error creating booking:', error)
+      toast.error("Failed to create booking. Please try again.")
     } finally {
       setLoading(false)
     }
   }
 
   const filteredGuests = searchGuests(searchQuery)
-  const availableSlots = donationSlots.filter(slot => 
-    slot.current_bookings < slot.max_donors && 
-    new Date(slot.date) >= new Date()
-  )
+  
+  // Filter slots based on preselected date if provided
+  const availableSlots = donationSlots.filter(slot => {
+    // Compare dates only (ignore time) for availability check
+    const today = new Date()
+    today.setHours(0, 0, 0, 0)
+    const slotDate = new Date(slot.date)
+    slotDate.setHours(0, 0, 0, 0)
+    
+    // For preselected dates from CalendarBookingView, use the provided current_bookings
+    // For database slots, use the provided current_bookings (which may be calculated)
+    const isAvailable = slot.current_bookings < slot.max_donors && slotDate >= today
+    
+    if (preselectedDate) {
+      const preselectedDateOnly = preselectedDate.split('T')[0] // Get just the date part
+      return isAvailable && slot.date === preselectedDateOnly
+    }
+    
+    return isAvailable
+  })
 
   return (
     <Card>
       <CardHeader>
         <CardTitle>{t('createBooking')}</CardTitle>
         <CardDescription>
-          {t('createBookingDesc')}
+          {preselectedDate
+            ? `Creating booking for ${format(new Date(preselectedDate), 'MMMM d, yyyy')}`
+            : t('createBookingDesc')
+          }
         </CardDescription>
+        {preselectedDate && (
+          <div className="mt-2 p-3 bg-green-50 border border-green-200 rounded-lg">
+            <div className="flex items-center">
+              <svg className="h-4 w-4 text-green-600 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+              </svg>
+              <span className="text-sm font-medium text-green-800">
+                Date pre-selected from calendar - {availableSlots.length} slot(s) available
+              </span>
+            </div>
+          </div>
+        )}
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-6">
+          {/* Registered User Alert */}
+          {showRegisteredUserAlert && registeredUser && (
+            <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+              <div className="flex items-start">
+                <UserCheck className="h-5 w-5 text-blue-600 mt-0.5" />
+                <div className="ml-3">
+                  <h4 className="text-sm font-medium text-blue-800">Registered User Found</h4>
+                  <p className="mt-1 text-sm text-blue-700">
+                    {registeredUser.full_name} ({registeredUser.phone}) is a registered user. 
+                    This booking will be created as a donor booking and auto-approved by the monastery.
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* Guest Selection */}
           <div className="space-y-2">
             <Label>{t('selectGuest')}</Label>
@@ -292,6 +439,8 @@ export function GuestBookingForm({ monasteryId, donationSlots, onBookingComplete
                     notes: ''
                   })
                   setSearchQuery('')
+                  setRegisteredUser(null)
+                  setShowRegisteredUserAlert(false)
                 }}
               >
                 <Plus className="h-4 w-4" />
@@ -325,7 +474,7 @@ export function GuestBookingForm({ monasteryId, donationSlots, onBookingComplete
                 id="fullName"
                 value={formData.fullName}
                 onChange={(e) => handleInputChange('fullName', e.target.value)}
-                placeholder="Guest full name"
+                placeholder={registeredUser ? registeredUser.full_name : "Guest full name"}
                 required
               />
             </div>
@@ -336,7 +485,7 @@ export function GuestBookingForm({ monasteryId, donationSlots, onBookingComplete
                 type="email"
                 value={formData.email}
                 onChange={(e) => handleInputChange('email', e.target.value)}
-                placeholder="guest@email.com"
+                placeholder={registeredUser ? registeredUser.email : "guest@email.com"}
               />
             </div>
             <div className="space-y-2">
@@ -345,7 +494,7 @@ export function GuestBookingForm({ monasteryId, donationSlots, onBookingComplete
                 id="address"
                 value={formData.address}
                 onChange={(e) => handleInputChange('address', e.target.value)}
-                placeholder="Guest address"
+                placeholder={registeredUser ? registeredUser.address : "Guest address"}
               />
             </div>
           </div>
@@ -375,8 +524,8 @@ export function GuestBookingForm({ monasteryId, donationSlots, onBookingComplete
                 <option value="">{t('selectSlot')}</option>
                 {availableSlots.map((slot) => (
                   <option key={slot.id} value={slot.id}>
-                    {format(new Date(slot.date), 'MMM d')} - {slot.meal_type} at {slot.time_slot} 
-                    ({slot.current_bookings}/{slot.max_donors} booked)
+                    {format(new Date(slot.date), 'MMM d')} - {slot.meal_type || 'Meal'} at {slot.time_slot}
+                    ({slot.current_bookings || 0}/{slot.max_donors || 0} booked)
                   </option>
                 ))}
               </select>

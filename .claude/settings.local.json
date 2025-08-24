@@ -37,7 +37,27 @@
       "Bash(sed:*)",
       "mcp__ide__executeCode",
       "Bash(npm run:*)",
-      "Bash(git merge:*)"
+      "Bash(git merge:*)",
+      "WebSearch",
+      "WebFetch(domain:docs.anthropic.com)",
+      "Bash(.claude/hooks/branch-manager.sh:*)",
+      "Bash(git branch:*)",
+      "Bash(node:*)",
+      "mcp__playwright-mcp__browser_type",
+      "Bash(lsof:*)",
+      "Bash(awk:*)",
+      "mcp__playwright-mcp__browser_take_screenshot",
+      "Bash(timeout 30s npm run test -- tests/admin-authenticated.spec.ts -g \"should access monastery management\" --headed)",
+      "Bash(timeout 60s npm run test -- tests/admin-authenticated.spec.ts --reporter=line)",
+      "Bash(npx playwright test:*)",
+      "Bash(npx:*)",
+      "mcp__playwright-mcp__browser_handle_dialog",
+      "mcp__playwright-mcp__browser_install",
+      "mcp__playwright-mcp__browser_hover",
+      "mcp__playwright-mcp__browser_press_key",
+      "Bash(git push:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)"
     ],
     "deny": []
   }

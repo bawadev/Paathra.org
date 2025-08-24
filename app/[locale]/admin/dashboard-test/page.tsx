@@ -10,9 +10,7 @@ import {
   Calendar, 
   TrendingUp, 
   AlertCircle,
-  CheckCircle,
-  Clock,
-  PieChart
+  CheckCircle
 } from 'lucide-react'
 
 export default function AdminDashboardSimple() {
@@ -211,7 +209,7 @@ export default function AdminDashboardSimple() {
               <span>Review Monasteries</span>
             </Button>
             <Button variant="outline" className="h-20 flex-col">
-              <PieChart className="h-6 w-6 mb-2" />
+              <AlertCircle className="h-6 w-6 mb-2" />
               <span>View Analytics</span>
             </Button>
             <Button variant="outline" className="h-20 flex-col">

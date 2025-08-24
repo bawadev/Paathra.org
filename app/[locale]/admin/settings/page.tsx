@@ -29,7 +29,6 @@ import {
   Save, 
   RefreshCw, 
   Database,
-  Mail,
   Shield,
   Bell,
   Users,
@@ -72,7 +71,7 @@ export default function Settings() {
   const [loading, setLoading] = useState(false)
   const [isDirty, setIsDirty] = useState(false)
 
-  const handleInputChange = (field: keyof SystemSettings, value: any) => {
+  const handleInputChange = (field: keyof SystemSettings, value: string | number | boolean) => {
     setSettings(prev => ({ ...prev, [field]: value }))
     setIsDirty(true)
   }

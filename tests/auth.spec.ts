@@ -2,24 +2,23 @@ import { test, expect } from '@playwright/test';
 
 test.describe('Authentication Flow', () => {
   test('should handle auth form display', async ({ page }) => {
-    await page.goto('/');
+    await page.goto('/en/auth');
     
-    // Look for authentication-related elements
-    const authButtons = page.locator('button:has-text("Login"), button:has-text("Sign in"), button:has-text("Sign up"), a:has-text("Login"), a:has-text("Sign in")');
+    // Wait for page to load
+    await page.waitForLoadState('networkidle', { timeout: 15000 });
     
-    if (await authButtons.count() > 0) {
-      console.log('Found authentication buttons');
-      await expect(authButtons.first()).toBeVisible();
+    // Check for login form elements with flexible approach
+    const pageContent = await page.textContent('body');
+    
+    // If auth page exists, check for basic elements
+    const currentUrl = page.url();
+    if (currentUrl.includes('/auth')) {
+      // Look for auth-related text
+      expect(pageContent).toMatch(/sign in|create account|login/i);
     } else {
-      console.log('No authentication buttons found on homepage');
-    }
-    
-    // Look for auth forms
-    const authForms = page.locator('form:has(input[type="email"]), form:has(input[type="password"])');
-    
-    if (await authForms.count() > 0) {
-      console.log('Found authentication forms');
-      await expect(authForms.first()).toBeVisible();
+      // If redirected, check we're on a valid page
+      expect(pageContent).not.toContain('404');
+      expect(pageContent).not.toContain('This page could not be found');
     }
     
     await page.screenshot({ path: 'test-results/auth-state.png' });
@@ -27,15 +26,15 @@ test.describe('Authentication Flow', () => {
 
   test('should handle protected routes', async ({ page }) => {
     // Test accessing a protected admin route
-    await page.goto('/admin/dashboard');
-    await page.waitForLoadState('networkidle');
+    await page.goto('/en/admin/dashboard');
+    await page.waitForLoadState('networkidle', { timeout: 15000 });
     
     const currentUrl = page.url();
     
     // Check if we're redirected away from admin (expected if not authenticated)
-    if (!currentUrl.includes('/admin/dashboard')) {
+    if (!currentUrl.includes('/en/admin/dashboard')) {
       console.log('Redirected from protected route (expected behavior)');
-      expect(currentUrl).not.toContain('/admin/dashboard');
+      expect(currentUrl).not.toContain('/en/admin/dashboard');
     } else {
       console.log('Admin dashboard accessible (user may be authenticated)');
     }
@@ -44,13 +43,23 @@ test.describe('Authentication Flow', () => {
   });
 
   test('should handle navigation after potential auth redirect', async ({ page }) => {
-    await page.goto('/admin/settings');
-    await page.waitForLoadState('networkidle');
+    await page.goto('/en/admin/settings');
+    await page.waitForLoadState('networkidle', { timeout: 15000 });
     
-    // After any redirects, the page should be functional
+    // Check if we were redirected to auth page (expected behavior for unauthenticated users)
+    const currentUrl = page.url();
     const bodyText = await page.textContent('body');
-    expect(bodyText).not.toContain('This page could not be found');
-    expect(bodyText).not.toContain('500');
+    
+    if (currentUrl.includes('/auth')) {
+      // If redirected to auth, check for auth form elements
+      expect(bodyText).toMatch(/sign in|create account|login/i);
+      console.log('Successfully redirected to auth page');
+    } else {
+      // If not redirected, the page should be functional (user might be authenticated)
+      expect(bodyText).not.toContain('This page could not be found');
+      expect(bodyText).not.toContain('500');
+      console.log('Admin page accessible (user may be authenticated)');
+    }
     
     await page.screenshot({ path: 'test-results/navigation-after-redirect.png' });
   });

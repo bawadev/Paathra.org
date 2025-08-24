@@ -8,64 +8,43 @@ const TEST_USER = {
 
 test.describe('Authentication with Login', () => {
   test('should login successfully with valid credentials', async ({ page }) => {
-    await page.goto('/');
+    await page.goto('/en/auth');
+    await page.waitForLoadState('networkidle');
     
-    // Look for login/signin button or form
-    const loginButton = page.locator('button:has-text("Login"), button:has-text("Sign in"), a:has-text("Login"), a:has-text("Sign in")');
+    // Wait for and fill email field with proper selectors
+    await page.waitForSelector('#email', { timeout: 10000 });
+    await page.fill('#email', TEST_USER.email);
+    await page.fill('#password', TEST_USER.password);
     
-    if (await loginButton.count() > 0) {
-      await loginButton.first().click();
-      await page.waitForLoadState('networkidle');
-    }
+    // Look for submit button
+    const submitButton = page.locator('button[type="submit"]');
+    await submitButton.click();
+    await page.waitForLoadState('networkidle', { timeout: 15000 });
     
-    // Look for email and password fields
-    const emailField = page.locator('input[type="email"], input[name="email"], input[placeholder*="email" i]');
-    const passwordField = page.locator('input[type="password"], input[name="password"], input[placeholder*="password" i]');
+    // Check if login was successful (look for dashboard or profile elements)
+    const currentUrl = page.url();
+    console.log('URL after login attempt:', currentUrl);
     
-    if (await emailField.count() > 0 && await passwordField.count() > 0) {
-      await emailField.fill(TEST_USER.email);
-      await passwordField.fill(TEST_USER.password);
-      
-      // Look for submit button
-      const submitButton = page.locator('button[type="submit"], button:has-text("Login"), button:has-text("Sign in")');
-      if (await submitButton.count() > 0) {
-        await submitButton.click();
-        await page.waitForLoadState('networkidle');
-        
-        // Check if login was successful (look for dashboard or profile elements)
-        const currentUrl = page.url();
-        console.log('URL after login attempt:', currentUrl);
-        
-        // Take screenshot after login
-        await page.screenshot({ path: 'test-results/after-login.png' });
-      }
-    } else {
-      console.log('Login form not found, taking screenshot of current state');
-      await page.screenshot({ path: 'test-results/no-login-form.png' });
-    }
+    // Take screenshot after login
+    await page.screenshot({ path: 'test-results/after-login.png' });
   });
 
   test('should access admin dashboard after login', async ({ page }) => {
     // First login
-    await page.goto('/');
+    await page.goto('/en/auth');
+    await page.waitForLoadState('networkidle');
     
-    // Look for existing login form or navigate to login
-    const emailField = page.locator('input[type="email"], input[name="email"]');
-    const passwordField = page.locator('input[type="password"], input[name="password"]');
+    // Wait for and fill email field with proper selectors
+    await page.waitForSelector('#email', { timeout: 10000 });
+    await page.fill('#email', TEST_USER.email);
+    await page.fill('#password', TEST_USER.password);
     
-    if (await emailField.count() > 0 && await passwordField.count() > 0) {
-      await emailField.fill(TEST_USER.email);
-      await passwordField.fill(TEST_USER.password);
-      
-      const submitButton = page.locator('button[type="submit"], button:has-text("Login"), button:has-text("Sign in")');
-      if (await submitButton.count() > 0) {
-        await submitButton.click();
-        await page.waitForLoadState('networkidle');
-      }
-    }
+    const submitButton = page.locator('button[type="submit"]');
+    await submitButton.click();
+    await page.waitForLoadState('networkidle', { timeout: 15000 });
     
     // Now try to access admin dashboard
-    await page.goto('/admin/dashboard');
+    await page.goto('/en/admin/dashboard');
     await page.waitForLoadState('networkidle');
     
     const currentUrl = page.url();
@@ -86,24 +65,20 @@ test.describe('Authentication with Login', () => {
 
   test('should access protected donation management features', async ({ page }) => {
     // Login first
-    await page.goto('/');
+    await page.goto('/en/auth');
+    await page.waitForLoadState('networkidle');
     
-    const emailField = page.locator('input[type="email"], input[name="email"]');
-    const passwordField = page.locator('input[type="password"], input[name="password"]');
+    // Wait for and fill email field with proper selectors
+    await page.waitForSelector('#email', { timeout: 10000 });
+    await page.fill('#email', TEST_USER.email);
+    await page.fill('#password', TEST_USER.password);
     
-    if (await emailField.count() > 0 && await passwordField.count() > 0) {
-      await emailField.fill(TEST_USER.email);
-      await passwordField.fill(TEST_USER.password);
-      
-      const submitButton = page.locator('button[type="submit"], button:has-text("Login"), button:has-text("Sign in")');
-      if (await submitButton.count() > 0) {
-        await submitButton.click();
-        await page.waitForLoadState('networkidle');
-      }
-    }
+    const submitButton = page.locator('button[type="submit"]');
+    await submitButton.click();
+    await page.waitForLoadState('networkidle', { timeout: 15000 });
     
     // Test manage pages
-    const managePages = ['/manage', '/manage/bookings', '/manage/monastery', '/manage/slots'];
+    const managePages = ['/en/manage', '/en/manage/bookings', '/en/manage/monastery', '/en/manage/slots'];
     
     for (const managePage of managePages) {
       await page.goto(managePage);
@@ -123,21 +98,17 @@ test.describe('Authentication with Login', () => {
 
   test('should handle logout functionality', async ({ page }) => {
     // Login first
-    await page.goto('/');
+    await page.goto('/en/auth');
+    await page.waitForLoadState('networkidle');
     
-    const emailField = page.locator('input[type="email"], input[name="email"]');
-    const passwordField = page.locator('input[type="password"], input[name="password"]');
+    // Wait for and fill email field with proper selectors
+    await page.waitForSelector('#email', { timeout: 10000 });
+    await page.fill('#email', TEST_USER.email);
+    await page.fill('#password', TEST_USER.password);
     
-    if (await emailField.count() > 0 && await passwordField.count() > 0) {
-      await emailField.fill(TEST_USER.email);
-      await passwordField.fill(TEST_USER.password);
-      
-      const submitButton = page.locator('button[type="submit"], button:has-text("Login"), button:has-text("Sign in")');
-      if (await submitButton.count() > 0) {
-        await submitButton.click();
-        await page.waitForLoadState('networkidle');
-      }
-    }
+    const submitButton = page.locator('button[type="submit"]');
+    await submitButton.click();
+    await page.waitForLoadState('networkidle', { timeout: 15000 });
     
     // Look for logout button
     const logoutButton = page.locator('button:has-text("Logout"), button:has-text("Sign out"), a:has-text("Logout"), a:has-text("Sign out")');
@@ -149,11 +120,11 @@ test.describe('Authentication with Login', () => {
       console.log('Logout button clicked');
       
       // Try to access a protected page to verify logout
-      await page.goto('/admin/dashboard');
+      await page.goto('/en/admin/dashboard');
       await page.waitForLoadState('networkidle');
       
       const currentUrl = page.url();
-      if (!currentUrl.includes('/admin/dashboard')) {
+      if (!currentUrl.includes('/en/admin/dashboard')) {
         console.log('Successfully logged out - redirected from protected page');
       }
     } else {

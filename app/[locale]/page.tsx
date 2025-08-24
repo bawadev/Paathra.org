@@ -7,8 +7,7 @@ import { ContentSlider } from '@/components/content-slider'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Link } from '@/src/i18n/navigation'
-import { Calendar, Heart, Users, Building, ArrowRight } from 'lucide-react'
-import { hasRole } from '@/types/auth'
+import { ArrowRight } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 
 export default function HomePage() {

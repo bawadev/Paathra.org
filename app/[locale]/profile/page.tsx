@@ -11,9 +11,6 @@ import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { AvatarUpload } from '@/components/avatar-upload'
 import { useTranslations } from 'next-intl'
-import { hasRole } from '@/types/auth'
-import { useRouter } from '@/src/i18n/navigation'
-
 export default function ProfilePage() {
   const { user, profile, updateProfile } = useAuth()
   const [editing, setEditing] = useState(false)
@@ -24,7 +21,6 @@ export default function ProfilePage() {
   })
   const [loading, setLoading] = useState(false)
   const t = useTranslations('Profile')
-  const router = useRouter()
 
   if (!user) {
     return <AuthForm />

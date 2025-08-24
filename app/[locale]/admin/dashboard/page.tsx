@@ -4,7 +4,6 @@ import { useEffect, useState } from 'react'
 import { Navigation } from '@/components/navigation'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
 import { supabase } from '@/lib/supabase'
 import { LoadingSpinner } from '@/components/loading'
 import { 
@@ -12,12 +11,35 @@ import {
   Building, 
   Calendar, 
   TrendingUp, 
-  AlertCircle,
-  CheckCircle,
-  Clock,
-  PieChart
+  AlertCircle
 } from 'lucide-react'
-import { getUserTypeDisplayName } from '@/types/auth'
+import { getUserTypeDisplayName, UserType } from '@/types/auth'
+
+interface UserProfile {
+  id: string
+  full_name: string
+  email: string
+  user_types: string[]
+  created_at: string
+  avatar_url?: string
+}
+
+interface Booking {
+  id: string
+  donation_date: string
+  status: string
+  food_type: string
+  estimated_servings: number
+  created_at: string
+  user_profiles?: {
+    full_name: string
+  }
+  donation_slots?: {
+    monasteries?: {
+      name: string
+    }
+  }
+}
 
 interface DashboardStats {
   totalUsers: number
@@ -26,8 +48,8 @@ interface DashboardStats {
   totalBookings: number
   pendingMonasteries: number
   todayBookings: number
-  recentUsers: any[]
-  recentBookings: any[]
+  recentUsers: UserProfile[]
+  recentBookings: Booking[]
 }
 
 export default function AdminDashboard() {
@@ -51,7 +73,7 @@ export default function AdminDashboard() {
         .select('user_types')
 
       // Count donors (users with donor type)
-      const totalDonors = allUsers?.filter(user => 
+      const totalDonors = allUsers?.filter((user: { user_types?: string[] }) => 
         user.user_types?.includes('donor')
       ).length || 0
 
@@ -148,7 +170,7 @@ export default function AdminDashboard() {
             </div>
             <div className="text-right">
               <div className="text-2xl font-bold">{stats?.todayBookings || 0}</div>
-              <div className="text-white/80">Today's Bookings</div>
+              <div className="text-white/80">Today&apos;s Bookings</div>
             </div>
           </div>
         </div>
@@ -244,7 +266,7 @@ export default function AdminDashboard() {
                     </div>
                     <div className="text-right">
                       <Badge variant="secondary" className="mb-1">
-                        {getUserTypeDisplayName(user.user_types)}
+                        {getUserTypeDisplayName(user.user_types[0] as UserType)}
                       </Badge>
                       <p className="text-xs text-[var(--text-light)]">
                         {new Date(user.created_at).toLocaleDateString()}

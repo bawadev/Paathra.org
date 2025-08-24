@@ -294,3 +294,23 @@ npm run test:debug -- --headed --project=chromium
 # Check build
 npm run build:ci
 ```
+
+## Workflow
+
+You need to follow below rules with every action:
+- Use supabase mcp when you have doubts on db structure and tasks involve db
+- Always ask permission before changing db structure
+- After every task test the feature using playwright mcp (don't use screenshot feature, analyze from console and text form of DOM)
+- Use credentials in .creds to login when using playwright mcp
+- Don't assume task is success, test through playwright mcp and verify
+- If you need to read documentation use context7 mcp or do a web search
+- If you keep running into same issue do a web search
+- Always use IDE provided tools to detect errors or warnings after any implementation
+- "Might be" is not good enough - validate and come to solid conclusions in planning phase
+
+## Important Instruction Reminders
+
+- Do what has been asked; nothing more, nothing less
+- NEVER create files unless they're absolutely necessary for achieving your goal
+- ALWAYS prefer editing an existing file to creating a new one
+- NEVER proactively create documentation files (*.md) or README files unless explicitly requested by the User

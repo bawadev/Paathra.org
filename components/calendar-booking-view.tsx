@@ -2,12 +2,14 @@
 
 import { useState, useEffect } from 'react'
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, isSameDay, addMonths, subMonths, startOfWeek, endOfWeek, isAfter, isBefore, parseISO } from 'date-fns'
-import { ChevronLeft, ChevronRight, Calendar, Clock, Users, Utensils, AlertCircle, Phone, Mail, MapPin, Check, X } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Calendar, Clock, Users, Utensils, AlertCircle, Phone, Mail, MapPin, Check, X, Plus, UserPlus } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog'
 import { cn } from '@/lib/utils'
+import { CreateSlotDialog } from './create-slot-dialog'
+import { GuestBookingForm } from './guest-booking-form'
 
 interface Booking {
   id: string
@@ -38,14 +40,19 @@ interface CalendarBookingViewProps {
   monasteryId: string
   bookings: Booking[]
   onBookingAction?: (bookingId: string, action: string) => void
+  onCreateGuestBooking?: (date: Date, availableSlots: any[]) => void
 }
 
-export function CalendarBookingView({ monasteryId, bookings, onBookingAction }: CalendarBookingViewProps) {
+export function CalendarBookingView({ monasteryId, bookings, onBookingAction, onCreateGuestBooking }: CalendarBookingViewProps) {
   const [currentDate, setCurrentDate] = useState(new Date())
   const [selectedDate, setSelectedDate] = useState<Date | null>(null)
   const [calendarBookings, setCalendarBookings] = useState<Booking[]>([])
   const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null)
   const [isDialogOpen, setIsDialogOpen] = useState(false)
+  const [createSlotDialogOpen, setCreateSlotDialogOpen] = useState(false)
+  const [guestBookingDialogOpen, setGuestBookingDialogOpen] = useState(false)
+  const [donationSlots, setDonationSlots] = useState<any[]>([])
+  const [selectedTimeSlot, setSelectedTimeSlot] = useState<string | null>(null)
 
   // Group bookings by date
   const bookingsByDate = bookings.reduce((acc, booking) => {
@@ -242,6 +249,74 @@ export function CalendarBookingView({ monasteryId, bookings, onBookingAction }: 
     }
   }
 
+  const handleCreateGuestBooking = async (date: Date) => {
+    if (onCreateGuestBooking) {
+      // Get available slots for the selected date
+      const dateKey = format(date, 'yyyy-MM-dd')
+      const dayBookings = bookingsByDate[dateKey] || []
+      
+      // If no slots exist for this date, we'll create default time slots
+      let availableSlots = []
+      
+      if (dayBookings.length === 0) {
+        // Create default time slots for the day
+        const defaultTimeSlots = ['08:00', '12:00', '18:00'] // Breakfast, Lunch, Dinner
+        const defaultCapacity = bookings.length > 0 && bookings[0]?.monasteries?.capacity ? bookings[0].monasteries.capacity : 50
+        
+        availableSlots = defaultTimeSlots.map(timeSlot => ({
+          id: `new-${dateKey}-${timeSlot}`, // Temporary ID for new slots
+          date: dateKey,
+          time_slot: timeSlot,
+          meal_type: timeSlot === '08:00' ? 'Breakfast' : timeSlot === '12:00' ? 'Lunch' : 'Dinner',
+          max_donors: defaultCapacity, // Use full capacity for new slots
+          current_bookings: 0,
+          monks_capacity: defaultCapacity,
+          monks_fed: 0,
+          monastery_id: monasteryId,
+          is_available: true,
+          special_requirements: null,
+          booking_notes: null,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
+        }))
+      } else {
+        // Use existing slots with remaining capacity
+        const capacityInfo = getCapacityInfo(date)
+        
+        // Get unique slot IDs from the bookings to find actual donation slots
+        const uniqueSlotIds = [...new Set(dayBookings.map(booking => booking.donation_slots.id))]
+        
+        availableSlots = Object.entries(capacityInfo.slots)
+          .filter(([timeSlot, slotInfo]) => slotInfo.totalBooked < slotInfo.capacity) // Only include slots with available capacity
+          .map(([timeSlot, slotInfo]) => {
+            // Find the actual slot ID for this time slot
+            const slotBooking = dayBookings.find(booking => booking.donation_slots.time === timeSlot)
+            const actualSlotId = slotBooking ? slotBooking.donation_slots.id : `${dateKey}-${timeSlot}`
+            
+            return {
+              id: actualSlotId,
+              date: dateKey,
+              time_slot: timeSlot,
+              meal_type: timeSlot.includes('06:') || timeSlot.includes('07:') || timeSlot.includes('08:') ? 'Breakfast' :
+                         timeSlot.includes('11:') || timeSlot.includes('12:') || timeSlot.includes('13:') ? 'Lunch' :
+                         timeSlot.includes('17:') || timeSlot.includes('18:') || timeSlot.includes('19:') ? 'Dinner' : 'Meal',
+              max_donors: slotInfo.capacity, // Total capacity of the slot
+              current_bookings: slotInfo.totalBooked, // Current bookings in this slot
+              monks_capacity: slotInfo.capacity,
+              monks_fed: slotInfo.totalBooked,
+              monastery_id: monasteryId,
+              is_available: slotInfo.totalBooked < slotInfo.capacity // Available if not fully booked
+            }
+          })
+      }
+      
+      // Only pass slots that have available capacity
+      const slotsWithCapacity = availableSlots.filter(slot => slot.current_bookings < slot.max_donors)
+      
+      onCreateGuestBooking(date, slotsWithCapacity)
+    }
+  }
+
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
       {/* Calendar */}
@@ -361,18 +436,36 @@ export function CalendarBookingView({ monasteryId, bookings, onBookingAction }: 
       {/* Booking Details */}
       <Card>
         <CardHeader className="pb-3">
-          <CardTitle>
-            {selectedDate 
-              ? `Bookings for ${format(selectedDate, 'MMMM d, yyyy')}`
-              : 'Upcoming Bookings'
-            }
-          </CardTitle>
-          <CardDescription>
-            {selectedDate 
-              ? `${displayBookings.length} booking(s) scheduled`
-              : `Next ${displayBookings.length} upcoming bookings`
-            }
-          </CardDescription>
+          <div className="flex items-center justify-between">
+            <div>
+              <CardTitle>
+                {selectedDate
+                  ? `Bookings for ${format(selectedDate, 'MMMM d, yyyy')}`
+                  : 'Upcoming Bookings'
+                }
+              </CardTitle>
+              <CardDescription>
+                {selectedDate
+                  ? `${displayBookings.length} booking(s) scheduled`
+                  : `Next ${displayBookings.length} upcoming bookings`
+                }
+              </CardDescription>
+            </div>
+            {selectedDate && (() => {
+              const { totalBooked, totalCapacity } = getCapacityInfo(selectedDate)
+              const hasAvailableCapacity = totalBooked < totalCapacity
+              return hasAvailableCapacity && (
+                <Button
+                  onClick={() => handleCreateGuestBooking(selectedDate)}
+                  className="bg-green-600 hover:bg-green-700 text-white"
+                  size="sm"
+                >
+                  <UserPlus className="w-4 h-4 mr-2" />
+                  Create a Booking
+                </Button>
+              )
+            })()}
+          </div>
         </CardHeader>
         <CardContent>
           {displayBookings.length === 0 ? (
