@@ -52,7 +52,9 @@
       "Bash(npx:*)",
       "mcp__playwright-mcp__browser_handle_dialog",
       "mcp__playwright-mcp__browser_install",
-      "mcp__playwright-mcp__browser_hover"
+      "mcp__playwright-mcp__browser_hover",
+      "mcp__playwright-mcp__browser_press_key",
+      "Bash(git push:*)"
     ],
     "deny": []
   }
