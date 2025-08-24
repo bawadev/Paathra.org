@@ -2,30 +2,29 @@ import { test } from '@playwright/test';
 
 test.describe('Admin Section', () => {
   test('should handle admin dashboard access', async ({ page }) => {
-    await page.goto('/admin/dashboard');
+    await page.goto('/en/admin/dashboard');
     
-    // Wait for the page to load
-    await page.waitForLoadState('networkidle');
+    // Wait for the page to load with extended timeout
+    await page.waitForLoadState('networkidle', { timeout: 15000 });
     
     // Check if we're redirected to login or if we can access the dashboard
     const currentUrl = page.url();
     
-    if (currentUrl.includes('/admin/dashboard')) {
-      // If we can access the dashboard, check for admin content
+    if (currentUrl.includes('/en/admin/dashboard')) {
+      // If we can access the dashboard
       console.log('Admin dashboard accessible');
-      
-      // Take screenshot
-      await page.screenshot({ path: 'test-results/admin-dashboard.png' });
     } else {
       // If redirected (likely to login), that's expected behavior
       console.log('Redirected from admin dashboard (expected if not authenticated)');
-      await page.screenshot({ path: 'test-results/admin-redirect.png' });
     }
+    
+    // Take screenshot
+    await page.screenshot({ path: 'test-results/admin-dashboard.png' });
   });
 
   test('should load admin settings page', async ({ page }) => {
-    await page.goto('/admin/settings');
-    await page.waitForLoadState('networkidle');
+    await page.goto('/en/admin/settings');
+    await page.waitForLoadState('networkidle', { timeout: 15000 });
     
     // Check if settings page loads or redirects
     const currentUrl = page.url();
@@ -35,8 +34,8 @@ test.describe('Admin Section', () => {
   });
 
   test('should load admin analytics page', async ({ page }) => {
-    await page.goto('/admin/analytics');
-    await page.waitForLoadState('networkidle');
+    await page.goto('/en/admin/analytics');
+    await page.waitForLoadState('networkidle', { timeout: 15000 });
     
     // Check if analytics page loads or redirects
     const currentUrl = page.url();
@@ -46,8 +45,8 @@ test.describe('Admin Section', () => {
   });
 
   test('should load admin users page', async ({ page }) => {
-    await page.goto('/admin/users');
-    await page.waitForLoadState('networkidle');
+    await page.goto('/en/admin/users');
+    await page.waitForLoadState('networkidle', { timeout: 15000 });
     
     // Check if users page loads or redirects
     const currentUrl = page.url();
@@ -57,8 +56,8 @@ test.describe('Admin Section', () => {
   });
 
   test('should load admin bookings page', async ({ page }) => {
-    await page.goto('/admin/bookings');
-    await page.waitForLoadState('networkidle');
+    await page.goto('/en/admin/bookings');
+    await page.waitForLoadState('networkidle', { timeout: 15000 });
     
     // Check if bookings page loads or redirects
     const currentUrl = page.url();

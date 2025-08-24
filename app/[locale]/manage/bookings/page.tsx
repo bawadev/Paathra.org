@@ -14,11 +14,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { CalendarSlotView } from '@/components/calendar-slot-view'
 import { supabase } from '@/lib/supabase'
 import { executeBookingTransition } from '@/lib/services/booking-workflow'
-import { format, parseISO } from 'date-fns'
-// Helper function to check role from database UserProfile
-const hasRole = (profile: any, role: string) => {
-  return profile?.user_types?.includes(role) ?? false
-}
+// import { format } from 'date-fns'
 import {
   Search,
   Filter,
@@ -26,6 +22,11 @@ import {
   AlertCircle,
   XCircle
 } from 'lucide-react'
+
+// Helper function to check role from database UserProfile
+const hasRole = (profile: any, role: string) => {
+  return profile?.user_types?.includes(role) ?? false
+}
 
 export default function ManageBookingsPage() {
   const { user, profile, loading: authLoading } = useAuth()
@@ -308,6 +309,7 @@ export default function ManageBookingsPage() {
             {/* Calendar View with Slot Management */}
             <CalendarSlotView
               monasteryId={monastery.id}
+              userId={user.id}
               bookings={filteredBookings.map(booking => ({
                 ...booking,
                 donation_slots: {
@@ -318,6 +320,7 @@ export default function ManageBookingsPage() {
               }))}
               onBookingAction={(bookingId, action) => updateBookingStatus(bookingId, action as any)}
               onCreateGuestBooking={handleCreateGuestBooking}
+              onBookingCreated={fetchData}
             />
           </div>
         )}

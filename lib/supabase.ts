@@ -34,7 +34,7 @@ function isValidUrl(string: string): boolean {
   try {
     new URL(string)
     return true
-  } catch (_) {
+  } catch {
     return false
   }
 }
@@ -153,7 +153,7 @@ export async function getMonasteriesWithDistance(
 ): Promise<MonasteryWithDistance[]> {
   const client = getSupabaseClient();
   
-  let query = client
+  const query = client
     .from('monasteries')
     .select('*')
     .eq('is_active', true)

@@ -10,7 +10,7 @@ import { LoadingLink } from '@/components/ui/loading-link'
 
 export default function LoadingDemoPage() {
   const [items, setItems] = useState<string[]>([])
-  const { startTransition } = usePageTransition()
+  const { } = usePageTransition()
   const { startSubmission, completeSubmission } = useFormSubmission()
   const { executeWithLoading } = useOperationLoading('data-loading')
 

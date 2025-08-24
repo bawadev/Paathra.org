@@ -98,16 +98,16 @@ export default function MonasteryDashboard() {
       // Calculate stats
       if (bookingsData || guestBookingsData) {
         const totalBookings = bookingsData?.length || 0
-        const pendingBookings = bookingsData?.filter(b => b.status === 'pending').length || 0
-        const todayBookings = bookingsData?.filter(b => 
+        const pendingBookings = bookingsData?.filter((b: any) => b.status === 'pending').length || 0
+        const todayBookings = bookingsData?.filter((b: any) => 
           b.booking_date && isToday(parseISO(b.booking_date))
         ).length || 0
-        const upcomingBookings = bookingsData?.filter(b => 
+        const upcomingBookings = bookingsData?.filter((b: any) => 
           b.booking_date && isFuture(parseISO(b.booking_date)) && b.status !== 'cancelled'
         ).length || 0
 
         const totalGuestBookings = guestBookingsData?.length || 0
-        const pendingGuestBookings = guestBookingsData?.filter(b => b.status === 'pending').length || 0
+        const pendingGuestBookings = guestBookingsData?.filter((b: any) => b.status === 'pending').length || 0
 
         setStats({
           totalBookings,

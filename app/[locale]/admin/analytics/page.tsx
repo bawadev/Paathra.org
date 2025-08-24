@@ -4,7 +4,6 @@ import { useEffect, useState } from 'react'
 import { Navigation } from '@/components/navigation'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
 import {
   Select,
   SelectContent,
@@ -20,10 +19,7 @@ import {
   Users, 
   Building, 
   Calendar,
-  DollarSign,
-  Activity,
-  BarChart3,
-  PieChart
+  Activity
 } from 'lucide-react'
 
 interface AnalyticsData {
@@ -47,8 +43,24 @@ interface AnalyticsData {
     lastMonth: number
     percentage: number
   }
-  recentActivity: any[]
-  topMonasteries: any[]
+  recentActivity: Array<{
+    id: string
+    donor?: { full_name: string }
+    donation_slot?: {
+      monastery?: { name: string }
+      date: string
+    }
+    food_type: string
+    status: string
+    created_at: string
+  }>
+  topMonasteries: Array<{
+    id: string
+    name: string
+    donation_slots: Array<{
+      donation_bookings: Array<{ count: number }>
+    }>
+  }>
   userTypeDistribution: {
     donors: number
     monasteryAdmins: number
@@ -94,7 +106,7 @@ export default function Analytics() {
         .from('user_profiles')
         .select('user_types')
       
-      const totalDonors = allUsers?.filter(u => u.user_types?.includes('donor')).length || 0
+      const totalDonors = allUsers?.filter((u: { user_types?: string[] }) => u.user_types?.includes('donor')).length || 0
 
       // Fetch growth data
       const [
@@ -133,9 +145,9 @@ export default function Analytics() {
         .select('user_types')
 
       const userTypeDistribution = {
-        donors: userTypes?.filter(u => u.user_types?.includes('donor')).length || 0,
-        monasteryAdmins: userTypes?.filter(u => u.user_types?.includes('monastery_admin')).length || 0,
-        superAdmins: userTypes?.filter(u => u.user_types?.includes('super_admin')).length || 0
+        donors: userTypes?.filter((u: { user_types?: string[] }) => u.user_types?.includes('donor')).length || 0,
+        monasteryAdmins: userTypes?.filter((u: { user_types?: string[] }) => u.user_types?.includes('monastery_admin')).length || 0,
+        superAdmins: userTypes?.filter((u: { user_types?: string[] }) => u.user_types?.includes('super_admin')).length || 0
       }
 
       // Fetch booking status distribution
@@ -144,10 +156,10 @@ export default function Analytics() {
         .select('status')
 
       const bookingStatusDistribution = {
-        pending: bookingStatuses?.filter(b => b.status === 'pending').length || 0,
-        confirmed: bookingStatuses?.filter(b => b.status === 'confirmed').length || 0,
-        completed: bookingStatuses?.filter(b => b.status === 'completed').length || 0,
-        cancelled: bookingStatuses?.filter(b => b.status === 'cancelled').length || 0
+        pending: bookingStatuses?.filter((b: { status: string }) => b.status === 'pending').length || 0,
+        confirmed: bookingStatuses?.filter((b: { status: string }) => b.status === 'confirmed').length || 0,
+        completed: bookingStatuses?.filter((b: { status: string }) => b.status === 'completed').length || 0,
+        cancelled: bookingStatuses?.filter((b: { status: string }) => b.status === 'cancelled').length || 0
       }
 
       // Fetch top monasteries by booking count

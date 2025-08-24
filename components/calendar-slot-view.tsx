@@ -1,8 +1,8 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, isSameDay, addMonths, subMonths, startOfWeek, endOfWeek, isAfter, isBefore, parseISO } from 'date-fns'
-import { ChevronLeft, ChevronRight, Calendar, Clock, Users, Utensils, AlertCircle, Phone, Mail, MapPin, Check, X, Plus, UserPlus, Edit3, Trash2 } from 'lucide-react'
+import { useState, useEffect, useCallback } from 'react'
+import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, isSameDay, addMonths, subMonths, startOfWeek, endOfWeek, parseISO } from 'date-fns'
+import { ChevronLeft, ChevronRight, Calendar, Edit3, Trash2, Check, X, Plus, UserPlus, AlertCircle } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
@@ -51,11 +51,21 @@ interface Booking {
 interface CalendarSlotViewProps {
   monasteryId: string
   bookings: Booking[]
+  userId?: string
   onBookingAction?: (bookingId: string, action: string) => void
-  onCreateGuestBooking?: (date: Date, availableSlots: any[]) => void
+  onCreateGuestBooking?: (date: Date, availableSlots: DonationSlot[]) => void
+  onBookingCreated?: () => void
 }
 
-export function CalendarSlotView({ monasteryId, bookings, onBookingAction, onCreateGuestBooking }: CalendarSlotViewProps) {
+interface Monastery {
+  id: string
+  capacity: number
+  breakfast_time?: string
+  lunch_time?: string
+  dinner_time?: string
+}
+
+export function CalendarSlotView({ monasteryId, bookings, onBookingAction, userId, onCreateGuestBooking, onBookingCreated }: CalendarSlotViewProps) {
   const [currentDate, setCurrentDate] = useState(new Date())
   const [selectedDate, setSelectedDate] = useState<Date | null>(null)
   const [donationSlots, setDonationSlots] = useState<DonationSlot[]>([])
@@ -64,7 +74,7 @@ export function CalendarSlotView({ monasteryId, bookings, onBookingAction, onCre
   const [editSlotDialogOpen, setEditSlotDialogOpen] = useState(false)
   const [selectedSlot, setSelectedSlot] = useState<DonationSlot | null>(null)
   const [bulkSlotDialogOpen, setBulkSlotDialogOpen] = useState(false)
-  const [monastery, setMonastery] = useState<any>(null)
+  const [monastery, setMonastery] = useState<Monastery | null>(null)
 
   // Form state for slot creation/editing
   const [formData, setFormData] = useState({
@@ -98,6 +108,26 @@ export function CalendarSlotView({ monasteryId, bookings, onBookingAction, onCre
     isGuest: false
   })
 
+  // Restore selected date from sessionStorage on component mount
+  useEffect(() => {
+    const storedBookingData = sessionStorage.getItem('guestBookingPreselection')
+    if (storedBookingData) {
+      try {
+        const bookingData = JSON.parse(storedBookingData)
+        if (bookingData.selectedDate && bookingData.monasteryId === monasteryId) {
+          const storedDate = new Date(bookingData.selectedDate)
+          setSelectedDate(storedDate)
+          setCurrentDate(storedDate) // Also update current month view
+        }
+        // Clear the stored data after using it
+        sessionStorage.removeItem('guestBookingPreselection')
+      } catch (error) {
+        console.error('Error parsing stored booking data:', error)
+        sessionStorage.removeItem('guestBookingPreselection')
+      }
+    }
+  }, [monasteryId])
+
   // Fetch monastery details
   useEffect(() => {
     const fetchMonastery = async () => {
@@ -114,27 +144,53 @@ export function CalendarSlotView({ monasteryId, bookings, onBookingAction, onCre
     fetchMonastery()
   }, [monasteryId])
 
-  // Fetch slots for selected date
-  useEffect(() => {
-    if (selectedDate) {
-      fetchSlotsForDate(selectedDate)
-    }
-  }, [selectedDate])
-
-  const fetchSlotsForDate = async (date: Date) => {
+  const fetchSlotsForDate = useCallback(async (date: Date) => {
     setLoadingSlots(true)
     const dateStr = format(date, 'yyyy-MM-dd')
     
     const { data: slots } = await supabase
       .from('donation_slots')
-      .select('*')
+      .select(`
+        *,
+        donation_bookings(
+          estimated_servings,
+          status
+        )
+      `)
       .eq('monastery_id', monasteryId)
       .eq('date', dateStr)
       .order('time_slot')
 
-    setDonationSlots(slots || [])
+    // Calculate actual servings for each slot
+    const slotsWithCalculatedData = (slots || []).map(slot => {
+      const activeBookings = slot.donation_bookings?.filter(
+        booking => booking.status !== 'cancelled'
+      ) || []
+      
+      const totalServings = activeBookings.reduce(
+        (sum, booking) => sum + (booking.estimated_servings || 0), 
+        0
+      )
+      
+      return {
+        ...slot,
+        monks_fed: totalServings,
+        current_bookings: activeBookings.length,
+        // Remove the nested bookings data to keep the interface clean
+        donation_bookings: undefined
+      }
+    })
+
+    setDonationSlots(slotsWithCalculatedData)
     setLoadingSlots(false)
-  }
+  }, [monasteryId])
+
+  // Fetch slots for selected date
+  useEffect(() => {
+    if (selectedDate) {
+      fetchSlotsForDate(selectedDate)
+    }
+  }, [selectedDate, fetchSlotsForDate])
 
   // Get calendar days
   const monthStart = startOfMonth(currentDate)
@@ -157,21 +213,21 @@ export function CalendarSlotView({ monasteryId, bookings, onBookingAction, onCre
     return acc
   }, {} as Record<string, Booking[]>)
 
-  // Get slot occupancy info
-  const getSlotOccupancy = (date: Date) => {
-    const dateKey = format(date, 'yyyy-MM-dd')
-    const dayBookings = bookingsByDate[dateKey] || []
-    
-    // Count bookings by time slot (actual booking count, not servings)
-    const slotBookings = dayBookings.reduce((acc, booking) => {
-      const time = booking.donation_slots.time
-      if (!acc[time]) acc[time] = 0
-      acc[time] += 1 // Count actual bookings, not servings
-      return acc
-    }, {} as Record<string, number>)
-
-    return slotBookings
-  }
+  // Get slot occupancy info - commented out as not currently used
+  // const getSlotOccupancy = (date: Date) => {
+  //   const dateKey = format(date, 'yyyy-MM-dd')
+  //   const dayBookings = bookingsByDate[dateKey] || []
+  //
+  //   // Count bookings by time slot (actual booking count, not servings)
+  //   const slotBookings = dayBookings.reduce((acc, booking) => {
+  //     const time = booking.donation_slots.time
+  //     if (!acc[time]) acc[time] = 0
+  //     acc[time] += 1 // Count actual bookings, not servings
+  //     return acc
+  //   }, {} as Record<string, number>)
+  //
+  //   return slotBookings
+  // }
 
   const handleDateClick = (date: Date) => {
     setSelectedDate(date)
@@ -187,45 +243,64 @@ export function CalendarSlotView({ monasteryId, bookings, onBookingAction, onCre
   }
 
   const createSlot = async () => {
-    if (!selectedDate || !monastery) return
-
-    // Check if slot already exists
-    const existingSlot = donationSlots.find(
-      slot => slot.meal_type === formData.meal_type && slot.date === formData.date
-    )
-
-    if (existingSlot) {
-      alert(`A ${formData.meal_type} slot already exists for this date`)
-      return
+    if (!selectedDate || !monastery) {
+      console.error('Missing selectedDate or monastery');
+      return;
     }
 
-    const { error } = await supabase
-      .from('donation_slots')
-      .insert({
-        monastery_id: monasteryId,
-        date: formData.date,
-        time_slot: formData.time_slot,
-        meal_type: formData.meal_type,
-        monks_capacity: formData.monks_capacity,
-        max_donors: formData.max_donors,
-        booking_notes: formData.booking_notes || null,
-        is_available: true,
-        monks_fed: 0,
-        current_bookings: 0,
-        created_by: 'monastery_admin'
-      })
+    try {
+      // Check if slot already exists
+      const existingSlot = donationSlots.find(
+        slot => slot.meal_type === formData.meal_type && slot.date === formData.date
+      )
 
-    if (!error) {
-      setCreateSlotDialogOpen(false)
-      fetchSlotsForDate(selectedDate)
-      // Update monastery default time if changed
-      if (formData.time_slot !== getDefaultTime(formData.meal_type)) {
-        const updateField = `${formData.meal_type}_time`
-        await supabase
-          .from('monasteries')
-          .update({ [updateField]: `${formData.time_slot}:00` })
-          .eq('id', monasteryId)
+      if (existingSlot) {
+        alert(`A ${formData.meal_type} slot already exists for this date`)
+        return
       }
+
+      console.log('Creating slot with data:', formData);
+      
+      const { error } = await supabase
+        .from('donation_slots')
+        .insert({
+          monastery_id: monasteryId,
+          date: formData.date,
+          time_slot: formData.time_slot,
+          meal_type: formData.meal_type,
+          monks_capacity: formData.monks_capacity,
+          max_donors: formData.max_donors,
+          booking_notes: formData.booking_notes || null,
+          is_available: true,
+          monks_fed: 0,
+          current_bookings: 0,
+          created_by: userId || null
+        })
+
+      if (error) {
+        console.error('Error creating slot:', error);
+        alert(`Error creating slot: ${error.message}`);
+      } else {
+        setCreateSlotDialogOpen(false)
+        fetchSlotsForDate(selectedDate)
+        
+        // Notify parent component to refresh data
+        if (onBookingCreated) {
+          onBookingCreated()
+        }
+        
+        // Update monastery default time if changed
+        if (formData.time_slot !== getDefaultTime(formData.meal_type)) {
+          const updateField = `${formData.meal_type}_time`
+          await supabase
+            .from('monasteries')
+            .update({ [updateField]: `${formData.time_slot}:00` })
+            .eq('id', monasteryId)
+        }
+      }
+    } catch (error) {
+      console.error('Unexpected error creating slot:', error);
+      alert('An unexpected error occurred while creating the slot');
     }
   }
 
@@ -301,7 +376,7 @@ export function CalendarSlotView({ monasteryId, bookings, onBookingAction, onCre
           is_available: true,
           monks_fed: 0,
           current_bookings: 0,
-          created_by: 'monastery_admin'
+          created_by: userId || null
         })
       }
     }
@@ -389,7 +464,7 @@ export function CalendarSlotView({ monasteryId, bookings, onBookingAction, onCre
       // Then, search in guest_profiles
       const { data: guestProfile } = await supabase
         .from('guest_profiles')
-        .select('full_name, email')
+        .select('id, full_name, email')
         .eq('phone', phone)
         .single();
 
@@ -397,7 +472,8 @@ export function CalendarSlotView({ monasteryId, bookings, onBookingAction, onCre
         setBookingFormData(prev => ({
           ...prev,
           donor_name: guestProfile.full_name,
-          donor_email: guestProfile.email
+          donor_email: guestProfile.email,
+          guest_profile_id: guestProfile.id
         }));
         setPhoneLookup({
           loading: false,
@@ -432,34 +508,53 @@ const createBooking = async () => {
     setCreatingBooking(true)
 
     try {
-      let guestId = null;
+      let guestId = bookingFormData.guest_profile_id || null;
 
-      // Handle new donor creation if phone doesn't exist in either table
-      if (!phoneLookup.found && bookingFormData.donor_phone) {
-        const { data: existingGuest } = await supabase
-          .from('guest_profiles')
-          .select('id')
-          .eq('phone', bookingFormData.donor_phone)
-          .single();
-
-        if (existingGuest) {
-          guestId = existingGuest.id;
-        } else {
-          // Create new guest profile
-          const { data: newGuest } = await supabase
+      // Handle guest profile creation or retrieval
+      if (!guestId && bookingFormData.donor_phone) {
+        // If we already found the guest profile during lookup, use it
+        if (phoneLookup.found && phoneLookup.isGuest) {
+          // We should already have the guest_profile_id from the lookup
+          // If not, fetch it again
+          if (!guestId) {
+            const { data: existingGuest } = await supabase
+              .from('guest_profiles')
+              .select('id')
+              .eq('phone', bookingFormData.donor_phone)
+              .single();
+            
+            if (existingGuest) {
+              guestId = existingGuest.id;
+            }
+          }
+        } else if (!phoneLookup.found) {
+          // Create new guest profile for completely new donor
+          const { data: existingGuest } = await supabase
             .from('guest_profiles')
-            .insert({
-              phone: bookingFormData.donor_phone,
-              full_name: bookingFormData.donor_name,
-              email: bookingFormData.donor_email,
-              monastery_id: monasteryId,
-              created_at: new Date().toISOString()
-            })
-            .select()
+            .select('id')
+            .eq('phone', bookingFormData.donor_phone)
             .single();
-          
-          if (newGuest) {
-            guestId = newGuest.id;
+
+          if (existingGuest) {
+            guestId = existingGuest.id;
+          } else {
+            // Create new guest profile with dummy email if none provided
+            const guestEmail = bookingFormData.donor_email || `guest-${Date.now()}@temp.dhaana.com`;
+            const { data: newGuest } = await supabase
+              .from('guest_profiles')
+              .insert({
+                phone: bookingFormData.donor_phone,
+                full_name: bookingFormData.donor_name,
+                email: guestEmail,
+                monastery_id: monasteryId,
+                created_at: new Date().toISOString()
+              })
+              .select()
+              .single();
+            
+            if (newGuest) {
+              guestId = newGuest.id;
+            }
           }
         }
       }
@@ -468,46 +563,181 @@ const createBooking = async () => {
       let slotId = bookingFormData.selected_slot_id
       
       if (!slotId) {
-        // Create new slot if none selected
-        const { data: newSlot, error: slotError } = await supabase
+        const timeSlot = bookingFormData.selected_time || '12:00:00'
+        const formattedTime = timeSlot.includes(':') && !timeSlot.includes(':00') ? `${timeSlot}:00` : timeSlot
+        
+        // Check if slot already exists
+        const { data: existingSlot } = await supabase
           .from('donation_slots')
-          .insert({
-            monastery_id: monasteryId,
-            date: format(selectedDate, 'yyyy-MM-dd'),
-            time_slot: bookingFormData.selected_time || '12:00',
-            meal_type: 'lunch',
-            monks_capacity: monastery.capacity || 10,
-            max_donors: 5,
-            is_available: true,
-            monks_fed: 0,
-            current_bookings: 0,
-            created_by: 'monastery_admin'
-          })
-          .select()
+          .select('id')
+          .eq('monastery_id', monasteryId)
+          .eq('date', format(selectedDate, 'yyyy-MM-dd'))
+          .eq('time_slot', formattedTime)
           .single()
 
-        if (slotError) throw slotError
-        slotId = newSlot.id
+        if (existingSlot) {
+          slotId = existingSlot.id
+        } else {
+          // Create new slot if none exists
+          const { data: newSlot, error: slotError } = await supabase
+            .from('donation_slots')
+            .insert({
+              monastery_id: monasteryId,
+              date: format(selectedDate, 'yyyy-MM-dd'),
+              time_slot: formattedTime,
+              meal_type: 'lunch',
+              monks_capacity: monastery.capacity || 10,
+              max_donors: 5,
+              is_available: true,
+              monks_fed: 0,
+              current_bookings: 0
+            })
+            .select()
+            .single()
+
+          if (slotError) throw slotError
+          slotId = newSlot.id
+        }
       }
 
-      // Create the booking
-      const { error: bookingError } = await supabase
-        .from('donation_bookings')
-        .insert({
-          donation_slot_id: slotId,
-          donor_id: null, // Guest booking
-          food_type: bookingFormData.food_type,
-          estimated_servings: bookingFormData.estimated_servings,
-          special_notes: bookingFormData.special_notes,
-          guest_name: bookingFormData.donor_name,
-          guest_email: bookingFormData.donor_email,
-          guest_phone: bookingFormData.donor_phone,
-          status: 'monastery_approved', // Auto-approved for monastery admin bookings
-          confirmed_at: new Date().toISOString(),
-          guest_profile_id: guestId
-        })
-
-      if (bookingError) throw bookingError
+      // Check for duplicate bookings first
+      let existingBooking = null;
+      
+      if (phoneLookup.found && !phoneLookup.isGuest) {
+        // Check for existing booking for registered user
+        const { data: userProfile } = await supabase
+          .from('user_profiles')
+          .select('id')
+          .eq('phone', bookingFormData.donor_phone)
+          .single();
+          
+        if (!userProfile) throw new Error('User profile not found');
+        
+        const { data: existing } = await supabase
+          .from('donation_bookings')
+          .select('id, food_type, estimated_servings, special_notes')
+          .eq('donation_slot_id', slotId)
+          .eq('donor_id', userProfile.id)
+          .single();
+          
+        if (existing) {
+          existingBooking = existing;
+          // Show confirmation dialog for updating existing booking
+          const confirmUpdate = confirm(
+            `This user already has a booking for this slot:\n\n` +
+            `Current booking:\n` +
+            `• Food: ${existing.food_type}\n` +
+            `• Servings: ${existing.estimated_servings}\n` +
+            `• Notes: ${existing.special_notes || 'None'}\n\n` +
+            `New booking:\n` +
+            `• Food: ${bookingFormData.food_type}\n` +
+            `• Servings: ${bookingFormData.estimated_servings}\n` +
+            `• Notes: ${bookingFormData.special_notes || 'None'}\n\n` +
+            `Do you want to update the existing booking with the new values?`
+          );
+          
+          if (!confirmUpdate) {
+            setCreatingBooking(false);
+            return;
+          }
+          
+          // Update existing booking
+          const { error: updateError } = await supabase
+            .from('donation_bookings')
+            .update({
+              food_type: bookingFormData.food_type,
+              estimated_servings: bookingFormData.estimated_servings,
+              special_notes: bookingFormData.special_notes,
+              contact_phone: bookingFormData.donor_phone,
+              updated_at: new Date().toISOString()
+            })
+            .eq('id', existing.id);
+            
+          if (updateError) throw updateError;
+        } else {
+          // Create new booking for registered user
+          const result = await supabase
+            .from('donation_bookings')
+            .insert({
+              donation_slot_id: slotId,
+              donor_id: userProfile.id,
+              food_type: bookingFormData.food_type,
+              estimated_servings: bookingFormData.estimated_servings,
+              special_notes: bookingFormData.special_notes,
+              contact_phone: bookingFormData.donor_phone,
+              donation_date: format(selectedDate, 'yyyy-MM-dd'),
+              status: 'monastery_approved', // Auto-approved for monastery admin bookings
+              monastery_approved_at: new Date().toISOString(),
+              monastery_approved_by: userId,
+              monks_to_feed: 1,
+              initiated_by: 'monastery_admin',
+              initiated_by_admin_id: userId
+            });
+            
+          if (result.error) throw result.error;
+        }
+      } else {
+        // Guest user - check for duplicate guest booking first
+        if (guestId) {
+          const { data: existingGuestBooking } = await supabase
+            .from('guest_bookings')
+            .select('id, food_type, estimated_servings, special_notes')
+            .eq('donation_slot_id', slotId)
+            .eq('guest_profile_id', guestId)
+            .single();
+            
+          if (existingGuestBooking) {
+            // Show confirmation dialog for updating existing guest booking
+            const confirmUpdate = confirm(
+              `This guest already has a booking for this slot:\n\n` +
+              `Current booking:\n` +
+              `• Food: ${existingGuestBooking.food_type}\n` +
+              `• Servings: ${existingGuestBooking.estimated_servings}\n` +
+              `• Notes: ${existingGuestBooking.special_notes || 'None'}\n\n` +
+              `New booking:\n` +
+              `• Food: ${bookingFormData.food_type}\n` +
+              `• Servings: ${bookingFormData.estimated_servings}\n` +
+              `• Notes: ${bookingFormData.special_notes || 'None'}\n\n` +
+              `Do you want to update the existing booking with the new values?`
+            );
+            
+            if (!confirmUpdate) {
+              setCreatingBooking(false);
+              return;
+            }
+            
+            // Update existing guest booking
+            const { error: updateError } = await supabase
+              .from('guest_bookings')
+              .update({
+                food_type: bookingFormData.food_type,
+                estimated_servings: bookingFormData.estimated_servings,
+                special_notes: bookingFormData.special_notes,
+                contact_phone: bookingFormData.donor_phone,
+                updated_at: new Date().toISOString()
+              })
+              .eq('id', existingGuestBooking.id);
+              
+            if (updateError) throw updateError;
+          } else {
+            // Create new guest booking
+            const { error: insertError } = await supabase
+              .from('guest_bookings')
+              .insert({
+                donation_slot_id: slotId,
+                guest_profile_id: guestId,
+                food_type: bookingFormData.food_type,
+                estimated_servings: bookingFormData.estimated_servings,
+                special_notes: bookingFormData.special_notes,
+                contact_phone: bookingFormData.donor_phone,
+                status: 'monastery_approved', // Auto-approved for monastery admin bookings
+                confirmed_at: new Date().toISOString()
+              });
+              
+            if (insertError) throw insertError;
+          }
+        }
+      }
 
       // Reset form and close dialog
       setBookingDialogOpen(false)
@@ -528,8 +758,23 @@ const createBooking = async () => {
         isGuest: false
       })
 
+      // Store the selected date for restoration
+      if (selectedDate) {
+        const restoreData = {
+          selectedDate: selectedDate.toISOString(),
+          monasteryId: monasteryId,
+          timestamp: new Date().toISOString()
+        }
+        sessionStorage.setItem('guestBookingPreselection', JSON.stringify(restoreData))
+      }
+
       // Refresh slots and bookings
       fetchSlotsForDate(selectedDate)
+      
+      // Notify parent component to refresh booking data
+      if (onBookingCreated) {
+        onBookingCreated()
+      }
       
     } catch (error) {
       console.error('Error creating booking:', error)
@@ -539,10 +784,10 @@ const createBooking = async () => {
     }
   }
 
-  const openBookingDialog = () => {
+  const openBookingDialog = (preselectedSlot?: DonationSlot) => {
     if (!selectedDate) return
     
-    // Reset form and phone lookup state
+    // Reset form and phone lookup state, pre-fill slot if provided
     setBookingFormData({
       donor_name: '',
       donor_email: '',
@@ -550,8 +795,8 @@ const createBooking = async () => {
       food_type: '',
       estimated_servings: 1,
       special_notes: '',
-      selected_slot_id: '',
-      selected_time: ''
+      selected_slot_id: preselectedSlot?.id || '',
+      selected_time: preselectedSlot ? `${preselectedSlot.meal_type} - ${preselectedSlot.time_slot}` : ''
     })
     
     setPhoneLookup({
@@ -803,17 +1048,8 @@ const createBooking = async () => {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {/* Quick Slot Creation */}
+                {/* Bulk Slot Creation */}
                 <div className="space-y-2">
-                  <Button 
-                    onClick={() => setCreateSlotDialogOpen(true)}
-                    className="w-full"
-                    size="sm"
-                  >
-                    <Plus className="w-4 h-4 mr-2" />
-                    Create Slot
-                  </Button>
-                  
                   <Button 
                     onClick={() => setBulkSlotDialogOpen(true)}
                     className="w-full"
@@ -882,68 +1118,143 @@ const createBooking = async () => {
                   </Button>
                 </div>
 
-                {/* Big Green Book Button */}
-                <Button 
-                  onClick={() => openBookingDialog()}
-                  className="w-full bg-green-600 hover:bg-green-700 text-white text-base py-3 h-auto"
-                  size="lg"
-                >
-                  <UserPlus className="w-5 h-5 mr-2" />
-                  Book Donation
-                </Button>
+                {/* Instructions for slot booking */}
+                <div className="text-center py-2 px-4 bg-blue-50 rounded-lg border border-blue-200">
+                  <p className="text-sm text-blue-700 font-medium">
+                    👆 Click on any active slot above to create a booking
+                  </p>
+                </div>
 
                 {/* Existing Slots */}
                 {loadingSlots ? (
                   <div className="text-center py-4">Loading slots...</div>
                 ) : donationSlots.length === 0 ? (
-                  <div className="text-center py-4 text-gray-500">
+                  <div className="text-center py-6 text-gray-500">
                     <Calendar className="w-8 h-8 mx-auto mb-2 text-gray-300" />
-                    <p className="text-sm">No slots for this date</p>
+                    <p className="text-sm font-medium mb-2">No slots for this date</p>
+                    <p className="text-xs text-gray-400">Create slots above to accept bookings for this date</p>
                   </div>
                 ) : (
                   <div className="space-y-2">
                     {donationSlots.map((slot) => (
-                      <div key={slot.id} className="border rounded-lg p-3">
+                      <div key={slot.id} className="relative group">
+                        {/* Interactive Overlay with Management Actions */}
+                        <div className="absolute inset-0 bg-gray-900/90 rounded-lg opacity-0 group-hover:opacity-100 transition-all duration-200 z-10 flex flex-col items-center justify-center">
+                          {slot.is_available ? (
+                            <>
+                              {/* Create Booking Action */}
+                              <button
+                                onClick={() => openBookingDialog(slot)}
+                                className="text-white hover:bg-white/10 rounded-lg p-3 transition-colors w-full"
+                              >
+                                <UserPlus className="w-6 h-6 mx-auto mb-1" />
+                                <p className="font-medium text-sm">Create Booking</p>
+                              </button>
+                              
+                              {/* Management Actions Row */}
+                              <div className="flex items-center gap-3 mt-3 pt-3 border-t border-gray-700">
+                                <button
+                                  onClick={() => startEditingSlot(slot)}
+                                  className="text-gray-300 hover:text-white p-2 hover:bg-white/10 rounded transition-all"
+                                  title="Edit Slot"
+                                >
+                                  <Edit3 className="w-4 h-4" />
+                                </button>
+                                
+                                <button
+                                  onClick={() => toggleSlotAvailability(slot.id, slot.is_available)}
+                                  className="text-gray-300 hover:text-yellow-400 p-2 hover:bg-white/10 rounded transition-all"
+                                  title="Disable Slot"
+                                >
+                                  <AlertCircle className="w-4 h-4" />
+                                </button>
+                                
+                                {slot.current_bookings === 0 && (
+                                  <button
+                                    onClick={() => deleteSlot(slot.id)}
+                                    className="text-gray-300 hover:text-red-400 p-2 hover:bg-white/10 rounded transition-all"
+                                    title="Delete Slot"
+                                  >
+                                    <Trash2 className="w-4 h-4" />
+                                  </button>
+                                )}
+                              </div>
+                            </>
+                          ) : (
+                            <div className="text-white text-center">
+                              <AlertCircle className="w-6 h-6 mx-auto mb-2 text-yellow-400" />
+                              <p className="font-medium">Slot Disabled</p>
+                              <button
+                                onClick={() => toggleSlotAvailability(slot.id, slot.is_available)}
+                                className="mt-3 text-sm px-3 py-1 bg-green-600 hover:bg-green-700 rounded transition-colors"
+                              >
+                                Enable Slot
+                              </button>
+                            </div>
+                          )}
+                        </div>
+                        
+                        <div className={cn(
+                          "border rounded-lg p-3 transition-all duration-200",
+                          slot.is_available 
+                            ? "group-hover:border-gray-400 group-hover:shadow-md cursor-pointer" 
+                            : "opacity-60"
+                        )}>
                         <div className="flex items-center justify-between mb-1">
                           <div className="font-medium text-sm capitalize">
                             {slot.meal_type} - {slot.time_slot}
                           </div>
                           <Badge 
                             className={slot.is_available ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}
-                            size="sm"
                           >
                             {slot.is_available ? 'Active' : 'Disabled'}
                           </Badge>
                         </div>
                         
-                        <div className="text-xs text-gray-600 mb-2">
-                          {slot.monks_fed}/{slot.monks_capacity} monks • {slot.current_bookings}/{slot.max_donors} donors
+                        <div className="text-xs mb-2">
+                          <div className={cn(
+                            "font-medium",
+                            slot.monks_fed > slot.monks_capacity 
+                              ? "text-red-600" 
+                              : slot.monks_fed === slot.monks_capacity 
+                              ? "text-yellow-600" 
+                              : "text-gray-600"
+                          )}>
+                            <span className="font-semibold">{slot.monks_fed}</span>/{slot.monks_capacity} servings
+                            {slot.monks_fed > slot.monks_capacity && (
+                              <span className="ml-2 text-xs bg-red-100 text-red-800 px-1.5 py-0.5 rounded">
+                                Over capacity
+                              </span>
+                            )}
+                            {slot.monks_fed === slot.monks_capacity && (
+                              <span className="ml-2 text-xs bg-yellow-100 text-yellow-800 px-1.5 py-0.5 rounded">
+                                Full
+                              </span>
+                            )}
+                          </div>
+                          <div className="text-gray-500 mt-1">
+                            {slot.current_bookings} booking{slot.current_bookings !== 1 ? 's' : ''}
+                          </div>
+                          
+                          {/* Capacity Progress Bar */}
+                          <div className="mt-2">
+                            <div className="w-full bg-gray-200 rounded-full h-1.5">
+                              <div 
+                                className={cn(
+                                  "h-1.5 rounded-full transition-all duration-300",
+                                  slot.monks_fed > slot.monks_capacity 
+                                    ? "bg-red-500" 
+                                    : slot.monks_fed === slot.monks_capacity 
+                                    ? "bg-yellow-500" 
+                                    : "bg-green-500"
+                                )}
+                                style={{ 
+                                  width: `${Math.min((slot.monks_fed / slot.monks_capacity) * 100, 100)}%` 
+                                }}
+                              />
+                            </div>
+                          </div>
                         </div>
-                        
-                        <div className="flex gap-1">
-                          <Button 
-                            size="xs" 
-                            variant="ghost"
-                            onClick={() => startEditingSlot(slot)}
-                          >
-                            <Edit3 className="w-3 h-3" />
-                          </Button>
-                          <Button 
-                            size="xs" 
-                            variant="ghost"
-                            onClick={() => toggleSlotAvailability(slot.id, slot.is_available)}
-                          >
-                            {slot.is_available ? 'Disable' : 'Enable'}
-                          </Button>
-                          {slot.current_bookings === 0 && (
-                            <Button 
-                              size="xs" 
-                              variant="ghost"
-                              onClick={() => deleteSlot(slot.id)}
-                            >
-                              <Trash2 className="w-3 h-3" />
-                            </Button>
-                          )}
                         </div>
                       </div>
                     ))}

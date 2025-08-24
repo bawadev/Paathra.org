@@ -64,7 +64,7 @@ function AuthCodeErrorContent() {
             Authentication Error
           </CardTitle>
           <CardDescription className="text-[var(--text-light)]">
-            We couldn't complete your authentication. This might be due to:
+            We couldn&apos;t complete your authentication. This might be due to:
           </CardDescription>
         </CardHeader>
         
@@ -91,14 +91,14 @@ function AuthCodeErrorContent() {
           
           <div className="flex gap-3">
             <Button
-              onClick={() => router.push('/auth')}
+              onClick={() => router.push('/en/auth')}
               className="flex-1 btn-dana-primary"
             >
               Try Again
             </Button>
             <Button
               variant="outline"
-              onClick={() => router.push('/')}
+              onClick={() => router.push('/en')}
               className="flex-1"
             >
               Go Home

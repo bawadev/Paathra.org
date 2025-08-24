@@ -4,7 +4,6 @@ import { useEffect, useState } from 'react'
 import { useAuth } from '@/lib/auth-context'
 import { Navigation } from '@/components/navigation'
 import { AuthForm } from '@/components/auth-form'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { supabase, DonationSlot, Monastery } from '@/lib/supabase'
@@ -42,7 +41,7 @@ export default function DonationsPage() {
       console.error('Error fetching donation slots:', error)
     } else {
       // Filter slots that still have capacity for monks
-      const availableSlots = (data || []).filter(slot => 
+      const availableSlots = (data || []).filter((slot: DonationSlotWithMonastery) => 
         slot.monks_fed < slot.monks_capacity
       ).slice(0, 20)
       setSlots(availableSlots)
@@ -214,7 +213,7 @@ export default function DonationsPage() {
               <div className="text-center mt-12">
                 <div className="card-dana max-w-3xl mx-auto p-8">
                   <h3 className="text-2xl font-semibold text-[var(--text-dark)] mb-4">
-                    Can't find a suitable time?
+                    Can&apos;t find a suitable time?
                   </h3>
                   <p className="text-[var(--text-light)] mb-6 text-lg">
                     Explore all monasteries in your area and get notified when new donation slots become available.
