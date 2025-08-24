@@ -11,13 +11,14 @@ import { Card, CardContent } from '@/components/ui/card'
 import { cn } from '@/lib/utils'
 import { supabase } from '@/lib/supabase'
 import { executeBookingTransition } from '@/lib/services/booking-workflow'
-import { format, parseISO } from 'date-fns'
-import { Calendar, Clock, MapPin, Phone, Utensils, Users, Gift } from 'lucide-react'
+import { format, parseISO, isFuture, isToday } from 'date-fns'
+import { Calendar, Clock, MapPin, Phone, Utensils, Users, Gift, Filter } from 'lucide-react'
 
 export default function MyDonationsPage() {
   const { user, loading: authLoading } = useAuth()
   const [bookings, setBookings] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
+  const [filter, setFilter] = useState<'all' | 'upcoming' | 'past'>('all')
 
   useEffect(() => {
     if (user) {
@@ -85,6 +86,35 @@ export default function MyDonationsPage() {
         return status.charAt(0).toUpperCase() + status.slice(1)
     }
   }
+
+  const getFilteredBookings = () => {
+    if (filter === 'all') return bookings
+    
+    const today = new Date()
+    today.setHours(0, 0, 0, 0)
+    
+    return bookings.filter(booking => {
+      if (!booking.donation_slots?.date) return false
+      
+      const bookingDate = parseISO(booking.donation_slots.date)
+      const isUpcoming = isFuture(bookingDate) || isToday(bookingDate)
+      
+      if (filter === 'upcoming') {
+        return isUpcoming
+      } else if (filter === 'past') {
+        return !isUpcoming
+      }
+      
+      return true
+    })
+  }
+
+  const filteredBookings = getFilteredBookings()
+  const upcomingCount = bookings.filter(booking => {
+    if (!booking.donation_slots?.date) return false
+    const bookingDate = parseISO(booking.donation_slots.date)
+    return isFuture(bookingDate) || isToday(bookingDate)
+  }).length
 
   if (authLoading) {
     return (
@@ -162,11 +192,72 @@ export default function MyDonationsPage() {
                 </h2>
                 <div className="text-sm text-gray-600">
                   {bookings.length} donation{bookings.length !== 1 ? 's' : ''} total
+                  {upcomingCount > 0 && ` (${upcomingCount} upcoming)`}
                 </div>
               </div>
               
-              <div className="grid gap-6">
-                {bookings.map((booking) => (
+              {/* Filter Buttons */}
+              <div className="flex flex-wrap gap-3">
+                <Button
+                  variant={filter === 'all' ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => setFilter('all')}
+                  className={cn(
+                    filter === 'all' 
+                      ? 'bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600' 
+                      : 'border-amber-200 text-amber-700 hover:bg-amber-50'
+                  )}
+                >
+                  <Filter className="w-4 h-4 mr-2" />
+                  All Donations ({bookings.length})
+                </Button>
+                <Button
+                  variant={filter === 'upcoming' ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => setFilter('upcoming')}
+                  className={cn(
+                    filter === 'upcoming' 
+                      ? 'bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600' 
+                      : 'border-green-200 text-green-700 hover:bg-green-50'
+                  )}
+                >
+                  <Calendar className="w-4 h-4 mr-2" />
+                  Upcoming ({upcomingCount})
+                </Button>
+                <Button
+                  variant={filter === 'past' ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => setFilter('past')}
+                  className={cn(
+                    filter === 'past' 
+                      ? 'bg-gradient-to-r from-gray-500 to-slate-500 hover:from-gray-600 hover:to-slate-600' 
+                      : 'border-gray-200 text-gray-700 hover:bg-gray-50'
+                  )}
+                >
+                  <Clock className="w-4 h-4 mr-2" />
+                  Past ({bookings.length - upcomingCount})
+                </Button>
+              </div>
+              
+              {filteredBookings.length === 0 ? (
+                <div className="text-center py-12">
+                  <div className="w-16 h-16 bg-amber-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <Calendar className="w-8 h-8 text-amber-600" />
+                  </div>
+                  <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                    No {filter === 'upcoming' ? 'upcoming' : filter === 'past' ? 'past' : ''} donations found
+                  </h3>
+                  <p className="text-gray-600">
+                    {filter === 'upcoming' 
+                      ? 'You have no upcoming donations scheduled.' 
+                      : filter === 'past' 
+                        ? 'You have no past donations recorded.' 
+                        : 'No donations match your current filter.'}
+                  </p>
+                </div>
+              ) : (
+                <div className="grid gap-6">
+                  {filteredBookings.map((booking) => (
                   <Card key={booking.id} className="hover:shadow-lg transition-all duration-300">
                     <CardContent className="p-6">
                       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
@@ -310,8 +401,9 @@ export default function MyDonationsPage() {
                       </div>
                     </CardContent>
                   </Card>
-                ))}
-              </div>
+                  ))}
+                </div>
+              )}
             </div>
           )}
         </div>
