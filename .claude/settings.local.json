@@ -36,7 +36,8 @@
       "Bash(npx tsc:*)",
       "Bash(sed:*)",
       "mcp__ide__executeCode",
-      "Bash(npm run:*)"
+      "Bash(npm run:*)",
+      "Bash(git merge:*)"
     ],
     "deny": []
   }
