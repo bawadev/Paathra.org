@@ -17,10 +17,7 @@ import { executeBookingTransition } from '@/lib/services/booking-workflow'
 // import { format } from 'date-fns'
 import {
   Search,
-  Filter,
-  CheckCircle,
-  AlertCircle,
-  XCircle
+  Filter
 } from 'lucide-react'
 
 // Helper function to check role from database UserProfile
@@ -146,14 +143,6 @@ export default function ManageBookingsPage() {
     }
   }
 
-  const openReceivedStatusDialog = (bookingId: string, receivedStatus: 'delivered' | 'not_delivered') => {
-    setReceivedStatusDialog({
-      isOpen: true,
-      bookingId,
-      receivedStatus
-    })
-    setMonasteryNotes('')
-  }
 
   const closeReceivedStatusDialog = () => {
     setReceivedStatusDialog({
@@ -188,43 +177,6 @@ export default function ManageBookingsPage() {
     }
   }
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'monastery_approved':
-        return 'bg-blue-100 text-blue-800'
-      case 'confirmed':
-        return 'bg-green-100 text-green-800'
-      case 'pending':
-        return 'bg-yellow-100 text-yellow-800'
-      case 'cancelled':
-        return 'bg-red-100 text-red-800'
-      case 'delivered':
-        return 'bg-emerald-100 text-emerald-800'
-      case 'not_delivered':
-        return 'bg-orange-100 text-orange-800'
-      default:
-        return 'bg-gray-100 text-gray-800'
-    }
-  }
-
-  const getStatusIcon = (status: string) => {
-    switch (status) {
-      case 'monastery_approved':
-        return <CheckCircle className="w-4 h-4" />
-      case 'confirmed':
-        return <CheckCircle className="w-4 h-4" />
-      case 'pending':
-        return <AlertCircle className="w-4 h-4" />
-      case 'cancelled':
-        return <XCircle className="w-4 h-4" />
-      case 'delivered':
-        return <CheckCircle className="w-4 h-4" />
-      case 'not_delivered':
-        return <XCircle className="w-4 h-4" />
-      default:
-        return <AlertCircle className="w-4 h-4" />
-    }
-  }
 
   const handleCreateGuestBooking = (date: Date, availableSlots: any[]) => {
     // Store the selected date and slots in sessionStorage for the guest booking page

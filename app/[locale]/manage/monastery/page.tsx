@@ -14,7 +14,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert'
 import { supabase, Monastery } from '@/lib/supabase'
 import { ImageUpload } from '@/components/image-upload'
 import { imageUploadService } from '@/lib/services/image-upload'
-import { Building, Phone, Mail, Globe, MapPin, Users, CheckCircle, X, Image as ImageIcon } from 'lucide-react'
+import { Building, Phone, Mail, Globe, CheckCircle, X, Image as ImageIcon } from 'lucide-react'
 import { hasRole } from '@/types/auth'
 import { MonasteryLocationPicker } from '@/components/monastery-location-picker'
 
