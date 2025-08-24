@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 import { useAuth } from '@/lib/auth-context'
 import { Navigation } from '@/components/navigation'
 import { AuthForm } from '@/components/auth-form'
@@ -26,6 +27,8 @@ const hasRole = (profile: any, role: string) => {
 }
 
 export default function ManageBookingsPage() {
+  const t = useTranslations('ManageBookings')
+  const tCommon = useTranslations('Common')
   const { user, profile, loading: authLoading } = useAuth()
   const router = useRouter()
   const pathname = usePathname()
@@ -197,7 +200,7 @@ export default function ManageBookingsPage() {
   if (authLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <div className="text-lg">Loading...</div>
+        <div className="text-lg">{tCommon('loading')}</div>
       </div>
     )
   }
@@ -212,27 +215,27 @@ export default function ManageBookingsPage() {
       
       <main className="container mx-auto px-4 py-8">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Manage Bookings</h1>
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">{t('title')}</h1>
           <p className="text-gray-600">
-            View and manage donation bookings for {monastery?.name}
+            {t('description', { monasteryName: monastery?.name })}
           </p>
         </div>
 
         {loading ? (
-          <div className="text-center py-8">Loading bookings...</div>
+          <div className="text-center py-8">{t('loadingBookings')}</div>
         ) : (
           <div className="space-y-6">
             {/* Filters */}
             <Card>
               <CardHeader>
-                <CardTitle>Filters</CardTitle>
+                <CardTitle>{t('filters')}</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="relative">
                     <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
                     <Input
-                      placeholder="Search by donor name, food type, or email..."
+                      placeholder={t('searchPlaceholder')}
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
                       className="pl-10"
@@ -242,16 +245,16 @@ export default function ManageBookingsPage() {
                   <Select value={statusFilter} onValueChange={setStatusFilter}>
                     <SelectTrigger>
                       <Filter className="w-4 h-4 mr-2" />
-                      <SelectValue placeholder="Filter by status" />
+                      <SelectValue placeholder={t('filterByStatus')} />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="all">All Statuses</SelectItem>
-                      <SelectItem value="pending">Pending Approval</SelectItem>
-                      <SelectItem value="monastery_approved">Monastery Approved</SelectItem>
-                      <SelectItem value="confirmed">Donor Confirmed</SelectItem>
-                      <SelectItem value="delivered">Delivered</SelectItem>
-                      <SelectItem value="not_delivered">Not Delivered</SelectItem>
-                      <SelectItem value="cancelled">Cancelled</SelectItem>
+                      <SelectItem value="all">{t('allStatuses')}</SelectItem>
+                      <SelectItem value="pending">{t('pendingApproval')}</SelectItem>
+                      <SelectItem value="monastery_approved">{t('monasteryApproved')}</SelectItem>
+                      <SelectItem value="confirmed">{t('donorConfirmed')}</SelectItem>
+                      <SelectItem value="delivered">{t('delivered')}</SelectItem>
+                      <SelectItem value="not_delivered">{t('notDelivered')}</SelectItem>
+                      <SelectItem value="cancelled">{t('cancelled')}</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -283,12 +286,12 @@ export default function ManageBookingsPage() {
         <DialogContent>
           <DialogHeader>
             <DialogTitle>
-              Mark Donation as {receivedStatusDialog.receivedStatus === 'delivered' ? 'Received' : 'Not Received'}
+              {receivedStatusDialog.receivedStatus === 'delivered' ? t('markAsReceived') : t('markAsNotReceived')}
             </DialogTitle>
             <DialogDescription>
               {receivedStatusDialog.receivedStatus === 'delivered' 
-                ? 'Confirm that the donation was successfully received'
-                : 'Mark that the donation was not received as expected'
+                ? t('confirmReceived')
+                : t('confirmNotReceived')
               }
             </DialogDescription>
           </DialogHeader>
@@ -296,14 +299,14 @@ export default function ManageBookingsPage() {
           <div className="space-y-4">
             <div>
               <label htmlFor="monastery-notes" className="text-sm font-medium">
-                Notes (optional)
+                {t('notes')}
               </label>
               <Textarea
                 id="monastery-notes"
                 placeholder={
                   receivedStatusDialog.receivedStatus === 'delivered'
-                    ? 'Add any notes about the donation received...'
-                    : 'Please explain why the donation was not received...'
+                    ? t('notesPlaceholderReceived')
+                    : t('notesPlaceholderNotReceived')
                 }
                 value={monasteryNotes}
                 onChange={(e) => setMonasteryNotes(e.target.value)}
@@ -314,7 +317,7 @@ export default function ManageBookingsPage() {
 
           <DialogFooter>
             <Button variant="outline" onClick={closeReceivedStatusDialog}>
-              Cancel
+              {tCommon('cancel')}
             </Button>
             <Button
               onClick={updateReceivedStatus}
@@ -324,7 +327,7 @@ export default function ManageBookingsPage() {
                   : 'bg-orange-600 hover:bg-orange-700'
               }
             >
-              Confirm {receivedStatusDialog.receivedStatus === 'delivered' ? 'Received' : 'Not Received'}
+              {receivedStatusDialog.receivedStatus === 'delivered' ? t('confirmReceivedBtn') : t('confirmNotReceivedBtn')}
             </Button>
           </DialogFooter>
         </DialogContent>

@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, isSameDay, addMonths, subMonths, startOfWeek, endOfWeek, parseISO } from 'date-fns'
+import { useTranslations } from 'next-intl'
 import { ChevronLeft, ChevronRight, Calendar, Edit3, Trash2, Check, X, Plus, UserPlus, AlertCircle } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -66,6 +67,10 @@ interface Monastery {
 }
 
 export function CalendarSlotView({ monasteryId, bookings, onBookingAction, userId, onCreateGuestBooking, onBookingCreated }: CalendarSlotViewProps) {
+  const tCalendar = useTranslations('CalendarSlotView')
+  const tSlot = useTranslations('SlotDialog')
+  const tBooking = useTranslations('BookingDialog')
+  const tCommon = useTranslations('Common')
   const [currentDate, setCurrentDate] = useState(new Date())
   const [selectedDate, setSelectedDate] = useState<Date | null>(null)
   const [donationSlots, setDonationSlots] = useState<DonationSlot[]>([])
@@ -884,7 +889,7 @@ const createBooking = async () => {
                     {totalBookings > 0 && (
                       <div className="w-full px-1 mt-auto">
                         <div className="text-xs text-gray-700 font-medium">
-                          {totalBookings} bookings
+                          {totalBookings} {totalBookings === 1 ? tCalendar('booking') : tCalendar('bookings')}
                         </div>
                       </div>
                     )}
@@ -906,12 +911,14 @@ const createBooking = async () => {
           <Card className="mt-6">
             <CardHeader>
               <CardTitle>
-                Bookings for {format(selectedDate, 'MMMM d, yyyy')}
+                {tCalendar('bookingsFor', { date: format(selectedDate, 'MMMM d, yyyy') })}
               </CardTitle>
               <CardDescription>
-                {bookings.filter(booking => 
-                  booking.donation_slots.date === format(selectedDate, 'yyyy-MM-dd')
-                ).length} booking(s) scheduled
+                {tCalendar('bookingsScheduled', { 
+                  count: bookings.filter(booking => 
+                    booking.donation_slots.date === format(selectedDate, 'yyyy-MM-dd')
+                  ).length 
+                })}
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -920,7 +927,7 @@ const createBooking = async () => {
               ).length === 0 ? (
                 <div className="text-center py-8 text-gray-500">
                   <Calendar className="w-12 h-12 mx-auto mb-4 text-gray-300" />
-                  <p>No bookings for this date</p>
+                  <p>{tCalendar('noBookingsForDate')}</p>
                 </div>
               ) : (
                 <div className="space-y-4">
@@ -945,16 +952,16 @@ const createBooking = async () => {
                           </div>
                           
                           <div className="space-y-1 text-sm text-gray-600">
-                            <div><strong>Food:</strong> {booking.food_type} ({booking.estimated_servings} servings)</div>
-                            <div><strong>Time:</strong> {booking.donation_slots.time}</div>
-                            <div><strong>Contact:</strong> {booking.user_profiles.email}</div>
+                            <div><strong>{tCalendar('food')}</strong> {booking.food_type} ({booking.estimated_servings} {tCalendar('servings')})</div>
+                            <div><strong>{tCalendar('time')}</strong> {booking.donation_slots.time}</div>
+                            <div><strong>{tCalendar('contact')}</strong> {booking.user_profiles.email}</div>
                             {booking.user_profiles.phone && (
-                              <div><strong>Phone:</strong> {booking.user_profiles.phone}</div>
+                              <div><strong>{tCalendar('phone')}</strong> {booking.user_profiles.phone}</div>
                             )}
                             {booking.special_notes && (
-                              <div><strong>Notes:</strong> {booking.special_notes}</div>
+                              <div><strong>{tCalendar('notes')}</strong> {booking.special_notes}</div>
                             )}
-                            <div><strong>Booked:</strong> {format(parseISO(booking.created_at), 'MMM d, yyyy at h:mm a')}</div>
+                            <div><strong>{tCalendar('booked')}</strong> {format(parseISO(booking.created_at), 'MMM d, yyyy at h:mm a')}</div>
                           </div>
                         </div>
                       </div>
@@ -969,7 +976,7 @@ const createBooking = async () => {
                               onClick={() => onBookingAction?.(booking.id, 'approve')}
                             >
                               <Check className="w-4 h-4 mr-1" />
-                              Accept
+                              {tCalendar('accept')}
                             </Button>
                             <Button
                               size="sm"
@@ -977,7 +984,7 @@ const createBooking = async () => {
                               onClick={() => onBookingAction?.(booking.id, 'cancel')}
                             >
                               <X className="w-4 h-4 mr-1" />
-                              Reject
+                              {tCalendar('reject')}
                             </Button>
                           </>
                         )}
@@ -990,7 +997,7 @@ const createBooking = async () => {
                               onClick={() => onBookingAction?.(booking.id, 'markDelivered')}
                             >
                               <Check className="w-4 h-4 mr-1" />
-                              Mark Received
+                              {tCalendar('markReceived')}
                             </Button>
                             <Button
                               size="sm"
@@ -999,7 +1006,7 @@ const createBooking = async () => {
                               onClick={() => onBookingAction?.(booking.id, 'cancel')}
                             >
                               <X className="w-4 h-4 mr-1" />
-                              Cancel
+                              {tCalendar('cancel')}
                             </Button>
                           </>
                         )}
@@ -1007,21 +1014,21 @@ const createBooking = async () => {
                         {booking.status === 'delivered' && (
                           <Badge className="bg-emerald-100 text-emerald-800">
                             <Check className="w-4 h-4 mr-1" />
-                            Completed
+                            {tCalendar('completed')}
                           </Badge>
                         )}
                         
                         {booking.status === 'not_delivered' && (
                           <Badge className="bg-orange-100 text-orange-800">
                             <X className="w-4 h-4 mr-1" />
-                            Not Received
+                            {tCalendar('notReceived')}
                           </Badge>
                         )}
                         
                         {booking.status === 'cancelled' && (
                           <Badge className="bg-red-100 text-red-800">
                             <X className="w-4 h-4 mr-1" />
-                            Cancelled
+                            {tCommon('cancel')}
                           </Badge>
                         )}
                       </div>
@@ -1040,10 +1047,10 @@ const createBooking = async () => {
           <Card>
             <CardHeader>
               <CardTitle>
-                Slots for {format(selectedDate, 'MMM d')}
+                {tCalendar('slotsFor', { date: format(selectedDate, 'MMM d') })}
               </CardTitle>
               <CardDescription>
-                Manage donation time slots
+                {tCalendar('manageSlots')}
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -1057,7 +1064,7 @@ const createBooking = async () => {
                     size="sm"
                   >
                     <Plus className="w-4 h-4 mr-2" />
-                    Create Bulk (30 days)
+                    {tCalendar('createBulk')}
                   </Button>
                 </div>
 
@@ -1078,7 +1085,7 @@ const createBooking = async () => {
                     size="sm"
                     variant="outline"
                   >
-                    Breakfast (7:00 AM)
+                    {tCalendar('breakfast', { time: '7:00 AM' })}
                   </Button>
                   
                   <Button 
@@ -1096,7 +1103,7 @@ const createBooking = async () => {
                     size="sm"
                     variant="outline"
                   >
-                    Lunch (11:30 AM)
+                    {tCalendar('lunch', { time: '11:30 AM' })}
                   </Button>
                   
                   <Button 
@@ -1114,25 +1121,25 @@ const createBooking = async () => {
                     size="sm"
                     variant="outline"
                   >
-                    Dinner (5:00 PM)
+                    {tCalendar('dinner', { time: '5:00 PM' })}
                   </Button>
                 </div>
 
                 {/* Instructions for slot booking */}
                 <div className="text-center py-2 px-4 bg-blue-50 rounded-lg border border-blue-200">
                   <p className="text-sm text-blue-700 font-medium">
-                    👆 Click on any active slot above to create a booking
+                    {tCalendar('clickSlotInstructions')}
                   </p>
                 </div>
 
                 {/* Existing Slots */}
                 {loadingSlots ? (
-                  <div className="text-center py-4">Loading slots...</div>
+                  <div className="text-center py-4">{tCalendar('loadingSlots')}</div>
                 ) : donationSlots.length === 0 ? (
                   <div className="text-center py-6 text-gray-500">
                     <Calendar className="w-8 h-8 mx-auto mb-2 text-gray-300" />
-                    <p className="text-sm font-medium mb-2">No slots for this date</p>
-                    <p className="text-xs text-gray-400">Create slots above to accept bookings for this date</p>
+                    <p className="text-sm font-medium mb-2">{tCalendar('noSlotsForDate')}</p>
+                    <p className="text-xs text-gray-400">{tCalendar('createSlotsMessage')}</p>
                   </div>
                 ) : (
                   <div className="space-y-2">
@@ -1148,7 +1155,7 @@ const createBooking = async () => {
                                 className="text-white hover:bg-white/10 rounded-lg p-3 transition-colors w-full"
                               >
                                 <UserPlus className="w-6 h-6 mx-auto mb-1" />
-                                <p className="font-medium text-sm">Create Booking</p>
+                                <p className="font-medium text-sm">{tCalendar('createBooking')}</p>
                               </button>
                               
                               {/* Management Actions Row */}
@@ -1156,7 +1163,7 @@ const createBooking = async () => {
                                 <button
                                   onClick={() => startEditingSlot(slot)}
                                   className="text-gray-300 hover:text-white p-2 hover:bg-white/10 rounded transition-all"
-                                  title="Edit Slot"
+                                  title={tCalendar('editSlot')}
                                 >
                                   <Edit3 className="w-4 h-4" />
                                 </button>
@@ -1164,7 +1171,7 @@ const createBooking = async () => {
                                 <button
                                   onClick={() => toggleSlotAvailability(slot.id, slot.is_available)}
                                   className="text-gray-300 hover:text-yellow-400 p-2 hover:bg-white/10 rounded transition-all"
-                                  title="Disable Slot"
+                                  title={tCalendar('disableSlot')}
                                 >
                                   <AlertCircle className="w-4 h-4" />
                                 </button>
@@ -1183,12 +1190,12 @@ const createBooking = async () => {
                           ) : (
                             <div className="text-white text-center">
                               <AlertCircle className="w-6 h-6 mx-auto mb-2 text-yellow-400" />
-                              <p className="font-medium">Slot Disabled</p>
+                              <p className="font-medium">{tCalendar('slotDisabled')}</p>
                               <button
                                 onClick={() => toggleSlotAvailability(slot.id, slot.is_available)}
                                 className="mt-3 text-sm px-3 py-1 bg-green-600 hover:bg-green-700 rounded transition-colors"
                               >
-                                Enable Slot
+                                {tCalendar('enableSlot')}
                               </button>
                             </div>
                           )}
@@ -1207,7 +1214,7 @@ const createBooking = async () => {
                           <Badge 
                             className={slot.is_available ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}
                           >
-                            {slot.is_available ? 'Active' : 'Disabled'}
+                            {slot.is_available ? tCalendar('active') : tCalendar('disabled')}
                           </Badge>
                         </div>
                         
@@ -1220,20 +1227,20 @@ const createBooking = async () => {
                               ? "text-yellow-600" 
                               : "text-gray-600"
                           )}>
-                            <span className="font-semibold">{slot.monks_fed}</span>/{slot.monks_capacity} servings
+                            <span className="font-semibold">{slot.monks_fed}</span>/{slot.monks_capacity} {tCalendar('servings')}
                             {slot.monks_fed > slot.monks_capacity && (
                               <span className="ml-2 text-xs bg-red-100 text-red-800 px-1.5 py-0.5 rounded">
-                                Over capacity
+                                {tCalendar('overCapacity')}
                               </span>
                             )}
                             {slot.monks_fed === slot.monks_capacity && (
                               <span className="ml-2 text-xs bg-yellow-100 text-yellow-800 px-1.5 py-0.5 rounded">
-                                Full
+                                {tCalendar('full')}
                               </span>
                             )}
                           </div>
                           <div className="text-gray-500 mt-1">
-                            {slot.current_bookings} booking{slot.current_bookings !== 1 ? 's' : ''}
+                            {slot.current_bookings} {slot.current_bookings === 1 ? tCalendar('booking') : tCalendar('bookings')}
                           </div>
                           
                           {/* Capacity Progress Bar */}
@@ -1268,9 +1275,9 @@ const createBooking = async () => {
         {!selectedDate && (
           <Card>
             <CardHeader>
-              <CardTitle>Select a Date</CardTitle>
+              <CardTitle>{tCalendar('selectDate')}</CardTitle>
               <CardDescription>
-                Choose a date from the calendar to manage slots and view bookings
+                {tCalendar('chooseDateMessage')}
               </CardDescription>
             </CardHeader>
           </Card>
@@ -1281,15 +1288,15 @@ const createBooking = async () => {
       <Dialog open={createSlotDialogOpen} onOpenChange={setCreateSlotDialogOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Create New Slot</DialogTitle>
+            <DialogTitle>{tSlot('createNewSlot')}</DialogTitle>
             <DialogDescription>
-              Add a new donation time slot for {selectedDate && format(selectedDate, 'MMMM d, yyyy')}
+              {tSlot('addSlotFor', { date: selectedDate && format(selectedDate, 'MMMM d, yyyy') })}
             </DialogDescription>
           </DialogHeader>
           
           <div className="space-y-4">
             <div>
-              <Label>Meal Type</Label>
+              <Label>{tSlot('mealType')}</Label>
               <Select 
                 value={formData.meal_type} 
                 onValueChange={(value) => {
@@ -1304,9 +1311,9 @@ const createBooking = async () => {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="breakfast">Breakfast</SelectItem>
-                  <SelectItem value="lunch">Lunch</SelectItem>
-                  <SelectItem value="dinner">Dinner</SelectItem>
+                  <SelectItem value="breakfast">{tSlot('breakfast')}</SelectItem>
+                  <SelectItem value="lunch">{tSlot('lunch')}</SelectItem>
+                  <SelectItem value="dinner">{tSlot('dinner')}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
