@@ -1,8 +1,8 @@
 'use client'
 
-import { useAuth } from '@/lib/auth-context'
+import { useAuthStore } from '@/lib/stores/useAuthStore'
 import { AuthForm } from '@/components/auth-form'
-import { Navigation } from '@/components/navigation'
+import { Navigation } from '@/components/organisms/Navigation'
 import { ContentSlider } from '@/components/content-slider'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -11,7 +11,7 @@ import { ArrowRight } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 
 export default function HomePage() {
-  const { user, profile, loading } = useAuth()
+  const { user, profile, loading } = useAuthStore()
   const t = useTranslations('HomePage')
   const tCommon = useTranslations('Common')
 

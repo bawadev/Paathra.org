@@ -1,8 +1,8 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { useAuth } from '@/lib/auth-context'
-import { Navigation } from '@/components/navigation'
+import { useAuthStore } from '@/lib/stores/useAuthStore'
+import { Navigation } from '@/components/organisms/Navigation'
 import { AuthForm } from '@/components/auth-form'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -16,7 +16,7 @@ interface DonationSlotWithMonastery extends DonationSlot {
 }
 
 export default function DonationsPage() {
-  const { user, loading: authLoading } = useAuth()
+  const { user, loading: authLoading } = useAuthStore()
   const [slots, setSlots] = useState<DonationSlotWithMonastery[]>([])
   const [loading, setLoading] = useState(true)
 

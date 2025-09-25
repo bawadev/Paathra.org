@@ -3,7 +3,7 @@ import { NextIntlClientProvider, hasLocale } from 'next-intl';
 import { notFound } from 'next/navigation';
 import { routing } from '@/src/i18n/routing';
 import { setRequestLocale } from 'next-intl/server';
-import { AuthProvider } from "@/lib/auth-context";
+import { AuthProvider } from "@/lib/providers/AuthProvider";
 import { Toaster } from "@/components/ui/sonner";
 import AuthErrorBoundary from "@/components/auth-error-boundary";
 import { ErrorProvider } from "@/lib/error-management";

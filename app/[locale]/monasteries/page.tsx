@@ -1,8 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { useAuth } from '@/lib/auth-context'
-import { Navigation } from '@/components/navigation'
+import { useAuthStore } from '@/lib/stores/useAuthStore'
 import { AuthForm } from '@/components/auth-form'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -19,7 +18,7 @@ import { Link } from '@/src/i18n/navigation'
 import { useTranslations } from 'next-intl'
 
 export default function MonasteriesPage() {
-  const { user, profile, loading: authLoading } = useAuth()
+  const { user, profile, loading: authLoading } = useAuthStore()
   const t = useTranslations('Monasteries')
   const tCommon = useTranslations('Common')
   const [monasteries, setMonasteries] = useState<MonasteryWithDistance[]>([])
@@ -154,8 +153,6 @@ export default function MonasteriesPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Navigation />
-      
       <main className="container mx-auto px-4 py-8">
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">{t('title')}</h1>

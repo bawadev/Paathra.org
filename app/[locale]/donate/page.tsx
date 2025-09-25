@@ -1,8 +1,8 @@
 'use client'
 
 import { useState } from 'react'
-import { useAuth } from '@/lib/auth-context'
-import { Navigation } from '@/components/navigation'
+import { useAuthStore } from '@/lib/stores/useAuthStore'
+import { Navigation } from '@/components/organisms/Navigation'
 import { DonationCalendar } from '@/components/features/donation/DonationCalendar'
 import { DonationBookingForm } from '@/components/donation-booking-form'
 import { DonationSlot } from '@/lib/supabase'
@@ -13,7 +13,7 @@ import { Heart, Users, Gift } from 'lucide-react'
 import { BookingConfirmationDialog } from '@/components/booking-confirmation-dialog'
 
 export default function DonatePage() {
-  const { user, loading } = useAuth()
+  const { user, loading } = useAuthStore()
   const [selectedSlot, setSelectedSlot] = useState<DonationSlot | null>(null)
   const [bookingSuccess, setBookingSuccess] = useState(false)
   const [confirmedBooking, setConfirmedBooking] = useState<any>(null)

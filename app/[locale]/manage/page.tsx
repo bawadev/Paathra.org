@@ -1,8 +1,8 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { useAuth } from '@/lib/auth-context'
-import { Navigation } from '@/components/navigation'
+import { useAuthStore } from '@/lib/stores/useAuthStore'
+import { Navigation } from '@/components/organisms/Navigation'
 import { AuthForm } from '@/components/auth-form'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -35,7 +35,7 @@ interface DashboardStats {
 }
 
 export default function MonasteryDashboard() {
-  const { user, profile, loading: authLoading } = useAuth()
+  const { user, profile, loading: authLoading } = useAuthStore()
   const [monastery, setMonastery] = useState<Monastery | null>(null)
   const [recentBookings, setRecentBookings] = useState<DonationBooking[]>([])
   const [stats, setStats] = useState<DashboardStats>({

@@ -9,7 +9,7 @@
 
 'use client'
 
-import { Navigation } from '@/components/navigation'
+import { Navigation } from '@/components/organisms/Navigation'
 import { LoadingSpinner } from '@/components/loading'
 
 interface PageLayoutProps {

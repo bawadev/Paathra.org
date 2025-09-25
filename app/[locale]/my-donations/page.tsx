@@ -1,8 +1,8 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { useAuth } from '@/lib/auth-context'
-import { Navigation } from '@/components/navigation'
+import { useAuthStore } from '@/lib/stores/useAuthStore'
+import { Navigation } from '@/components/organisms/Navigation'
 import { AuthForm } from '@/components/auth-form'
 
 import { Button } from '@/components/ui/button'
@@ -15,7 +15,7 @@ import { format, parseISO, isFuture, isToday } from 'date-fns'
 import { Calendar, Clock, MapPin, Phone, Utensils, Users, Gift, Filter } from 'lucide-react'
 
 export default function MyDonationsPage() {
-  const { user, loading: authLoading } = useAuth()
+  const { user, loading: authLoading } = useAuthStore()
   const [bookings, setBookings] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
   const [filter, setFilter] = useState<'all' | 'upcoming' | 'past'>('all')

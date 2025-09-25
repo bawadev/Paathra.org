@@ -1,4 +1,4 @@
-import { Navigation } from '@/components/navigation'
+import { Navigation } from '@/components/organisms/Navigation'
 
 export default function MonasteryAdminLayout({
   children,

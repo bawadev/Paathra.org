@@ -3,8 +3,8 @@
 import { useEffect, useState } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
 import { useTranslations } from 'next-intl'
-import { useAuth } from '@/lib/auth-context'
-import { Navigation } from '@/components/navigation'
+import { useAuthStore } from '@/lib/stores/useAuthStore'
+import { Navigation } from '@/components/organisms/Navigation'
 import { AuthForm } from '@/components/auth-form'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -29,7 +29,7 @@ const hasRole = (profile: any, role: string) => {
 export default function ManageBookingsPage() {
   const t = useTranslations('ManageBookings')
   const tCommon = useTranslations('Common')
-  const { user, profile, loading: authLoading } = useAuth()
+  const { user, profile, loading: authLoading } = useAuthStore()
   const router = useRouter()
   const pathname = usePathname()
   const [monastery, setMonastery] = useState<any | null>(null)

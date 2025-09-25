@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Navigation } from '@/components/navigation'
+import { Navigation } from '@/components/organisms/Navigation'
 import { usePageTransition, useFormSubmission } from '@/components/ui/global-loading-overlay'
 import { useOperationLoading } from '@/lib/loading-system'
 import { LoadingLink } from '@/components/ui/loading-link'

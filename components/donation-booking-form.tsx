@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { useForm, FormProvider } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useAuth } from '@/lib/auth-context'
+import { useAuthStore } from '@/lib/stores/useAuthStore'
 import { supabase, DonationSlot } from '@/lib/supabase'
 import { donationBookingSchema, type DonationBookingInput } from '@/lib/schemas'
 import { Button } from '@/components/ui/button'
@@ -32,7 +32,7 @@ interface DonationBookingFormProps {
 }
 
 export function DonationBookingForm({ slot, onSuccess, onCancel }: DonationBookingFormProps) {
-  const { user } = useAuth()
+  const { user } = useAuthStore()
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
 

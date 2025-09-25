@@ -219,6 +219,26 @@ html[lang="si"] h6 {
   @apply shadow-xl -translate-y-1;
 }
 
+.dana-button {
+  @apply inline-flex items-center justify-center rounded-lg font-medium transition-all duration-300;
+  @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring;
+  @apply disabled:pointer-events-none disabled:opacity-50;
+}
+
+.dana-button-primary {
+  @apply dana-button bg-primary text-primary-foreground hover:bg-primary/90;
+  @apply shadow-sm hover:shadow-md hover:-translate-y-0.5;
+}
+
+.dana-button-secondary {
+  @apply dana-button border border-primary text-primary bg-transparent;
+  @apply hover:bg-primary hover:text-primary-foreground hover:-translate-y-0.5;
+}
+
+.dana-button-ghost {
+  @apply dana-button hover:bg-accent hover:text-accent-foreground;
+}
+
 /* Loading States */
 .dana-loading {
   @apply animate-pulse;
@@ -232,6 +252,16 @@ html[lang="si"] h6 {
 .dana-nav {
   @apply fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-md border-b border-border/50;
   transition: all 300ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.dana-nav-item {
+  @apply text-foreground/80 hover:text-foreground transition-colors duration-200;
+  @apply hover:bg-accent/50 rounded-md;
+}
+
+.dana-nav-dropdown {
+  @apply bg-popover text-popover-foreground rounded-lg border border-border shadow-lg;
+  @apply animate-in fade-in-0 zoom-in-95 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95;
 }
 
 /* Form Styles */

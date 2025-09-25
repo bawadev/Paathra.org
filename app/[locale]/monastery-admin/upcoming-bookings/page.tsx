@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useAuth } from '@/lib/auth-context'
+import { useAuthStore } from '@/lib/stores/useAuthStore'
 import { supabase } from '@/lib/supabase'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -43,7 +43,7 @@ interface MonasteryConfig {
 }
 
 export default function UpcomingBookingsPage() {
-  const { user, profile } = useAuth()
+  const { user, profile } = useAuthStore()
   const [bookings, setBookings] = useState<DonationBooking[]>([])
   const [monasteryConfig, setMonasteryConfig] = useState<MonasteryConfig | null>(null)
   const [loading, setLoading] = useState(true)

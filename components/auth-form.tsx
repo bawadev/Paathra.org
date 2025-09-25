@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { useForm, FormProvider } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useAuth } from '@/lib/auth-context'
+import { useAuthStore } from '@/lib/stores/useAuthStore'
 import { signInSchema, signUpSchema, type SignInInput, type SignUpInput } from '@/lib/schemas'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -17,7 +17,7 @@ interface SocialAuthButtonsProps {
 
 function SocialAuthButtons({ onSuccess, onError }: SocialAuthButtonsProps) {
   const [loading, setLoading] = useState<string | null>(null);
-  const { signInWithSocial } = useAuth();
+  const { signInWithSocial } = useAuthStore();
 
   const handleSocialLogin = async (provider: 'google' | 'facebook' | 'twitter') => {
     setLoading(provider);
@@ -89,7 +89,7 @@ function SocialAuthButtons({ onSuccess, onError }: SocialAuthButtonsProps) {
 function SignInForm({ onSuccess, onError }: { onSuccess: () => void; onError: (error: string) => void }) {
   const [loading, setLoading] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
-  const { signIn } = useAuth()
+  const { signIn } = useAuthStore()
 
   const form = useForm<SignInInput>({
     resolver: zodResolver(signInSchema),
@@ -194,7 +194,7 @@ function SignInForm({ onSuccess, onError }: { onSuccess: () => void; onError: (e
 function SignUpForm({ onSuccess, onError }: { onSuccess: (message: string) => void; onError: (error: string) => void }) {
   const [loading, setLoading] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
-  const { signUp } = useAuth()
+  const { signUp } = useAuthStore()
 
   const form = useForm<SignUpInput>({
     resolver: zodResolver(signUpSchema),
@@ -315,7 +315,7 @@ export function AuthForm() {
   const [isSignUp, setIsSignUp] = useState(false)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
-  const { error: authError, clearError } = useAuth()
+  const { error: authError, clearError } = useAuthStore()
 
   // Show auth context errors
   const displayError = error || authError

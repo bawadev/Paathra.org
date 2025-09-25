@@ -7,7 +7,7 @@
 
 'use client'
 
-import { useAuth } from '@/lib/auth-context'
+import { useAuthStore } from '@/lib/stores/useAuthStore'
 import { AuthForm } from '@/components/auth-form'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
@@ -32,7 +32,7 @@ export function AuthGuard({
   unauthorizedMessage,
   showRoleIcon = true
 }: AuthGuardProps) {
-  const { user, profile, loading } = useAuth()
+  const { user, profile, loading } = useAuthStore()
 
   // Loading state
   if (loading) {
@@ -84,7 +84,7 @@ export function AuthGuard({
  * Simplified auth check hook for components
  */
 export function useAuthCheck(requiredRole?: UserType) {
-  const { user, profile, loading } = useAuth()
+  const { user, profile, loading } = useAuthStore()
   
   return {
     isAuthenticated: !!user,
@@ -107,7 +107,7 @@ export function RoleBasedContent({
   children: React.ReactNode
   fallback?: React.ReactNode
 }) {
-  const { profile } = useAuth()
+  const { profile } = useAuthStore()
   
   const hasAccess = allowedRoles.some(role => hasRole(profile, role))
   

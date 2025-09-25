@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { useAuth } from '@/lib/auth-context'
+import { useAuthStore } from '@/lib/stores/useAuthStore'
 import { Button } from '@/components/ui/button'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { supabase } from '@/lib/supabase'
@@ -19,7 +19,7 @@ export function AvatarUpload({
   size = 'md',
   showUploadButton = true 
 }: AvatarUploadProps) {
-  const { profile, updateProfile } = useAuth()
+  const { profile, updateProfile } = useAuthStore()
   const [uploading, setUploading] = useState(false)
   const t = useTranslations('Profile')
 
