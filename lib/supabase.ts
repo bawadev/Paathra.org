@@ -3,32 +3,6 @@ import { createServerClient } from '@supabase/ssr'
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseConfig } from './env'
 
-// Function to get Supabase client safely
-export const getSupabaseClient = () => {
-  // Validate URL format before creating client
-  if (!supabaseConfig.url || !supabaseConfig.anonKey || !isValidUrl(supabaseConfig.url)) {
-    console.warn('Supabase environment variables not configured properly. Some features may not work.')
-    // Return a mock client that prevents null errors
-    return {
-      auth: {
-        getUser: () => Promise.resolve({ data: { user: null }, error: null }),
-        signOut: () => Promise.resolve({ error: null }),
-        onAuthStateChange: () => ({ data: { subscription: null }, error: null }),
-      },
-      from: () => ({
-        select: () => Promise.resolve({ data: [], error: null }),
-        insert: () => Promise.resolve({ data: null, error: new Error('Supabase not configured') }),
-        update: () => Promise.resolve({ data: null, error: new Error('Supabase not configured') }),
-        delete: () => Promise.resolve({ data: null, error: new Error('Supabase not configured') }),
-        eq: function() { return this },
-        not: function() { return this },
-        order: function() { return this },
-      }),
-    } as any
-  }
-  return createClient(supabaseConfig.url, supabaseConfig.anonKey)
-}
-
 // Helper function to validate URL
 function isValidUrl(string: string): boolean {
   try {
@@ -44,7 +18,7 @@ export const supabase = (() => {
   if (supabaseConfig.url && supabaseConfig.anonKey && isValidUrl(supabaseConfig.url)) {
     return createClient(supabaseConfig.url, supabaseConfig.anonKey)
   }
-  
+
   // Return mock client to prevent null errors
   console.warn('Supabase environment variables not configured properly. Using mock client.')
   return {
@@ -64,6 +38,11 @@ export const supabase = (() => {
     }),
   } as any
 })()
+
+// Function to get Supabase client safely - returns singleton instance
+export const getSupabaseClient = () => {
+  return supabase
+}
 
 // Server-side Supabase client for middleware and server components
 export const createSupabaseServerClient = (request: NextRequest, response: NextResponse) => {

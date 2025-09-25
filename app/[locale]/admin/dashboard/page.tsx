@@ -1,19 +1,21 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation'
+import { useAuth } from '@/lib/auth-context'
 import { Navigation } from '@/components/navigation'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { supabase } from '@/lib/supabase'
 import { LoadingSpinner } from '@/components/loading'
-import { 
-  Users, 
-  Building, 
-  Calendar, 
-  TrendingUp, 
+import {
+  Users,
+  Building,
+  Calendar,
+  TrendingUp,
   AlertCircle
 } from 'lucide-react'
-import { getUserTypeDisplayName, UserType } from '@/types/auth'
+import { getUserTypeDisplayName, UserType, hasRole } from '@/types/auth'
 
 interface UserProfile {
   id: string
@@ -53,12 +55,25 @@ interface DashboardStats {
 }
 
 export default function AdminDashboard() {
+  const { user, profile, loading: authLoading } = useAuth()
+  const router = useRouter()
   const [stats, setStats] = useState<DashboardStats | null>(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    fetchDashboardStats()
-  }, [])
+    // Check authentication and role
+    if (!authLoading) {
+      if (!user) {
+        router.push('/en/auth')
+      } else if (profile && !hasRole(profile, 'super_admin')) {
+        // User is authenticated but not a super admin
+        router.push('/en')
+      } else if (profile && hasRole(profile, 'super_admin')) {
+        // User is authenticated and is a super admin
+        fetchDashboardStats()
+      }
+    }
+  }, [user, profile, authLoading, router])
 
   const fetchDashboardStats = async () => {
     try {
@@ -139,6 +154,29 @@ export default function AdminDashboard() {
     }
   }
 
+  // Show loading while checking authentication
+  if (authLoading || (user && !profile && loading)) {
+    return (
+      <div className="min-h-screen bg-[var(--bg-light)]">
+        <Navigation />
+        <div className="flex items-center justify-center min-h-screen">
+          <LoadingSpinner />
+        </div>
+      </div>
+    )
+  }
+
+  // User not authenticated
+  if (!user) {
+    return null // Will redirect in useEffect
+  }
+
+  // User authenticated but not super admin
+  if (profile && !hasRole(profile, 'super_admin')) {
+    return null // Will redirect in useEffect
+  }
+
+  // Loading dashboard data
   if (loading) {
     return (
       <div className="min-h-screen bg-[var(--bg-light)]">

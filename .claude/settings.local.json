@@ -57,7 +57,8 @@
       "mcp__playwright-mcp__browser_press_key",
       "Bash(git push:*)",
       "Bash(git add:*)",
-      "Bash(git commit:*)"
+      "Bash(git commit:*)",
+      "mcp__playwright__browser_evaluate"
     ],
     "deny": []
   }
