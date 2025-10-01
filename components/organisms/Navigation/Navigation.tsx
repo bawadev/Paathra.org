@@ -4,7 +4,7 @@ import { Link } from '@/src/i18n/navigation'
 import { useAuthStore } from '@/lib/stores/useAuthStore'
 import { useUIStore } from '@/lib/stores/useUIStore'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { Button } from '@/components/atoms/Button'
+import { Button } from '@/components/ui/button'
 import {
   NavigationMenu,
   NavigationMenuContent,
@@ -172,7 +172,7 @@ export function Navigation() {
                     <NavigationMenuItem key={item.id}>
                       {item.items ? (
                         <>
-                          <NavigationMenuTrigger className="text-foreground/80 hover:text-foreground hover:bg-accent/50 rounded-md text-sm font-medium transition-colors duration-200">
+                          <NavigationMenuTrigger className="text-foreground/80 hover:text-foreground hover:bg-accent/50 rounded-md text-base font-semibold transition-colors duration-200">
                             {item.label}
                           </NavigationMenuTrigger>
                           <NavigationMenuContent>
@@ -234,9 +234,8 @@ export function Navigation() {
                             </AvatarFallback>
                           </Avatar>
                           <span className="text-sm font-medium">
-                            {profile?.full_name || 'User'}
+                            {profile?.full_name?.split(' ')[0] || 'User'}
                           </span>
-                          <ChevronDown className="w-3 h-3" />
                         </div>
                       </NavigationMenuTrigger>
                       <NavigationMenuContent>
@@ -244,18 +243,18 @@ export function Navigation() {
                           <NavigationMenuLink asChild>
                             <Link
                               href="/profile"
-                              className="flex items-center gap-2 px-3 py-2 text-sm rounded-md hover:bg-accent/50 transition-colors"
+                              className="flex items-center gap-3 px-3 py-2 text-sm rounded-md hover:bg-accent/50 transition-colors"
                             >
-                              <User className="w-4 h-4 text-primary" />
-                              <span>{t('myProfile')}</span>
+                              <User className="w-4 h-4 text-primary flex-shrink-0" />
+                              <span className="flex-1">{t('myProfile')}</span>
                             </Link>
                           </NavigationMenuLink>
                           <button
                             onClick={handleSignOut}
-                            className="w-full flex items-center gap-2 px-3 py-2 text-sm rounded-md hover:bg-accent/50 transition-colors text-left"
+                            className="w-full flex items-center gap-3 px-3 py-2 text-sm rounded-md hover:bg-accent/50 transition-colors text-left"
                           >
-                            <LogOut className="w-4 h-4 text-primary" />
-                            <span>{t('signOut')}</span>
+                            <LogOut className="w-4 h-4 text-primary flex-shrink-0" />
+                            <span className="flex-1">{t('signOut')}</span>
                           </button>
                         </div>
                       </NavigationMenuContent>
@@ -354,18 +353,18 @@ export function Navigation() {
               <Link
                 href="/profile"
                 onClick={() => setMobileMenuOpen(false)}
-                className="flex items-center gap-2 px-3 py-2 text-sm rounded-md hover:bg-accent/50 transition-colors"
+                className="flex items-center gap-3 px-3 py-2 text-sm rounded-md hover:bg-accent/50 transition-colors"
               >
-                <User className="w-4 h-4 text-primary" />
-                <span>{t('myProfile')}</span>
+                <User className="w-4 h-4 text-primary flex-shrink-0" />
+                <span className="flex-1">{t('myProfile')}</span>
               </Link>
 
               <button
                 onClick={handleSignOut}
-                className="w-full flex items-center gap-2 px-3 py-2 text-sm rounded-md hover:bg-accent/50 transition-colors text-left mt-1"
+                className="w-full flex items-center gap-3 px-3 py-2 text-sm rounded-md hover:bg-accent/50 transition-colors text-left mt-1"
               >
-                <LogOut className="w-4 h-4 text-primary" />
-                <span>{t('signOut')}</span>
+                <LogOut className="w-4 h-4 text-primary flex-shrink-0" />
+                <span className="flex-1">{t('signOut')}</span>
               </button>
             </div>
           </div>
