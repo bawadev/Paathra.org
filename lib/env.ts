@@ -21,9 +21,9 @@ const envSchema = z.object({
   NEXT_PUBLIC_APP_NAME: z.string().default('Dhaana'),
   
   // Feature Flags
-  NEXT_PUBLIC_ENABLE_ANALYTICS: z.string().default('false').transform(val => val === 'true'),
-  NEXT_PUBLIC_ENABLE_ERROR_REPORTING: z.string().default('false').transform(val => val === 'true'),
-  NEXT_PUBLIC_ENABLE_DEBUG_MODE: z.string().default('false').transform(val => val === 'true'),
+  NEXT_PUBLIC_ENABLE_ANALYTICS: z.union([z.string(), z.boolean()]).default('false').transform(val => val === 'true' || val === true),
+  NEXT_PUBLIC_ENABLE_ERROR_REPORTING: z.union([z.string(), z.boolean()]).default('false').transform(val => val === 'true' || val === true),
+  NEXT_PUBLIC_ENABLE_DEBUG_MODE: z.union([z.string(), z.boolean()]).default('false').transform(val => val === 'true' || val === true),
   
   // External Services (optional)
   SENTRY_DSN: z.string().optional(),

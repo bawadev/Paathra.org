@@ -306,6 +306,7 @@
   },
   "CalendarSlotView": {
     "calendarView": "Calendar View",
+    "today": "Today",
     "bookingsFor": "Bookings for {date}",
     "bookingsScheduled": "{count} booking(s) scheduled",
     "noBookingsForDate": "No bookings for this date",
