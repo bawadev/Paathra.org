@@ -145,82 +145,89 @@ export default function MonasteriesPage() {
 
   if (authLoading) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-[var(--bg-light)]">
-        <div className="text-lg text-[var(--text-light)]">{tCommon('loading')}</div>
+      <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-red-50">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-amber-500 mx-auto mb-4"></div>
+          <div className="text-lg text-gray-600">{tCommon('loading')}</div>
+        </div>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <main className="container mx-auto px-4 py-8">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">{t('title')}</h1>
-          <p className="text-gray-600">
+    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-red-50">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="mb-6 md:mb-8">
+          <h1 className="text-2xl md:text-4xl font-bold text-gray-900 mb-2">{t('title')}</h1>
+          <p className="text-base md:text-lg text-gray-600">
             {t('description')}
           </p>
         </div>
 
         {/* Location and Controls */}
-        <div className="grid gap-6 lg:grid-cols-4 mb-6">
+        <div className="grid gap-4 md:gap-6 lg:grid-cols-4 mb-4 md:mb-6">
           <div className="lg:col-span-3">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center justify-between">
+            <Card className="bg-white rounded-xl md:rounded-2xl shadow-xl">
+              <CardHeader className="pb-3 md:pb-6">
+                <CardTitle className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
                   <div className="flex items-center space-x-2">
-                    <MapPin className="w-5 h-5" />
-                    <span>{t('locationAndFilters')}</span>
+                    <MapPin className="w-5 h-5 text-amber-600" />
+                    <span className="text-gray-900 text-base md:text-lg">{t('locationAndFilters')}</span>
                   </div>
                   <Button
                     variant="outline"
                     size="sm"
                     onClick={() => setShowLocationSettings(!showLocationSettings)}
+                    className="border-amber-200 text-amber-700 hover:bg-amber-50 min-h-[44px] w-full sm:w-auto"
                   >
                     <NavigationIcon className="w-4 h-4 mr-1" />
-                    {t('setLocation')}
+                    <span className="text-sm">{t('setLocation')}</span>
                   </Button>
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="grid gap-4 md:grid-cols-3">
+                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                   {/* Search */}
-                  <div className="space-y-1">
-                    <label className="text-sm font-medium">{t('search')}</label>
+                  <div className="space-y-1 sm:col-span-2 lg:col-span-1">
+                    <label className="text-sm font-medium text-gray-700">{t('search')}</label>
                     <Input
                       placeholder={t('searchPlaceholder')}
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
+                      className="border-gray-200 focus:border-amber-500 focus:ring-amber-500 min-h-[44px]"
                     />
                   </div>
 
                   {/* Sort By */}
                   <div className="space-y-1">
-                    <label className="text-sm font-medium">{t('sortBy')}</label>
+                    <label className="text-sm font-medium text-gray-700">{t('sortBy')}</label>
                     <Select value={sortBy} onValueChange={(value: any) => setSortBy(value)}>
-                      <SelectTrigger>
+                      <SelectTrigger className="border-gray-200 focus:border-amber-500 focus:ring-amber-500 min-h-[44px]">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="distance">{t('distance')}</SelectItem>
-                        <SelectItem value="name">{t('name')}</SelectItem>
-                        <SelectItem value="capacity">{t('capacity')}</SelectItem>
+                        <SelectItem value="distance" className="min-h-[44px]">{t('distance')}</SelectItem>
+                        <SelectItem value="name" className="min-h-[44px]">{t('name')}</SelectItem>
+                        <SelectItem value="capacity" className="min-h-[44px]">{t('capacity')}</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
 
                   {/* Max Distance */}
                   <div className="space-y-1">
-                    <label className="text-sm font-medium">{t('maxDistance')}</label>
+                    <label className="text-sm font-medium text-gray-700">{t('maxDistance')}</label>
                     <Select value={maxDistance.toString()} onValueChange={(value) => setMaxDistance(parseInt(value))}>
-                      <SelectTrigger>
+                      <SelectTrigger className="border-gray-200 focus:border-amber-500 focus:ring-amber-500 min-h-[44px]">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="10">10 km</SelectItem>
-                        <SelectItem value="25">25 km</SelectItem>
-                        <SelectItem value="50">50 km</SelectItem>
-                        <SelectItem value="100">100 km</SelectItem>
-                        <SelectItem value="500">500 km</SelectItem>
+                        <SelectItem value="10" className="min-h-[44px]">10 km</SelectItem>
+                        <SelectItem value="25" className="min-h-[44px]">25 km</SelectItem>
+                        <SelectItem value="50" className="min-h-[44px]">50 km</SelectItem>
+                        <SelectItem value="100" className="min-h-[44px]">100 km</SelectItem>
+                        <SelectItem value="500" className="min-h-[44px]">500 km</SelectItem>
+                        <SelectItem value="2000" className="min-h-[44px]">2000 km</SelectItem>
+                        <SelectItem value="999999" className="min-h-[44px]">Show All</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
@@ -228,11 +235,11 @@ export default function MonasteriesPage() {
 
                 {/* Current Location Display */}
                 {userLocation && (
-                  <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                  <div className="mt-4 p-3 bg-amber-50 border border-amber-200 rounded-lg">
                     <div className="flex items-center space-x-2">
-                      <MapPin className="w-4 h-4 text-blue-600" />
-                      <span className="text-sm font-medium text-blue-800">{t('yourLocation')}</span>
-                      <span className="text-sm text-blue-700">
+                      <MapPin className="w-4 h-4 text-amber-600" />
+                      <span className="text-sm font-medium text-amber-800">{t('yourLocation')}</span>
+                      <span className="text-sm text-amber-700">
                         {userLocation.address || `${userLocation.latitude.toFixed(4)}, ${userLocation.longitude.toFixed(4)}`}
                       </span>
                     </div>
@@ -242,23 +249,23 @@ export default function MonasteriesPage() {
             </Card>
           </div>
 
-          <div>
-            <Card>
+          <div className="lg:block">
+            <Card className="bg-white rounded-xl md:rounded-2xl shadow-xl">
               <CardHeader>
-                <CardTitle className="text-lg">{t('quickStats')}</CardTitle>
+                <CardTitle className="text-base md:text-lg text-gray-900">{t('quickStats')}</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="space-y-3">
-                  <div>
-                    <div className="text-2xl font-bold text-blue-600">{filteredMonasteries.length}</div>
-                    <div className="text-sm text-gray-600">Monasteries Found</div>
+                <div className="flex lg:flex-col gap-4 lg:gap-3 lg:space-y-0">
+                  <div className="flex-1 lg:flex-none">
+                    <div className="text-2xl font-bold text-amber-600">{filteredMonasteries.length}</div>
+                    <div className="text-xs md:text-sm text-gray-600">Monasteries Found</div>
                   </div>
                   {userLocation && (
-                    <div>
+                    <div className="flex-1 lg:flex-none">
                       <div className="text-2xl font-bold text-green-600">
                         {filteredMonasteries.filter(m => m.distance && m.distance <= 25).length}
                       </div>
-                      <div className="text-sm text-gray-600">Within 25km</div>
+                      <div className="text-xs md:text-sm text-gray-600">Within 25km</div>
                     </div>
                   )}
                 </div>
@@ -279,98 +286,102 @@ export default function MonasteriesPage() {
         )}
 
         {/* Map View - Always Visible */}
-        <Card className="mb-6">
-          <CardHeader>
-            <CardTitle className="flex items-center space-x-2">
-              <Map className="w-5 h-5" />
+        <Card className="mb-4 md:mb-6 bg-white rounded-xl md:rounded-2xl shadow-xl overflow-hidden">
+          <CardHeader className="pb-3">
+            <CardTitle className="flex items-center space-x-2 text-gray-900 text-base md:text-lg">
+              <Map className="w-5 h-5 text-amber-600" />
               <span>Monasteries Map</span>
             </CardTitle>
           </CardHeader>
           <CardContent className="p-0">
-            <MonasteryMap
-              monasteries={filteredMonasteries}
-              userLocation={userLocation}
-              onMonasterySelect={handleMonasterySelect}
-              height="500px"
-            />
+            <div className="h-[300px] md:h-[400px] lg:h-[500px]">
+              <MonasteryMap
+                monasteries={filteredMonasteries}
+                userLocation={userLocation}
+                onMonasterySelect={handleMonasterySelect}
+                height="100%"
+              />
+            </div>
           </CardContent>
         </Card>
 
         {/* Loading State */}
         {loading ? (
           <div className="text-center py-8">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-            <p className="text-gray-600">Loading monasteries...</p>
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-amber-500 mx-auto mb-4"></div>
+            <p className="text-lg text-gray-600">Loading monasteries...</p>
           </div>
         ) : (
           /* Monasteries Grid */
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-4 md:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
             {filteredMonasteries.length === 0 ? (
               <div className="col-span-full text-center py-8">
-                <MapPin className="w-12 h-12 mx-auto text-gray-300 mb-4" />
-                <h3 className="text-lg font-medium text-gray-900 mb-2">No monasteries found</h3>
-                <p className="text-gray-600">
+                <div className="w-16 h-16 md:w-20 md:h-20 bg-amber-100 rounded-full flex items-center justify-center mx-auto mb-4 md:mb-6">
+                  <MapPin className="w-8 h-8 md:w-10 md:h-10 text-amber-600" />
+                </div>
+                <h3 className="text-xl md:text-2xl font-semibold text-gray-900 mb-2">No monasteries found</h3>
+                <p className="text-gray-600 text-sm md:text-lg px-4">
                   {searchQuery ? 'Try adjusting your search or filters' : 'Try setting your location or increasing the distance range'}
                 </p>
               </div>
             ) : (
               filteredMonasteries.map((monastery) => (
-                <Card key={monastery.id} className="hover:shadow-lg transition-shadow">
-                  <CardHeader>
-                    <div className="flex items-start justify-between">
-                      <div className="flex-1">
-                        <CardTitle className="text-lg">{monastery.name}</CardTitle>
-                        <CardDescription className="flex items-center mt-1">
-                          <MapPin className="w-4 h-4 mr-1" />
-                          {monastery.address}
+                <Card key={monastery.id} className="bg-white rounded-xl md:rounded-2xl shadow-lg hover:shadow-xl transition-all duration-200">
+                  <CardHeader className="pb-3">
+                    <div className="flex flex-col sm:flex-row items-start justify-between gap-2">
+                      <div className="flex-1 min-w-0">
+                        <CardTitle className="text-base md:text-lg text-gray-900 break-words">{monastery.name}</CardTitle>
+                        <CardDescription className="flex items-start mt-1.5 text-gray-600 text-sm">
+                          <MapPin className="w-4 h-4 mr-1 mt-0.5 flex-shrink-0 text-amber-600" />
+                          <span className="break-words">{monastery.address}</span>
                         </CardDescription>
                       </div>
                       {monastery.distance && (
-                        <Badge variant="outline" className="ml-2">
+                        <Badge variant="outline" className="border-amber-200 text-amber-700 flex-shrink-0 text-xs">
                           {formatDistance(monastery.distance)}
                         </Badge>
                       )}
                     </div>
                   </CardHeader>
-                  <CardContent className="space-y-4">
+                  <CardContent className="space-y-3 md:space-y-4">
                     {monastery.description && (
                       <p className="text-sm text-gray-600">{monastery.description}</p>
                     )}
-                    
+
                     <div className="grid grid-cols-2 gap-4 text-sm">
                       {monastery.capacity && (
-                        <div className="flex items-center">
-                          <Users className="w-4 h-4 mr-2 text-gray-400" />
+                        <div className="flex items-center text-gray-700">
+                          <Users className="w-4 h-4 mr-2 text-amber-600" />
                           <span>{monastery.capacity} monks</span>
                         </div>
                       )}
-                      
+
                       {monastery.phone && (
-                        <div className="flex items-center">
-                          <Phone className="w-4 h-4 mr-2 text-gray-400" />
+                        <div className="flex items-center text-gray-700">
+                          <Phone className="w-4 h-4 mr-2 text-amber-600" />
                           <span className="truncate">{monastery.phone}</span>
                         </div>
                       )}
-                      
+
                       {monastery.email && (
-                        <div className="flex items-center">
-                          <Mail className="w-4 h-4 mr-2 text-gray-400" />
+                        <div className="flex items-center text-gray-700">
+                          <Mail className="w-4 h-4 mr-2 text-amber-600" />
                           <span className="truncate">{monastery.email}</span>
                         </div>
                       )}
-                      
+
                       {monastery.website && (
-                        <div className="flex items-center">
-                          <Globe className="w-4 h-4 mr-2 text-gray-400" />
-                          <a href={monastery.website} target="_blank" rel="noopener noreferrer" 
-                             className="text-blue-600 hover:underline truncate">
+                        <div className="flex items-center text-gray-700">
+                          <Globe className="w-4 h-4 mr-2 text-amber-600" />
+                          <a href={monastery.website} target="_blank" rel="noopener noreferrer"
+                             className="text-amber-700 hover:text-amber-800 hover:underline truncate">
                             Website
                           </a>
                         </div>
                       )}
                     </div>
 
-                    <div className="flex space-x-2">
+                    <div className="flex flex-col sm:flex-row gap-2 sm:space-x-0">
                       <Link
                         href={{
                           pathname: '/donations',
@@ -378,7 +389,7 @@ export default function MonasteriesPage() {
                         }}
                         className="flex-1"
                       >
-                        <Button className="w-full">
+                        <Button className="w-full min-h-[44px] bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-semibold rounded-xl shadow-md hover:shadow-lg transition-all duration-200 text-sm">
                           {t('makeDonation')}
                         </Button>
                       </Link>
@@ -386,7 +397,7 @@ export default function MonasteriesPage() {
                         href={`/monasteries/${monastery.id}`}
                         className="flex-1"
                       >
-                        <Button variant="outline" className="w-full">
+                        <Button variant="outline" className="w-full min-h-[44px] border-amber-200 text-amber-700 hover:bg-amber-50 rounded-xl text-sm">
                           {t('viewPortfolio')}
                         </Button>
                       </Link>

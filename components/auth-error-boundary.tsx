@@ -42,7 +42,7 @@ class AuthErrorBoundary extends React.Component<
       
       return (
         <div className="min-h-screen bg-[var(--bg-light)] flex items-center justify-center p-8">
-          <Card className="card-dana max-w-md w-full">
+          <Card className="dana-card max-w-md w-full">
             <CardHeader className="text-center">
               <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-r from-red-500 to-[var(--accent-color)] rounded-2xl flex items-center justify-center">
                 <AlertTriangle className="w-8 h-8 text-white" />
@@ -74,7 +74,7 @@ class AuthErrorBoundary extends React.Component<
                     await clearAuthState()
                     window.location.href = '/'
                   }}
-                  className="w-full btn-dana-primary flex items-center gap-2"
+                  className="w-full dana-button dana-button-primary flex items-center gap-2"
                 >
                   <RefreshCw className="w-4 h-4" />
                   {isRefreshError ? 'Go to Sign In' : 'Reload and Sign In Again'}
@@ -86,7 +86,7 @@ class AuthErrorBoundary extends React.Component<
                     onClick={() => {
                       this.setState({ hasError: false, error: null, isRefreshTokenError: false })
                     }}
-                    className="w-full btn-dana-secondary"
+                    className="w-full dana-button dana-button-secondary"
                   >
                     Try Again
                   </Button>

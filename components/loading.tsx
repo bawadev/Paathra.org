@@ -14,8 +14,8 @@ export function LoadingSpinner({ size = 'md', className }: LoadingSpinnerProps) 
   }
 
   return (
-    <Loader2 
-      className={cn('animate-spin', sizeClasses[size], className)} 
+    <Loader2
+      className={cn('dana-loading-spinner text-primary', sizeClasses[size], className)}
     />
   )
 }
@@ -28,9 +28,9 @@ interface LoadingStateProps {
 export function LoadingState({ message = 'Loading...', className }: LoadingStateProps) {
   return (
     <div className={cn('flex items-center justify-center p-8', className)}>
-      <div className="flex flex-col items-center space-y-2">
+      <div className="flex flex-col items-center space-y-3 animate-dana-fade-in">
         <LoadingSpinner size="lg" />
-        <p className="text-sm text-muted-foreground">{message}</p>
+        <p className="text-caption">{message}</p>
       </div>
     </div>
   )
@@ -42,7 +42,7 @@ interface PageLoadingProps {
 
 export function PageLoading({ message = 'Loading page...' }: PageLoadingProps) {
   return (
-    <div className="min-h-screen flex items-center justify-center">
+    <div className="min-h-screen flex items-center justify-center bg-background">
       <LoadingState message={message} />
     </div>
   )
@@ -57,7 +57,7 @@ export function InlineLoading({ message, size = 'sm' }: InlineLoadingProps) {
   return (
     <div className="flex items-center space-x-2">
       <LoadingSpinner size={size} />
-      {message && <span className="text-sm text-muted-foreground">{message}</span>}
+      {message && <span className="text-caption">{message}</span>}
     </div>
   )
 }

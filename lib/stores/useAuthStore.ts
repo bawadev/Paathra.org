@@ -56,62 +56,36 @@ export const useAuthStore = create<AuthState>()(
         set({ loading: true, error: null })
 
         try {
-          // Create a timeout promise
-          const timeoutPromise = new Promise((_, reject) =>
-            setTimeout(() => reject(new Error('Profile fetch timeout')), 5000)
-          )
-
-          // Create the profile fetch promise
-          const fetchPromise = supabase
+          // Simple approach without timeout for now - let Supabase handle its own timeouts
+          const { data, error } = await supabase
             .from('user_profiles')
             .select('*')
             .eq('id', userId)
             .single()
 
-          // Race between fetch and timeout
-          const { data, error } = await Promise.race([
-            fetchPromise,
-            timeoutPromise
-          ]) as any
-
-          if (error && error.code !== 'PGRST116') {
-            // Try fallback fetch using REST API
-            try {
-              const session = await supabase.auth.getSession()
-              const fallbackResponse = await fetch(
-                `${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/user_profiles?id=eq.${userId}`,
-                {
-                  headers: {
-                    'apikey': process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-                    'Authorization': `Bearer ${session.data.session?.access_token}`
-                  }
-                }
-              )
-
-              if (fallbackResponse.ok) {
-                const profiles = await fallbackResponse.json()
-                if (profiles && profiles.length > 0) {
-                  set({ profile: profiles[0], loading: false })
-                  return
-                }
-              }
-            } catch (fallbackError) {
-              console.error('Fallback profile fetch failed:', fallbackError)
+          if (error) {
+            // Handle specific error cases
+            if (error.code === 'PGRST116') {
+              // Profile not found - this is expected for new users
+              console.log('Profile not found for user:', userId, '- this is normal for new users')
+              set({ profile: null, loading: false, error: null })
+              return
             }
 
-            throw error
+            // For other errors, log them but don't show to user
+            console.warn('Profile fetch error:', error.message, error.code)
+            set({ profile: null, loading: false, error: null })
+            return
           }
 
-          set({ profile: data || null, loading: false })
+          // Successfully got profile data
+          set({ profile: data || null, loading: false, error: null })
         } catch (error: any) {
-          console.error('Error fetching profile:', error)
-          set({
-            error: error.message === 'Profile fetch timeout'
-              ? 'Profile loading timed out. Please refresh the page.'
-              : 'Failed to load profile',
-            loading: false,
-            profile: null
-          })
+          // Catch any network or other errors
+          console.warn('Profile fetch exception:', error.name, error.message)
+
+          // Don't show errors to users for profile fetching - just set profile to null
+          set({ profile: null, loading: false, error: null })
         }
       },
 

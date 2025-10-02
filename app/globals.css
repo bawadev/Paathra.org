@@ -11,40 +11,97 @@
   --font-sinhala: var(--font-sinhala);
   --font-sinhala-serif: var(--font-sinhala-serif);
 
-  /* Design System Colors */
-  --color-primary-50: #fefbf2;
-  --color-primary-100: #fdf6e3;
-  --color-primary-200: #faeac0;
-  --color-primary-300: #f6d797;
-  --color-primary-400: #f1c165;
-  --color-primary-500: #d4af37;
-  --color-primary-600: #b8952b;
-  --color-primary-700: #9a7b23;
-  --color-primary-800: #7c6220;
-  --color-primary-900: #65511b;
+  /* Elegant Dana Design System - OKLCH Color Palette */
+  --color-primary-50: oklch(0.98 0.02 85);
+  --color-primary-100: oklch(0.95 0.04 85);
+  --color-primary-200: oklch(0.90 0.06 85);
+  --color-primary-300: oklch(0.82 0.08 85);
+  --color-primary-400: oklch(0.78 0.10 85);
+  --color-primary-500: oklch(0.74 0.12 85); /* Primary Dana Gold */
+  --color-primary-600: oklch(0.68 0.11 85);
+  --color-primary-700: oklch(0.58 0.10 85);
+  --color-primary-800: oklch(0.48 0.09 85);
+  --color-primary-900: oklch(0.35 0.08 85);
 
-  --color-secondary-50: #f5f2f0;
-  --color-secondary-100: #e8e0db;
-  --color-secondary-200: #d4c5bb;
-  --color-secondary-300: #bba395;
-  --color-secondary-400: #a18570;
-  --color-secondary-500: #8b4513;
-  --color-secondary-600: #7a3c11;
-  --color-secondary-700: #65320e;
-  --color-secondary-800: #52290c;
-  --color-secondary-900: #42220a;
+  --color-secondary-50: oklch(0.96 0.02 45);
+  --color-secondary-100: oklch(0.92 0.03 45);
+  --color-secondary-200: oklch(0.85 0.05 45);
+  --color-secondary-300: oklch(0.75 0.07 45);
+  --color-secondary-400: oklch(0.65 0.08 45);
+  --color-secondary-500: oklch(0.55 0.09 45); /* Rich Warm Brown */
+  --color-secondary-600: oklch(0.45 0.09 45);
+  --color-secondary-700: oklch(0.35 0.09 45);
+  --color-secondary-800: oklch(0.28 0.08 45);
+  --color-secondary-900: oklch(0.20 0.06 45);
 
-  --color-accent-50: #fef2f2;
-  --color-accent-100: #fee2e2;
-  --color-accent-200: #fecaca;
-  --color-accent-300: #fca5a5;
-  --color-accent-400: #f87171;
-  --color-accent-500: #ff6b6b;
-  --color-accent-600: #e55353;
-  --color-accent-700: #c53e3e;
-  --color-accent-800: #a53232;
-  --color-accent-900: #8b2929;
+  --color-accent-50: oklch(0.97 0.05 25);
+  --color-accent-100: oklch(0.94 0.08 25);
+  --color-accent-200: oklch(0.88 0.12 25);
+  --color-accent-300: oklch(0.80 0.15 25);
+  --color-accent-400: oklch(0.75 0.17 25);
+  --color-accent-500: oklch(0.70 0.18 25); /* Elegant Coral */
+  --color-accent-600: oklch(0.65 0.17 25);
+  --color-accent-700: oklch(0.58 0.16 25);
+  --color-accent-800: oklch(0.50 0.14 25);
+  --color-accent-900: oklch(0.40 0.12 25);
 
+  /* Trust Blue - Donation flows and trust signals */
+  --color-trust-50: oklch(0.97 0.02 220);
+  --color-trust-100: oklch(0.94 0.04 220);
+  --color-trust-200: oklch(0.88 0.06 220);
+  --color-trust-300: oklch(0.78 0.08 220);
+  --color-trust-400: oklch(0.70 0.10 220);
+  --color-trust-500: oklch(0.65 0.15 220);
+  --color-trust-600: oklch(0.58 0.16 220);
+  --color-trust-700: oklch(0.50 0.15 220);
+  --color-trust-800: oklch(0.42 0.14 220);
+  --color-trust-900: oklch(0.32 0.12 220);
+
+  /* Spiritual Purple - Meditation and spiritual sections */
+  --color-spiritual-25: oklch(0.985 0.01 280);
+  --color-spiritual-50: oklch(0.97 0.02 280);
+  --color-spiritual-100: oklch(0.94 0.04 280);
+  --color-spiritual-200: oklch(0.88 0.06 280);
+  --color-spiritual-300: oklch(0.80 0.08 280);
+  --color-spiritual-400: oklch(0.72 0.10 280);
+  --color-spiritual-500: oklch(0.65 0.15 280);
+  --color-spiritual-600: oklch(0.58 0.16 280);
+  --color-spiritual-700: oklch(0.50 0.15 280);
+  --color-spiritual-800: oklch(0.42 0.14 280);
+  --color-spiritual-900: oklch(0.32 0.12 280);
+
+  /* Compassion Green - Success states and growth */
+  --color-compassion-25: oklch(0.985 0.01 142);
+  --color-compassion-50: oklch(0.97 0.02 142);
+  --color-compassion-100: oklch(0.94 0.04 142);
+  --color-compassion-200: oklch(0.88 0.06 142);
+  --color-compassion-300: oklch(0.78 0.08 142);
+  --color-compassion-400: oklch(0.68 0.10 142);
+  --color-compassion-500: oklch(0.60 0.15 142);
+  --color-compassion-600: oklch(0.54 0.16 142);
+  --color-compassion-700: oklch(0.46 0.15 142);
+  --color-compassion-800: oklch(0.38 0.14 142);
+  --color-compassion-900: oklch(0.28 0.12 142);
+
+  /* Semantic Colors */
+  --color-success-500: oklch(0.60 0.15 142);
+  --color-warning-500: oklch(0.75 0.15 85);
+  --color-error-500: oklch(0.65 0.20 25);
+  --color-info-500: oklch(0.65 0.15 220);
+
+  /* Neutral Grays with Warm Tint */
+  --color-neutral-50: oklch(0.98 0.005 85);
+  --color-neutral-100: oklch(0.96 0.01 85);
+  --color-neutral-200: oklch(0.92 0.015 85);
+  --color-neutral-300: oklch(0.86 0.02 85);
+  --color-neutral-400: oklch(0.70 0.02 85);
+  --color-neutral-500: oklch(0.58 0.02 85);
+  --color-neutral-600: oklch(0.45 0.025 85);
+  --color-neutral-700: oklch(0.35 0.03 85);
+  --color-neutral-800: oklch(0.25 0.03 85);
+  --color-neutral-900: oklch(0.15 0.02 85);
+
+  /* ShadCN Integration */
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -78,95 +135,112 @@
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
 }
 
 :root {
-  --radius: 0.625rem;
+  --radius: 0.75rem;
 
-  /* ShadCN Color Variables - Dana Theme Integration */
-  --background: oklch(0.98 0.005 85); /* Light warm background */
-  --foreground: oklch(0.25 0.03 240); /* Dana text-dark */
-  --card: oklch(1 0 0); /* Pure white cards */
+  /* Enhanced ShadCN Color Variables - Elegant Dana Theme */
+  --background: oklch(0.99 0.003 85);
+  --foreground: oklch(0.25 0.03 240);
+  --card: oklch(1 0 0);
   --card-foreground: oklch(0.25 0.03 240);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.25 0.03 240);
-  --primary: oklch(0.74 0.12 85); /* Dana primary gold */
-  --primary-foreground: oklch(1 0 0); /* White text on gold */
-  --secondary: oklch(0.35 0.09 45); /* Dana secondary brown */
+  --primary: oklch(0.74 0.12 85);
+  --primary-foreground: oklch(1 0 0);
+  --secondary: oklch(0.45 0.09 45);
   --secondary-foreground: oklch(1 0 0);
-  --muted: oklch(0.95 0.01 85); /* Light muted with warm tint */
-  --muted-foreground: oklch(0.58 0.01 240); /* Dana text-light */
-  --accent: oklch(0.70 0.18 25); /* Dana accent coral */
+  --muted: oklch(0.96 0.01 85);
+  --muted-foreground: oklch(0.55 0.02 240);
+  --accent: oklch(0.70 0.18 25);
   --accent-foreground: oklch(1 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.90 0.02 85); /* Warm border */
-  --input: oklch(0.97 0.01 85); /* Warm input background */
-  --ring: oklch(0.74 0.12 85); /* Dana primary for focus rings */
-  --chart-1: oklch(0.74 0.12 85); /* Dana gold */
-  --chart-2: oklch(0.35 0.09 45); /* Dana brown */
-  --chart-3: oklch(0.70 0.18 25); /* Dana coral */
-  --chart-4: oklch(0.58 0.08 120); /* Complementary green */
-  --chart-5: oklch(0.65 0.15 280); /* Complementary purple */
-  --sidebar: oklch(0.98 0.005 85);
+  --destructive: oklch(0.65 0.20 25);
+  --destructive-foreground: oklch(1 0 0);
+  --border: oklch(0.92 0.015 85);
+  --input: oklch(0.98 0.005 85);
+  --ring: oklch(0.74 0.12 85);
+
+  /* Enhanced Chart Colors */
+  --chart-1: oklch(0.74 0.12 85);
+  --chart-2: oklch(0.45 0.09 45);
+  --chart-3: oklch(0.70 0.18 25);
+  --chart-4: oklch(0.60 0.15 142);
+  --chart-5: oklch(0.65 0.15 280);
+
+  /* Sidebar Integration */
+  --sidebar: oklch(0.99 0.003 85);
   --sidebar-foreground: oklch(0.25 0.03 240);
   --sidebar-primary: oklch(0.74 0.12 85);
   --sidebar-primary-foreground: oklch(1 0 0);
-  --sidebar-accent: oklch(0.95 0.01 85);
+  --sidebar-accent: oklch(0.96 0.01 85);
   --sidebar-accent-foreground: oklch(0.25 0.03 240);
-  --sidebar-border: oklch(0.90 0.02 85);
+  --sidebar-border: oklch(0.92 0.015 85);
   --sidebar-ring: oklch(0.74 0.12 85);
 }
 
 .dark {
-  --background: oklch(0.15 0.02 240); /* Dark with slight warmth */
-  --foreground: oklch(0.95 0.01 85); /* Warm white */
-  --card: oklch(0.20 0.02 240); /* Dark card with warmth */
-  --card-foreground: oklch(0.95 0.01 85);
-  --popover: oklch(0.20 0.02 240);
-  --popover-foreground: oklch(0.95 0.01 85);
-  --primary: oklch(0.78 0.12 85); /* Brighter gold for dark mode */
-  --primary-foreground: oklch(0.15 0.02 240); /* Dark text on gold */
-  --secondary: oklch(0.40 0.09 45); /* Lighter brown for dark mode */
-  --secondary-foreground: oklch(0.95 0.01 85);
-  --muted: oklch(0.25 0.02 240);
-  --muted-foreground: oklch(0.70 0.01 85); /* Lighter muted text */
-  --accent: oklch(0.72 0.18 25); /* Adjusted coral for dark mode */
-  --accent-foreground: oklch(0.15 0.02 240);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(0.30 0.02 240); /* Subtle warm border */
-  --input: oklch(0.22 0.02 240); /* Dark input with warmth */
-  --ring: oklch(0.78 0.12 85); /* Gold focus ring */
-  --chart-1: oklch(0.78 0.12 85); /* Dana gold */
-  --chart-2: oklch(0.45 0.09 45); /* Dana brown */
-  --chart-3: oklch(0.72 0.18 25); /* Dana coral */
-  --chart-4: oklch(0.62 0.08 120); /* Complementary green */
-  --chart-5: oklch(0.68 0.15 280); /* Complementary purple */
-  --sidebar: oklch(0.18 0.02 240);
-  --sidebar-foreground: oklch(0.95 0.01 85);
+  --background: oklch(0.12 0.015 240);
+  --foreground: oklch(0.96 0.01 85);
+  --card: oklch(0.18 0.02 240);
+  --card-foreground: oklch(0.96 0.01 85);
+  --popover: oklch(0.18 0.02 240);
+  --popover-foreground: oklch(0.96 0.01 85);
+  --primary: oklch(0.78 0.12 85);
+  --primary-foreground: oklch(0.12 0.015 240);
+  --secondary: oklch(0.42 0.09 45);
+  --secondary-foreground: oklch(0.96 0.01 85);
+  --muted: oklch(0.22 0.02 240);
+  --muted-foreground: oklch(0.72 0.015 85);
+  --accent: oklch(0.72 0.18 25);
+  --accent-foreground: oklch(0.12 0.015 240);
+  --destructive: oklch(0.68 0.20 25);
+  --destructive-foreground: oklch(0.96 0.01 85);
+  --border: oklch(0.28 0.02 240);
+  --input: oklch(0.20 0.02 240);
+  --ring: oklch(0.78 0.12 85);
+
+  /* Dark mode chart colors */
+  --chart-1: oklch(0.78 0.12 85);
+  --chart-2: oklch(0.47 0.09 45);
+  --chart-3: oklch(0.72 0.18 25);
+  --chart-4: oklch(0.62 0.15 142);
+  --chart-5: oklch(0.68 0.15 280);
+
+  /* Dark sidebar */
+  --sidebar: oklch(0.15 0.02 240);
+  --sidebar-foreground: oklch(0.96 0.01 85);
   --sidebar-primary: oklch(0.78 0.12 85);
-  --sidebar-primary-foreground: oklch(0.15 0.02 240);
-  --sidebar-accent: oklch(0.25 0.02 240);
-  --sidebar-accent-foreground: oklch(0.95 0.01 85);
-  --sidebar-border: oklch(0.30 0.02 240);
+  --sidebar-primary-foreground: oklch(0.12 0.015 240);
+  --sidebar-accent: oklch(0.22 0.02 240);
+  --sidebar-accent-foreground: oklch(0.96 0.01 85);
+  --sidebar-border: oklch(0.28 0.02 240);
   --sidebar-ring: oklch(0.78 0.12 85);
 }
 
 @layer base {
   * {
-    @apply border-border outline-ring/50;
+    @apply border-border;
+    outline-color: oklch(0.74 0.12 85 / 0.5);
   }
+
   body {
     @apply bg-background text-foreground antialiased;
-    font-feature-settings: 'liga' 1, 'kern' 1;
+    font-feature-settings: 'liga' 1, 'kern' 1, 'calt' 1;
     overflow-x: hidden;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 }
 
-/* Typography - Sinhala Support */
+/* Enhanced Sinhala Typography Support */
 html[lang="si"] body {
-  font-family: var(--font-sinhala), 'Noto Sans Sinhala', 'Abhaya Libre', sans-serif;
-  line-height: 1.75;
-  word-spacing: 0.05em;
+  font-family: var(--font-sinhala), 'Noto Sans Sinhala', 'Abhaya Libre', 'Sinhala MN', 'Iskoola Pota', sans-serif;
+  line-height: 1.85;
+  word-spacing: 0.08em;
+  letter-spacing: 0.015em;
 }
 
 html[lang="si"] h1,
@@ -175,12 +249,218 @@ html[lang="si"] h3,
 html[lang="si"] h4,
 html[lang="si"] h5,
 html[lang="si"] h6 {
-  font-family: var(--font-sinhala-serif), 'Abhaya Libre', serif;
+  font-family: var(--font-sinhala-serif), 'Abhaya Libre', 'Noto Serif Sinhala', serif;
   font-weight: 700;
-  line-height: 1.4;
+  line-height: 1.5;
+  letter-spacing: 0.02em;
+  word-spacing: 0.1em;
 }
 
-/* Design System Animation Classes */
+html[lang="si"] h1 {
+  line-height: 1.4;
+  letter-spacing: 0.025em;
+}
+
+html[lang="si"] h2 {
+  line-height: 1.45;
+}
+
+html[lang="si"] p,
+html[lang="si"] span,
+html[lang="si"] div {
+  line-height: 1.85;
+}
+
+html[lang="si"] .text-sm,
+html[lang="si"] .text-xs {
+  line-height: 1.9;
+}
+
+html[lang="si"] .text-lg,
+html[lang="si"] .text-xl {
+  line-height: 1.8;
+}
+
+html[lang="si"] .font-sans {
+  font-family: var(--font-sinhala), 'Noto Sans Sinhala', 'Abhaya Libre', sans-serif;
+}
+
+html[lang="si"] .font-serif {
+  font-family: var(--font-sinhala-serif), 'Abhaya Libre', 'Noto Serif Sinhala', serif;
+}
+
+/* Better spacing for Sinhala UI components */
+html[lang="si"] button,
+html[lang="si"] .btn {
+  line-height: 1.8;
+  padding-top: 0.65rem;
+  padding-bottom: 0.65rem;
+}
+
+html[lang="si"] input,
+html[lang="si"] textarea,
+html[lang="si"] select {
+  line-height: 1.8;
+}
+
+/* Enhanced Map Styles */
+.leaflet-container {
+  @apply font-sans rounded-xl overflow-hidden;
+  box-shadow: 0 10px 15px oklch(0 0 0 / 0.1), 0 4px 6px oklch(0 0 0 / 0.05);
+}
+
+.leaflet-popup-content-wrapper {
+  @apply rounded-xl border border-border/50;
+  background: oklch(1 0 0 / 0.98);
+  backdrop-filter: blur(8px);
+  box-shadow: 0 10px 15px oklch(0 0 0 / 0.1), 0 4px 6px oklch(0 0 0 / 0.05);
+}
+
+.leaflet-popup-content {
+  @apply m-0 text-sm leading-relaxed;
+}
+
+.leaflet-popup-tip {
+  background: oklch(1 0 0 / 0.98) !important;
+  border: 1px solid oklch(0.92 0.015 85) !important;
+}
+
+.custom-marker {
+  @apply bg-transparent border-none;
+  filter: drop-shadow(0 1px 3px oklch(0 0 0 / 0.1));
+}
+
+/* Enhanced Responsive Design */
+@media (max-width: 640px) {
+  .dana-container {
+    @apply px-4;
+  }
+}
+
+/* Print Styles */
+@media print {
+  .leaflet-container {
+    display: none !important;
+  }
+}
+
+/* High Contrast Mode Support */
+@media (prefers-contrast: high) {
+  :root {
+    --primary: oklch(0.35 0.15 85);
+    --border: oklch(0.75 0.05 85);
+  }
+
+  .dark {
+    --primary: oklch(0.85 0.15 85);
+    --border: oklch(0.45 0.05 240);
+  }
+}
+
+/* Reduced Motion Support */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Component Base Styles - CSS-only for Tailwind v4 compatibility */
+.dana-card {
+  background-color: var(--card);
+  color: var(--card-foreground);
+  border-radius: 1rem;
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  border: 1px solid oklch(from var(--border) l c h / 0.5);
+  transition: all 300ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.dana-card:hover {
+  box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+  transform: translateY(-4px);
+}
+
+.dana-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.5rem;
+  font-weight: 500;
+  transition: all 300ms cubic-bezier(0.16, 1, 0.3, 1);
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+}
+
+.dana-button:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}
+
+.dana-button:disabled {
+  pointer-events: none;
+  opacity: 0.5;
+}
+
+.dana-button-primary {
+  background-color: var(--primary);
+  color: var(--primary-foreground);
+  box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+}
+
+.dana-button-primary:hover {
+  background-color: oklch(from var(--primary) calc(l * 0.9) c h);
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  transform: translateY(-2px);
+}
+
+.dana-button-secondary {
+  border: 1px solid var(--primary);
+  color: var(--primary);
+  background-color: transparent;
+}
+
+.dana-button-secondary:hover {
+  background-color: var(--primary);
+  color: var(--primary-foreground);
+  transform: translateY(-2px);
+}
+
+.dana-button-outline {
+  border: 1px solid var(--border);
+  background-color: var(--background);
+  color: var(--foreground);
+}
+
+.dana-button-outline:hover {
+  background-color: var(--accent);
+  color: var(--accent-foreground);
+}
+
+.dana-button-ghost:hover {
+  background-color: var(--accent);
+  color: var(--accent-foreground);
+}
+
+.dana-badge {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 9999px;
+  border: 1px solid var(--border);
+  padding: 0.125rem 0.625rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  transition: colors 200ms;
+}
+
+.dana-badge:focus {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}
+
+/* Animation Classes */
 @keyframes dana-fade-in {
   from { opacity: 0; transform: translateY(20px); }
   to { opacity: 1; transform: translateY(0); }
@@ -191,12 +471,6 @@ html[lang="si"] h6 {
   50% { transform: translateY(-10px); }
 }
 
-@keyframes dana-glow {
-  0%, 100% { box-shadow: 0 0 20px rgb(212 175 55 / 0.3); }
-  50% { box-shadow: 0 0 40px rgb(212 175 55 / 0.5); }
-}
-
-/* Animation Utility Classes */
 .animate-dana-fade-in {
   animation: dana-fade-in 0.6s cubic-bezier(0.16, 1, 0.3, 1);
 }
@@ -205,100 +479,441 @@ html[lang="si"] h6 {
   animation: dana-float 3s ease-in-out infinite;
 }
 
-.animate-dana-glow {
-  animation: dana-glow 2s ease-in-out infinite;
+/* Focus and Hover Effects */
+.focus-elegant {
+  outline: 2px solid transparent;
+  outline-offset: 2px;
 }
 
-/* Component Base Styles */
-.dana-card {
-  @apply bg-card text-card-foreground rounded-2xl shadow-md border border-border/50;
+.focus-elegant:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}
+
+.hover-elegant {
   transition: all 300ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.dana-card:hover {
-  @apply shadow-xl -translate-y-1;
+.hover-elegant:hover {
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  transform: translateY(-2px);
 }
 
-/* Loading States */
-.dana-loading {
-  @apply animate-pulse;
+.shadow-elegant {
+  box-shadow: 0 4px 6px oklch(0 0 0 / 0.05), 0 1px 3px oklch(0 0 0 / 0.1);
 }
 
-.dana-skeleton {
-  @apply bg-muted rounded animate-pulse;
+.shadow-elegant-lg {
+  box-shadow: 0 10px 15px oklch(0 0 0 / 0.1), 0 4px 6px oklch(0 0 0 / 0.05);
 }
 
-/* Navigation Styles */
-.dana-nav {
-  @apply fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-md border-b border-border/50;
-  transition: all 300ms cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-/* Form Styles */
-.dana-input {
-  @apply flex h-10 w-full rounded-md border border-input bg-background px-3 py-2;
-  @apply text-sm ring-offset-background placeholder:text-muted-foreground;
-  @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2;
-  @apply disabled:cursor-not-allowed disabled:opacity-50;
-}
-
-.dana-textarea {
-  @apply flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2;
-  @apply text-sm ring-offset-background placeholder:text-muted-foreground;
-  @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2;
-  @apply disabled:cursor-not-allowed disabled:opacity-50;
-}
-
-/* Layout Helpers */
+/* Layout Utilities */
 .dana-container {
-  @apply mx-auto max-w-7xl px-4 sm:px-6 lg:px-8;
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 80rem;
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+@media (min-width: 640px) {
+  .dana-container {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .dana-container {
+    padding-left: 2rem;
+    padding-right: 2rem;
+  }
 }
 
 .dana-section {
-  @apply py-12 sm:py-16 lg:py-20;
+  padding-top: 3rem;
+  padding-bottom: 3rem;
 }
 
-.dana-grid {
-  @apply grid gap-6 md:gap-8;
+@media (min-width: 640px) {
+  .dana-section {
+    padding-top: 4rem;
+    padding-bottom: 4rem;
+  }
 }
 
-/* Utility Classes */
-.text-gradient-primary {
-  @apply bg-gradient-to-r from-primary-500 to-accent-500 bg-clip-text text-transparent;
+@media (min-width: 1024px) {
+  .dana-section {
+    padding-top: 5rem;
+    padding-bottom: 5rem;
+  }
 }
 
+/* Gradient Utilities */
 .bg-gradient-primary {
-  @apply bg-gradient-to-r from-primary-500 to-accent-500;
+  background-image: linear-gradient(to right, var(--color-primary-500), var(--color-accent-500));
 }
 
-.shadow-primary {
-  box-shadow: 0 4px 20px rgb(212 175 55 / 0.25);
+.text-gradient-primary {
+  background-image: linear-gradient(to right, var(--color-primary-500), var(--color-accent-500));
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
 }
 
-.shadow-primary-lg {
-  box-shadow: 0 8px 30px rgb(212 175 55 / 0.35);
+/* Enhanced Dana Navigation Components */
+.dana-nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 50;
+  background: oklch(from var(--background) l c h / 0.95);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid oklch(from var(--border) l c h / 0.5);
+  transition: all 300ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-/* Map Styles */
-.leaflet-container {
-  @apply font-sans;
+.dana-nav-trigger {
+  position: relative;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  user-select: none;
+  white-space: nowrap;
 }
 
-.leaflet-popup-content-wrapper {
-  @apply rounded-lg shadow-lg border border-border/50;
+.dana-nav-trigger:hover {
+  transform: translateY(-1px);
 }
 
-.leaflet-popup-content {
-  @apply m-0 text-sm leading-relaxed;
+.dana-nav-trigger[data-active="true"] {
+  color: var(--primary);
 }
 
-/* Responsive Utilities */
-@media (max-width: 640px) {
-  .dana-container {
-    @apply px-3;
+.dana-nav-trigger[data-expanded="true"] .chevron {
+  transform: rotate(180deg);
+}
+
+.dana-nav-dropdown-content {
+  animation: dana-dropdown-fade-in 200ms cubic-bezier(0.16, 1, 0.3, 1);
+  animation-fill-mode: forwards;
+  background: oklch(from var(--card) l c h / 0.98);
+  backdrop-filter: blur(16px);
+  will-change: transform, opacity;
+}
+
+.dana-nav-dropdown-item {
+  position: relative;
+  isolation: isolate;
+}
+
+.dana-nav-dropdown-item::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+  opacity: 0;
+  border-radius: inherit;
+  transition: opacity 200ms ease-out;
+  z-index: -1;
+}
+
+.dana-nav-dropdown-item:hover::before {
+  opacity: 0.05;
+}
+
+.dana-nav-dropdown-item:focus-visible::before {
+  opacity: 0.1;
+}
+
+/* Cultural Theme Adjustments for Navigation */
+.theme-sinhala .dana-nav-trigger,
+.theme-sinhala .dana-nav-dropdown-item {
+  font-family: var(--font-sinhala);
+  line-height: 1.75;
+  letter-spacing: 0.01em;
+  word-spacing: 0.05em;
+}
+
+.theme-sinhala .dana-nav-trigger {
+  font-weight: 600; /* Slightly bolder for Sinhala readability */
+}
+
+.theme-english .dana-nav-trigger,
+.theme-english .dana-nav-dropdown-item {
+  font-family: var(--font-geist-sans);
+  line-height: 1.6;
+  letter-spacing: 0;
+  font-weight: 500; /* Standard weight for English */
+}
+
+.theme-universal .dana-nav-trigger,
+.theme-universal .dana-nav-dropdown-item {
+  font-family: var(--font-geist-sans);
+  line-height: 1.6;
+  letter-spacing: 0;
+  font-weight: 500; /* Consistent with English */
+}
+
+/* Context-specific Navigation Styles */
+.context-donation .dana-nav {
+  background: oklch(from var(--color-trust-50) l c h / 0.95);
+}
+
+.context-monastery .dana-nav {
+  background: oklch(from var(--color-spiritual-50) l c h / 0.95);
+}
+
+.context-spiritual .dana-nav {
+  background: oklch(from var(--color-spiritual-50) l c h / 0.98);
+}
+
+.context-admin .dana-nav {
+  background: oklch(from var(--color-neutral-50) l c h / 0.95);
+}
+
+/* Accessibility Enhancements */
+@media (prefers-reduced-motion: reduce) {
+  .dana-nav,
+  .dana-nav-trigger,
+  .dana-nav-dropdown-content,
+  .dana-nav-dropdown-item {
+    transition: none !important;
+    animation: none !important;
+  }
+}
+
+@media (prefers-contrast: high) {
+  .dana-nav {
+    border-bottom-width: 2px;
+    background: var(--background);
   }
 
-  .dana-section {
-    @apply py-8;
+  .dana-nav-trigger:focus-visible {
+    outline-width: 3px;
+  }
+}
+
+/* Animation Keyframes */
+@keyframes dana-dropdown-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(-8px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Shadow Utilities */
+.shadow-soft {
+  box-shadow: 0 2px 8px oklch(0 0 0 / 0.04), 0 1px 3px oklch(0 0 0 / 0.08);
+}
+
+/* ============================================
+   RESPONSIVE UTILITIES - Mobile Optimization
+   ============================================ */
+
+/* Touch Target Utilities - WCAG AAA Compliance */
+.touch-target-min {
+  min-width: 44px;
+  min-height: 44px;
+}
+
+.touch-target {
+  min-width: 48px;
+  min-height: 48px;
+}
+
+.touch-target-comfortable {
+  min-width: 56px;
+  min-height: 56px;
+}
+
+/* Mobile Typography - iOS Zoom Prevention */
+@media (max-width: 767px) {
+  /* Ensure inputs are minimum 16px to prevent iOS auto-zoom */
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  input[type="tel"],
+  input[type="url"],
+  input[type="search"],
+  input[type="number"],
+  textarea,
+  select {
+    font-size: max(16px, 1rem);
+  }
+
+  /* Increase touch targets on mobile */
+  button:not(.no-touch-target),
+  a:not(.no-touch-target),
+  [role="button"]:not(.no-touch-target) {
+    min-height: 44px;
+  }
+
+  /* Mobile-optimized spacing */
+  .mobile-p-4 {
+    padding: 1rem;
+  }
+
+  .mobile-p-6 {
+    padding: 1.5rem;
+  }
+
+  /* Mobile-optimized text sizes */
+  .mobile-text-base {
+    font-size: 1rem;
+    line-height: 1.5;
+  }
+
+  .mobile-text-lg {
+    font-size: 1.125rem;
+    line-height: 1.5;
+  }
+
+  /* Hide on mobile */
+  .hide-mobile {
+    display: none;
+  }
+
+  /* Stack on mobile */
+  .mobile-stack {
+    flex-direction: column;
+  }
+
+  /* Full width on mobile */
+  .mobile-full {
+    width: 100%;
+  }
+}
+
+/* Desktop-specific utilities */
+@media (min-width: 768px) {
+  .hide-desktop {
+    display: none;
+  }
+
+  .desktop-row {
+    flex-direction: row;
+  }
+}
+
+/* Landscape orientation optimizations */
+@media (orientation: landscape) and (max-height: 600px) {
+  /* Reduce vertical padding in landscape mobile */
+  .landscape-compact {
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+  }
+}
+
+/* Touch device optimizations */
+@media (hover: none) and (pointer: coarse) {
+  /* Larger tap targets for touch devices */
+  button,
+  a,
+  [role="button"] {
+    min-height: 44px;
+    padding-top: max(0.75rem, 12px);
+    padding-bottom: max(0.75rem, 12px);
+  }
+
+  /* Disable hover states on touch devices */
+  .hover\:scale-105:hover {
+    transform: none;
+  }
+
+  /* Increase spacing for fat-finger syndrome */
+  .touch-spacing > * + * {
+    margin-top: 0.75rem;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  /* Increase border visibility */
+  button,
+  input,
+  select,
+  textarea {
+    border-width: 2px;
+  }
+
+  /* Stronger focus indicators */
+  *:focus-visible {
+    outline-width: 3px;
+    outline-offset: 2px;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Responsive container utilities */
+.container-mobile {
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+@media (min-width: 640px) {
+  .container-mobile {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .container-mobile {
+    padding-left: 2rem;
+    padding-right: 2rem;
+  }
+}
+
+/* Responsive grid utilities */
+.grid-mobile-1 {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}
+
+@media (min-width: 640px) {
+  .grid-mobile-1 {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .grid-mobile-1 {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+  }
+}
+
+/* Safe area insets for notched devices */
+@supports (padding: env(safe-area-inset-left)) {
+  .safe-area-padding {
+    padding-left: max(1rem, env(safe-area-inset-left));
+    padding-right: max(1rem, env(safe-area-inset-right));
+  }
+
+  .safe-area-top {
+    padding-top: max(1rem, env(safe-area-inset-top));
+  }
+
+  .safe-area-bottom {
+    padding-bottom: max(1rem, env(safe-area-inset-bottom));
   }
 }

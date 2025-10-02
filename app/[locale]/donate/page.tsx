@@ -61,26 +61,24 @@ export default function DonatePage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-red-50">
+    <div className="min-h-screen bg-gradient-to-br from-amber-50/50 via-orange-50/30 to-red-50/50">
       <Navigation />
-      
+
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-
-
         {/* Main Content */}
         <div className="max-w-6xl mx-auto">
           {selectedSlot ? (
-            <div className="bg-white rounded-2xl shadow-xl p-8">
-              <div className="flex items-center justify-between mb-6">
-                <Button 
-                  variant="outline" 
+            <div className="bg-white/95 backdrop-blur-sm rounded-3xl shadow-elegant-lg border border-amber-100/50 p-6 sm:p-8 lg:p-10">
+              <div className="flex items-center justify-between mb-8">
+                <Button
+                  variant="outline"
                   onClick={handleBookingCancel}
-                  className="border-amber-200 text-amber-700 hover:bg-amber-50"
+                  className="border-amber-200 text-amber-700 hover:bg-amber-50 hover:border-amber-300 transition-all duration-300 rounded-xl px-6 py-2.5 font-medium shadow-sm hover:shadow-md"
                 >
                   ← Back to Calendar
                 </Button>
               </div>
-              
+
               <DonationBookingForm
                 slot={selectedSlot}
                 onSuccess={handleBookingSuccess}
@@ -89,8 +87,6 @@ export default function DonatePage() {
             </div>
           ) : (
             <div>
-             
-              
               <DonationCalendar onSlotSelect={handleSlotSelect} />
             </div>
           )}
@@ -98,29 +94,32 @@ export default function DonatePage() {
 
         {/* Impact Stats */}
         {!selectedSlot && (
-          <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
-            <div className="bg-white rounded-xl p-6 text-center shadow-lg">
-              <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-3">
-                <Heart className="w-6 h-6 text-green-600" />
+          <div className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 max-w-5xl mx-auto">
+            <div className="group relative bg-gradient-to-br from-green-50 to-emerald-50 rounded-2xl p-8 text-center shadow-elegant border border-green-100/50 hover:shadow-elegant-lg transition-all duration-300 hover:-translate-y-1">
+              <div className="absolute top-0 right-0 w-24 h-24 bg-green-200/20 rounded-full blur-2xl -z-10 group-hover:bg-green-300/30 transition-colors duration-300"></div>
+              <div className="w-14 h-14 bg-gradient-to-br from-green-500 to-emerald-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg group-hover:scale-110 transition-transform duration-300">
+                <Heart className="w-7 h-7 text-white" />
               </div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-1">1,250+ Meals</h3>
-              <p className="text-sm text-gray-600">Provided this month</p>
+              <h3 className="text-2xl font-bold text-gray-900 mb-2">1,250+ Meals</h3>
+              <p className="text-sm font-medium text-gray-600">Provided this month</p>
             </div>
-            
-            <div className="bg-white rounded-xl p-6 text-center shadow-lg">
-              <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-3">
-                <Users className="w-6 h-6 text-blue-600" />
+
+            <div className="group relative bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl p-8 text-center shadow-elegant border border-blue-100/50 hover:shadow-elegant-lg transition-all duration-300 hover:-translate-y-1">
+              <div className="absolute top-0 right-0 w-24 h-24 bg-blue-200/20 rounded-full blur-2xl -z-10 group-hover:bg-blue-300/30 transition-colors duration-300"></div>
+              <div className="w-14 h-14 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg group-hover:scale-110 transition-transform duration-300">
+                <Users className="w-7 h-7 text-white" />
               </div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-1">85+ Donors</h3>
-              <p className="text-sm text-gray-600">Active this week</p>
+              <h3 className="text-2xl font-bold text-gray-900 mb-2">85+ Donors</h3>
+              <p className="text-sm font-medium text-gray-600">Active this week</p>
             </div>
-            
-            <div className="bg-white rounded-xl p-6 text-center shadow-lg">
-              <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-3">
-                <Gift className="w-6 h-6 text-purple-600" />
+
+            <div className="group relative bg-gradient-to-br from-purple-50 to-pink-50 rounded-2xl p-8 text-center shadow-elegant border border-purple-100/50 hover:shadow-elegant-lg transition-all duration-300 hover:-translate-y-1">
+              <div className="absolute top-0 right-0 w-24 h-24 bg-purple-200/20 rounded-full blur-2xl -z-10 group-hover:bg-purple-300/30 transition-colors duration-300"></div>
+              <div className="w-14 h-14 bg-gradient-to-br from-purple-500 to-pink-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg group-hover:scale-110 transition-transform duration-300">
+                <Gift className="w-7 h-7 text-white" />
               </div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-1">12 Monasteries</h3>
-              <p className="text-sm text-gray-600">Receiving donations</p>
+              <h3 className="text-2xl font-bold text-gray-900 mb-2">12 Monasteries</h3>
+              <p className="text-sm font-medium text-gray-600">Receiving donations</p>
             </div>
           </div>
         )}

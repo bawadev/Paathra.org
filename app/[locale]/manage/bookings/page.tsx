@@ -4,9 +4,7 @@ import { useEffect, useState } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { useAuthStore } from '@/lib/stores/useAuthStore'
-import { Navigation } from '@/components/organisms/Navigation'
 import { AuthForm } from '@/components/auth-form'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
@@ -199,8 +197,11 @@ export default function ManageBookingsPage() {
 
   if (authLoading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="text-lg">{tCommon('loading')}</div>
+      <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-red-50">
+        <div className="text-lg text-gray-700 flex items-center gap-3">
+          <div className="lotus-icon animate-spin"></div>
+          {tCommon('loading')}
+        </div>
       </div>
     )
   }
@@ -210,56 +211,61 @@ export default function ManageBookingsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <Navigation />
-      
-      <main className="container mx-auto px-4 py-8">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">{t('title')}</h1>
-          <p className="text-gray-600">
-            {t('description', { monasteryName: monastery?.name })}
-          </p>
-        </div>
+    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-red-50">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Hero Section */}
+        <section className="pt-12 pb-8">
+          <div className="text-center space-y-6">
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900 mb-4 leading-tight">
+              {t('title')}
+            </h1>
+            <p className="text-lg sm:text-xl text-gray-700 max-w-3xl mx-auto leading-relaxed">
+              {t('description', { monasteryName: monastery?.name })}
+            </p>
+          </div>
+        </section>
 
         {loading ? (
-          <div className="text-center py-8">{t('loadingBookings')}</div>
+          <div className="flex justify-center py-20">
+            <div className="flex items-center gap-3 text-gray-700">
+              <div className="lotus-icon animate-spin"></div>
+              <span className="text-lg">{t('loadingBookings')}</span>
+            </div>
+          </div>
         ) : (
-          <div className="space-y-6">
+          <section className="pb-20">
+            <div className="space-y-6">
             {/* Filters */}
-            <Card>
-              <CardHeader>
-                <CardTitle>{t('filters')}</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="relative">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-                    <Input
-                      placeholder={t('searchPlaceholder')}
-                      value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
-                      className="pl-10"
-                    />
-                  </div>
-                  
-                  <Select value={statusFilter} onValueChange={setStatusFilter}>
-                    <SelectTrigger>
-                      <Filter className="w-4 h-4 mr-2" />
-                      <SelectValue placeholder={t('filterByStatus')} />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">{t('allStatuses')}</SelectItem>
-                      <SelectItem value="pending">{t('pendingApproval')}</SelectItem>
-                      <SelectItem value="monastery_approved">{t('monasteryApproved')}</SelectItem>
-                      <SelectItem value="confirmed">{t('donorConfirmed')}</SelectItem>
-                      <SelectItem value="delivered">{t('delivered')}</SelectItem>
-                      <SelectItem value="not_delivered">{t('notDelivered')}</SelectItem>
-                      <SelectItem value="cancelled">{t('cancelled')}</SelectItem>
-                    </SelectContent>
-                  </Select>
+            <div className="bg-gradient-to-br from-white to-amber-50/30 rounded-2xl shadow-elegant border border-amber-100/50 p-6 hover:shadow-elegant-lg transition-all duration-300">
+              <h2 className="text-xl font-semibold text-gray-900 mb-4">{t('filters')}</h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-amber-600 w-4 h-4" />
+                  <Input
+                    placeholder={t('searchPlaceholder')}
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="pl-10 border-amber-200 focus:border-amber-500 focus:ring-amber-500 bg-white/80 backdrop-blur-sm"
+                  />
                 </div>
-              </CardContent>
-            </Card>
+
+                <Select value={statusFilter} onValueChange={setStatusFilter}>
+                  <SelectTrigger className="bg-white/80 backdrop-blur-sm">
+                    <Filter className="w-4 h-4 mr-2" />
+                    <SelectValue placeholder={t('filterByStatus')} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">{t('allStatuses')}</SelectItem>
+                    <SelectItem value="pending">{t('pendingApproval')}</SelectItem>
+                    <SelectItem value="monastery_approved">{t('monasteryApproved')}</SelectItem>
+                    <SelectItem value="confirmed">{t('donorConfirmed')}</SelectItem>
+                    <SelectItem value="delivered">{t('delivered')}</SelectItem>
+                    <SelectItem value="not_delivered">{t('notDelivered')}</SelectItem>
+                    <SelectItem value="cancelled">{t('cancelled')}</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
 
             {/* Calendar View with Slot Management */}
             <CalendarSlotView
@@ -277,7 +283,8 @@ export default function ManageBookingsPage() {
               onCreateGuestBooking={handleCreateGuestBooking}
               onBookingCreated={fetchData}
             />
-          </div>
+            </div>
+          </section>
         )}
       </main>
 

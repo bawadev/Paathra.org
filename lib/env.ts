@@ -76,13 +76,21 @@ function createEnv() {
   
   // Only validate in development for debugging purposes
   if (process.env.NODE_ENV === 'development') {
-    const parsed = envSchema.safeParse(process.env)
+    // Debug: Check if critical env vars are loaded
+    if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
+      console.error('🚨 CRITICAL: Supabase environment variables missing!')
+      console.error('NEXT_PUBLIC_SUPABASE_URL:', process.env.NEXT_PUBLIC_SUPABASE_URL ? 'Set' : 'Missing')
+      console.error('NEXT_PUBLIC_SUPABASE_ANON_KEY:', process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ? `Set (${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY.length} chars)` : 'Missing')
+    }
+
+    // Validate the constructed config object, not raw process.env
+    const parsed = envSchema.safeParse(config)
     if (!parsed.success) {
       console.warn('⚠️ Environment validation warnings:')
       console.warn(parsed.error.format())
     }
   }
-  
+
   return config
 }
 

@@ -1,8 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { Navigation } from '@/components/organisms/Navigation'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -32,9 +31,10 @@ import {
 } from '@/components/ui/dialog'
 import { supabase, UserProfile } from '@/lib/supabase'
 import { LoadingSpinner } from '@/components/loading'
-import { Search, Edit, Trash2, Filter } from 'lucide-react'
+import { Search, Edit, Trash2, Filter, Users } from 'lucide-react'
 import { toast } from 'sonner'
 import { UserType, hasRole, getUserTypeDisplayName } from '@/types/auth'
+import { PageContainer, PageHeader, StatCard } from '@/lib/design-system'
 
 export default function UserManagement() {
   const [users, setUsers] = useState<UserProfile[]>([])
@@ -157,75 +157,48 @@ export default function UserManagement() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[var(--bg-light)]">
-        <Navigation />
-        <div className="flex items-center justify-center min-h-screen">
-          <LoadingSpinner />
-        </div>
+      <div className="flex items-center justify-center min-h-screen bg-background">
+        <LoadingSpinner />
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-[var(--bg-light)]">
-      <Navigation />
-      
-      <main className="pt-32 pb-20 px-5">
-        <div className="container-dana">
-          <div className="space-y-6">
-      {/* Header */}
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight">User Management</h1>
-        <p className="text-muted-foreground">
-          Manage all users in the platform
-        </p>
-      </div>
+    <PageContainer gradient maxWidth="xl">
+      <PageHeader
+        title="User Management"
+        description="Manage all users in the platform"
+        icon={Users}
+      />
 
       {/* Stats Cards */}
       <div className="grid gap-4 md:grid-cols-4">
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium">Total Users</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{users.length}</div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium">Donors</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
-              {users.filter(u => hasRole(u, 'donor')).length}
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium">Monastery Admins</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
-              {users.filter(u => hasRole(u, 'monastery_admin')).length}
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium">Platform Admins</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
-              {users.filter(u => hasRole(u, 'super_admin')).length}
-            </div>
-          </CardContent>
-        </Card>
+        <StatCard
+          title="Total Users"
+          value={users.length}
+          icon={Users}
+          variant="primary"
+        />
+        <StatCard
+          title="Donors"
+          value={users.filter(u => hasRole(u, 'donor')).length}
+          variant="trust"
+        />
+        <StatCard
+          title="Monastery Admins"
+          value={users.filter(u => hasRole(u, 'monastery_admin')).length}
+          variant="secondary"
+        />
+        <StatCard
+          title="Platform Admins"
+          value={users.filter(u => hasRole(u, 'super_admin')).length}
+          variant="accent"
+        />
       </div>
 
       {/* Filters and Search */}
-      <Card>
-        <CardHeader>
+      <div className="dana-card">
+        <CardHeader className="pb-3">
           <CardTitle>Users</CardTitle>
           <CardDescription>View and manage all platform users</CardDescription>
         </CardHeader>
@@ -351,10 +324,7 @@ export default function UserManagement() {
             </Table>
           </div>
         </CardContent>
-      </Card>
-          </div>
-        </div>
-      </main>
-    </div>
+      </div>
+    </PageContainer>
   )
 }

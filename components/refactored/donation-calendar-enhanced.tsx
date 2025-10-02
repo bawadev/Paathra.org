@@ -374,7 +374,7 @@ const SlotCard = createMemoizedComponent<{
           {isAvailable && (
             <Button 
               size="sm" 
-              className={isSelected ? "btn-dana-primary" : ""}
+              className={isSelected ? "dana-button dana-button-primary" : ""}
               variant={isSelected ? "default" : "outline"}
             >
               {isSelected ? 'Selected' : 'Select'}

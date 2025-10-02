@@ -160,88 +160,37 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const fetchProfile = async (userId: string) => {
     try {
-      // Create a timeout promise
-      const timeoutPromise = new Promise((_, reject) =>
-        setTimeout(() => reject(new Error('Profile fetch timeout')), 5000)
-      )
-
-      // Create the profile fetch promise
-      const fetchPromise = supabase
+      // Simple, reliable approach without complex timeout handling
+      const { data, error } = await supabase
         .from('user_profiles')
         .select('*')
         .eq('id', userId)
         .single()
 
-      // Race between fetch and timeout
-      const { data, error } = await Promise.race([
-        fetchPromise,
-        timeoutPromise
-      ]) as any
-
-      if (error && error.code !== 'PGRST116') { // Not found error
-        console.error('Error fetching profile:', error)
-        // Try fallback fetch using REST API if main client fails
-        try {
-          const fallbackResponse = await fetch(
-            `${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/user_profiles?id=eq.${userId}`,
-            {
-              headers: {
-                'apikey': process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-                'Authorization': `Bearer ${(await supabase.auth.getSession()).data.session?.access_token}`
-              }
-            }
-          )
-          if (fallbackResponse.ok) {
-            const profiles = await fallbackResponse.json()
-            if (profiles && profiles.length > 0) {
-              setProfile(profiles[0])
-            } else {
-              setProfile(null)
-            }
-          } else {
-            setProfile(null)
-          }
-        } catch (fallbackError) {
-          console.error('Fallback profile fetch failed:', fallbackError)
+      if (error) {
+        if (error.code === 'PGRST116') {
+          // Profile not found - this is normal for new users
+          console.log('Profile not found for user:', userId, '- user may need to complete profile setup')
           setProfile(null)
+          return
         }
-      } else if (data) {
+
+        // For other errors, log but don't fail the app
+        console.warn('Profile fetch error:', error.message, error.code)
+        setProfile(null)
+        return
+      }
+
+      // Successfully got profile data
+      if (data) {
         setProfile(data)
       } else {
         setProfile(null)
       }
     } catch (error: any) {
-      if (error.message === 'Profile fetch timeout') {
-        console.warn('Profile fetch timed out, trying fallback fetch')
-        // Try fallback fetch using REST API
-        try {
-          const fallbackResponse = await fetch(
-            `${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/user_profiles?id=eq.${userId}`,
-            {
-              headers: {
-                'apikey': process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-                'Authorization': `Bearer ${(await supabase.auth.getSession()).data.session?.access_token}`
-              }
-            }
-          )
-          if (fallbackResponse.ok) {
-            const profiles = await fallbackResponse.json()
-            if (profiles && profiles.length > 0) {
-              setProfile(profiles[0])
-            } else {
-              setProfile(null)
-            }
-          } else {
-            setProfile(null)
-          }
-        } catch (fallbackError) {
-          console.error('Fallback profile fetch failed:', fallbackError)
-          setProfile(null)
-        }
-      } else {
-        console.error('Error fetching profile:', error)
-        setProfile(null)
-      }
+      // Handle any network or other errors gracefully
+      console.warn('Profile fetch exception:', error.name, error.message)
+      setProfile(null)
     } finally {
       setLoading(false)
     }

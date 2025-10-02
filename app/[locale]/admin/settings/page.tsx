@@ -1,8 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Navigation } from '@/components/organisms/Navigation'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -120,11 +119,10 @@ export default function Settings() {
   }
 
   return (
-    <div className="min-h-screen bg-[var(--bg-light)]">
-      <Navigation />
-      
+    <div className="min-h-screen bg-gradient-to-br from-background via-primary-50/30 to-accent-50/20">
+
       <main className="pt-32 pb-20 px-5">
-        <div className="container-dana">
+        <div className="dana-container">
           <div className="space-y-6">
       {/* Header */}
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
@@ -135,16 +133,16 @@ export default function Settings() {
           </p>
         </div>
         <div className="flex space-x-2">
-          <Button 
-            variant="outline" 
+          <Button
+            variant="outline"
             onClick={resetSettings}
             disabled={loading}
           >
             <RefreshCw className="h-4 w-4 mr-2" />
             Reset
           </Button>
-          <Button 
-            onClick={saveSettings} 
+          <Button
+            onClick={saveSettings}
             disabled={!isDirty || loading}
           >
             <Save className="h-4 w-4 mr-2" />
@@ -154,8 +152,8 @@ export default function Settings() {
       </div>
 
       {/* General Settings */}
-      <Card>
-        <CardHeader>
+      <div className="dana-card">
+        <CardHeader className="pb-3">
           <CardTitle className="flex items-center">
             <SettingsIcon className="h-5 w-5 mr-2" />
             General Settings
@@ -203,11 +201,11 @@ export default function Settings() {
             />
           </div>
         </CardContent>
-      </Card>
+      </div>
 
       {/* User Management Settings */}
-      <Card>
-        <CardHeader>
+      <div className="dana-card">
+        <CardHeader className="pb-3">
           <CardTitle className="flex items-center">
             <Users className="h-5 w-5 mr-2" />
             User Management
@@ -257,11 +255,11 @@ export default function Settings() {
             </Select>
           </div>
         </CardContent>
-      </Card>
+      </div>
 
       {/* Monastery Settings */}
-      <Card>
-        <CardHeader>
+      <div className="dana-card">
+        <CardHeader className="pb-3">
           <CardTitle className="flex items-center">
             <Building className="h-5 w-5 mr-2" />
             Monastery Management
@@ -307,11 +305,11 @@ export default function Settings() {
             </div>
           </div>
         </CardContent>
-      </Card>
+      </div>
 
       {/* Notifications */}
-      <Card>
-        <CardHeader>
+      <div className="dana-card">
+        <CardHeader className="pb-3">
           <CardTitle className="flex items-center">
             <Bell className="h-5 w-5 mr-2" />
             Notifications
@@ -332,11 +330,11 @@ export default function Settings() {
             />
           </div>
         </CardContent>
-      </Card>
+      </div>
 
       {/* System Security */}
-      <Card>
-        <CardHeader>
+      <div className="dana-card">
+        <CardHeader className="pb-3">
           <CardTitle className="flex items-center">
             <Shield className="h-5 w-5 mr-2" />
             Security & Maintenance
@@ -371,11 +369,11 @@ export default function Settings() {
             </div>
           </div>
         </CardContent>
-      </Card>
+      </div>
 
       {/* Dangerous Actions */}
-      <Card className="border-red-200">
-        <CardHeader>
+      <div className="dana-card border-red-200">
+        <CardHeader className="pb-3">
           <CardTitle className="flex items-center text-red-600">
             <AlertTriangle className="h-5 w-5 mr-2" />
             Danger Zone
@@ -408,7 +406,7 @@ export default function Settings() {
             </Dialog>
           </div>
         </CardContent>
-      </Card>
+      </div>
           </div>
         </div>
       </main>

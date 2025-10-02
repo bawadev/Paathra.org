@@ -191,10 +191,10 @@ export const useDonationStore = create<DonationState>()(
 
         return myBookings
           .filter((booking) => {
-            const bookingDate = new Date(booking.booking_date)
+            const bookingDate = new Date(booking.donation_date)
             return bookingDate >= now && booking.status !== 'cancelled'
           })
-          .sort((a, b) => new Date(a.booking_date).getTime() - new Date(b.booking_date).getTime())
+          .sort((a, b) => new Date(a.donation_date).getTime() - new Date(b.donation_date).getTime())
       },
 
       pastBookings: () => {
@@ -203,10 +203,10 @@ export const useDonationStore = create<DonationState>()(
 
         return myBookings
           .filter((booking) => {
-            const bookingDate = new Date(booking.booking_date)
+            const bookingDate = new Date(booking.donation_date)
             return bookingDate < now
           })
-          .sort((a, b) => new Date(b.booking_date).getTime() - new Date(a.booking_date).getTime())
+          .sort((a, b) => new Date(b.donation_date).getTime() - new Date(a.donation_date).getTime())
       },
     }),
     {

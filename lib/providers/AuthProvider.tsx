@@ -17,27 +17,28 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     let mounted = true
+    let isInitializing = false
 
     // Get initial session
     const getInitialSession = async () => {
+      if (isInitializing) return
+      isInitializing = true
+
       try {
+        console.log('Initializing auth session...')
         const { data: { session }, error } = await supabase.auth.getSession()
 
         if (error) {
-          console.error('Error getting session:', error)
+          console.warn('Error getting session:', error.message)
 
-          // Handle specific refresh token errors
+          // Handle specific refresh token errors gracefully
           if (error.message.toLowerCase().includes('invalid refresh token') ||
               error.message.toLowerCase().includes('refresh token not found')) {
-            console.log('Refresh token error detected, clearing session')
+            console.log('Invalid refresh token detected, clearing session')
             await supabase.auth.signOut()
-            setError('Your session has expired. Please sign in again.')
           } else if (error.message.includes('refresh') || error.message.includes('token')) {
-            // Clear invalid session
+            console.log('Token error detected, clearing session')
             await supabase.auth.signOut()
-            setError('Your session has expired. Please sign in again.')
-          } else {
-            setError('Authentication error. Please try again.')
           }
 
           if (mounted) {
@@ -45,23 +46,32 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             setUser(null)
             setProfile(null)
             setLoading(false)
+            // Don't set error for common token issues - just clear state
+            setError(null)
           }
           return
         }
 
         if (mounted) {
+          console.log('Session status:', session ? 'authenticated' : 'not authenticated')
           setSession(session)
           setUser(session?.user ?? null)
+
           if (session?.user) {
-            await fetchProfile(session.user.id)
+            // Fetch profile without blocking the UI
+            fetchProfile(session.user.id).catch((err) => {
+              console.warn('Profile fetch failed during initialization:', err)
+              // Don't set loading to false here - let fetchProfile handle it
+            })
           } else {
             setLoading(false)
           }
         }
       } catch (err) {
-        console.error('Unexpected auth error:', err)
+        console.warn('Unexpected auth initialization error:', err)
         if (mounted) {
-          setError('Authentication system error. Please refresh and try again.')
+          // Don't show errors to users during initialization
+          setError(null)
           setLoading(false)
         }
       }
@@ -80,15 +90,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       try {
         switch (event) {
           case 'SIGNED_IN':
+            console.log('User signed in')
             clearError()
             setSession(session)
             setUser(session?.user ?? null)
             if (session?.user) {
-              await fetchProfile(session.user.id)
+              fetchProfile(session.user.id).catch((err) => {
+                console.warn('Profile fetch failed after sign in:', err)
+              })
             }
             break
 
           case 'SIGNED_OUT':
+            console.log('User signed out')
             setSession(null)
             setUser(null)
             setProfile(null)
@@ -97,24 +111,46 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             break
 
           case 'TOKEN_REFRESHED':
+            console.log('Token refreshed')
             clearError()
             setSession(session)
             setUser(session?.user ?? null)
+            // Don't fetch profile on token refresh to avoid unnecessary requests
             break
 
           case 'USER_UPDATED':
+            console.log('User updated')
             setSession(session)
             setUser(session?.user ?? null)
             if (session?.user) {
-              await fetchProfile(session.user.id)
+              fetchProfile(session.user.id).catch((err) => {
+                console.warn('Profile fetch failed after user update:', err)
+              })
+            }
+            break
+
+          case 'INITIAL_SESSION':
+            console.log('Initial session loaded')
+            setSession(session)
+            setUser(session?.user ?? null)
+            if (session?.user) {
+              fetchProfile(session.user.id).catch((err) => {
+                console.warn('Profile fetch failed for initial session:', err)
+              })
+            } else {
+              setProfile(null)
+              setLoading(false)
             }
             break
 
           default:
+            console.log('Auth state change:', event)
             setSession(session)
             setUser(session?.user ?? null)
             if (session?.user) {
-              await fetchProfile(session.user.id)
+              fetchProfile(session.user.id).catch((err) => {
+                console.warn('Profile fetch failed for auth event:', event, err)
+              })
             } else {
               setProfile(null)
               setLoading(false)

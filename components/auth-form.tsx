@@ -8,7 +8,7 @@ import { signInSchema, signUpSchema, type SignInInput, type SignUpInput } from '
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Alert, AlertDescription } from '@/components/ui/alert'
-import { Eye, EyeOff, Chrome, Facebook, Twitter } from 'lucide-react'
+import { Eye, EyeOff, Chrome, Facebook, Twitter, Lock, User, AtSign } from 'lucide-react'
 
 interface SocialAuthButtonsProps {
   onSuccess: () => void;
@@ -54,29 +54,29 @@ function SocialAuthButtons({ onSuccess, onError }: SocialAuthButtonsProps) {
           variant="outline"
           onClick={() => handleSocialLogin('google')}
           disabled={!!loading}
-          className="w-full flex items-center justify-center gap-2 border-gray-200 hover:bg-gray-50"
+          className="w-full flex items-center justify-center gap-2 min-h-[48px]"
         >
           <Chrome className="w-4 h-4" />
           <span className="sr-only">Google</span>
         </Button>
-        
+
         <Button
           type="button"
           variant="outline"
           onClick={() => handleSocialLogin('facebook')}
           disabled={!!loading}
-          className="w-full flex items-center justify-center gap-2 border-gray-200 hover:bg-gray-50"
+          className="w-full flex items-center justify-center gap-2 min-h-[48px]"
         >
           <Facebook className="w-4 h-4" />
           <span className="sr-only">Facebook</span>
         </Button>
-        
+
         <Button
           type="button"
           variant="outline"
           onClick={() => handleSocialLogin('twitter')}
           disabled={!!loading}
-          className="w-full flex items-center justify-center gap-2 border-gray-200 hover:bg-gray-50"
+          className="w-full flex items-center justify-center gap-2 min-h-[48px]"
         >
           <Twitter className="w-4 h-4" />
           <span className="sr-only">Twitter</span>
@@ -120,7 +120,7 @@ function SignInForm({ onSuccess, onError }: { onSuccess: () => void; onError: (e
       <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
         <div className="space-y-4">
           <div>
-            <label htmlFor="email" className="block text-sm font-medium text-[var(--text-dark)] mb-2">
+            <label htmlFor="email" className="block text-sm font-medium text-foreground mb-2">
               Email Address
             </label>
             <div className="relative">
@@ -128,11 +128,11 @@ function SignInForm({ onSuccess, onError }: { onSuccess: () => void; onError: (e
                 type="email"
                 id="email"
                 {...form.register('email')}
-                className="w-full px-4 py-3 pl-12 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent transition-all"
+                className="flex h-11 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 pl-12"
                 placeholder="Enter your email"
                 required
               />
-              <span className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400">@</span>
+              <AtSign className="absolute left-4 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
             </div>
             {form.formState.errors.email && (
               <p className="text-red-500 text-sm mt-1">{form.formState.errors.email.message}</p>
@@ -140,7 +140,7 @@ function SignInForm({ onSuccess, onError }: { onSuccess: () => void; onError: (e
           </div>
           
           <div>
-            <label htmlFor="password" className="block text-sm font-medium text-[var(--text-dark)] mb-2">
+            <label htmlFor="password" className="block text-sm font-medium text-foreground mb-2">
               Password
             </label>
             <div className="relative">
@@ -148,15 +148,15 @@ function SignInForm({ onSuccess, onError }: { onSuccess: () => void; onError: (e
                 type={showPassword ? 'text' : 'password'}
                 id="password"
                 {...form.register('password')}
-                className="w-full px-4 py-3 pl-12 pr-12 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent transition-all"
+                className="flex h-11 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 pl-12 pr-12"
                 placeholder="Enter your password"
                 required
               />
-              <span className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400">🔒</span>
+              <Lock className="absolute left-4 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 min-w-[44px] min-h-[44px] flex items-center justify-center"
               >
                 {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
               </button>
@@ -169,10 +169,10 @@ function SignInForm({ onSuccess, onError }: { onSuccess: () => void; onError: (e
         
         <div className="flex items-center justify-between">
           <label className="flex items-center">
-            <input type="checkbox" className="w-4 h-4 text-[var(--primary-color)] border-gray-300 rounded focus:ring-[var(--primary-color)]" />
+            <input type="checkbox" className="min-w-[44px] min-h-[44px] text-[var(--primary-color)] border-gray-300 rounded focus:ring-[var(--primary-color)]" />
             <span className="ml-2 text-sm text-[var(--text-light)]">Remember me</span>
           </label>
-          <a href="#" className="text-sm text-[var(--primary-color)] hover:underline">
+          <a href="#" className="text-sm text-[var(--primary-color)] hover:underline min-h-[44px] inline-flex items-center">
             Forgot password?
           </a>
         </div>
@@ -180,7 +180,7 @@ function SignInForm({ onSuccess, onError }: { onSuccess: () => void; onError: (e
         <Button
           type="submit"
           disabled={loading}
-          className="w-full btn-dana-primary py-3 text-white font-semibold"
+          className="w-full "
         >
           {loading ? 'Signing in...' : 'Sign In'}
         </Button>
@@ -226,7 +226,7 @@ function SignUpForm({ onSuccess, onError }: { onSuccess: (message: string) => vo
       <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
         <div className="space-y-4">
           <div>
-            <label htmlFor="fullName" className="block text-sm font-medium text-[var(--text-dark)] mb-2">
+            <label htmlFor="fullName" className="block text-sm font-medium text-foreground mb-2">
               Full Name
             </label>
             <div className="relative">
@@ -234,11 +234,11 @@ function SignUpForm({ onSuccess, onError }: { onSuccess: (message: string) => vo
                 type="text"
                 id="fullName"
                 {...form.register('fullName')}
-                className="w-full px-4 py-3 pl-12 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent transition-all"
+                className="flex h-11 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 pl-12"
                 placeholder="Enter your full name"
                 required
               />
-              <span className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400">👤</span>
+              <User className="absolute left-4 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
             </div>
             {form.formState.errors.fullName && (
               <p className="text-red-500 text-sm mt-1">{form.formState.errors.fullName.message}</p>
@@ -246,7 +246,7 @@ function SignUpForm({ onSuccess, onError }: { onSuccess: (message: string) => vo
           </div>
           
           <div>
-            <label htmlFor="email" className="block text-sm font-medium text-[var(--text-dark)] mb-2">
+            <label htmlFor="email" className="block text-sm font-medium text-foreground mb-2">
               Email Address
             </label>
             <div className="relative">
@@ -254,19 +254,19 @@ function SignUpForm({ onSuccess, onError }: { onSuccess: (message: string) => vo
                 type="email"
                 id="email"
                 {...form.register('email')}
-                className="w-full px-4 py-3 pl-12 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent transition-all"
+                className="flex h-11 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 pl-12"
                 placeholder="Enter your email"
                 required
               />
-              <span className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400">@</span>
+              <AtSign className="absolute left-4 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
             </div>
             {form.formState.errors.email && (
               <p className="text-red-500 text-sm mt-1">{form.formState.errors.email.message}</p>
             )}
           </div>
-          
+
           <div>
-            <label htmlFor="password" className="block text-sm font-medium text-[var(--text-dark)] mb-2">
+            <label htmlFor="password" className="block text-sm font-medium text-foreground mb-2">
               Password
             </label>
             <div className="relative">
@@ -274,15 +274,15 @@ function SignUpForm({ onSuccess, onError }: { onSuccess: (message: string) => vo
                 type={showPassword ? 'text' : 'password'}
                 id="password"
                 {...form.register('password')}
-                className="w-full px-4 py-3 pl-12 pr-12 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent transition-all"
+                className="flex h-11 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 pl-12 pr-12"
                 placeholder="Create a strong password"
                 required
               />
-              <span className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400">🔒</span>
+              <Lock className="absolute left-4 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 min-w-[44px] min-h-[44px] flex items-center justify-center"
               >
                 {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
               </button>
@@ -296,7 +296,7 @@ function SignUpForm({ onSuccess, onError }: { onSuccess: (message: string) => vo
         <Button
           type="submit"
           disabled={loading}
-          className="w-full btn-dana-primary py-3 text-white font-semibold"
+          className="w-full "
         >
           {loading ? 'Creating account...' : 'Create Account'}
         </Button>
@@ -376,7 +376,7 @@ export function AuthForm() {
       {/* Right Side - Form */}
       <div className="flex-1 flex items-center justify-center p-8 bg-[var(--bg-light)]">
         <div className="w-full max-w-md">
-          <Card className="card-dana p-8">
+          <Card className="p-8">
             <CardHeader className="text-center pb-6">
               <CardTitle className="text-2xl font-bold text-[var(--text-dark)]">
                 {isSignUp ? 'Create Account' : 'Sign In'}
@@ -415,7 +415,7 @@ export function AuthForm() {
                 <button
                   type="button"
                   onClick={handleModeSwitch}
-                  className="ml-1 text-[var(--primary-color)] hover:underline font-medium"
+                  className="ml-1 text-[var(--primary-color)] hover:underline font-medium inline-flex items-center min-h-[44px] py-2"
                 >
                   {isSignUp ? 'Sign In' : 'Sign Up'}
                 </button>

@@ -1,6 +1,6 @@
 'use client'
 
-import { Navigation } from '@/components/organisms/Navigation'
+import { Navigation } from '@/components/organisms/Navigation/Navigation'
 
 interface BaseLayoutProps {
   children: React.ReactNode

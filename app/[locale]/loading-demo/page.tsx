@@ -49,7 +49,7 @@ export default function LoadingDemoPage() {
 
           <div className="grid md:grid-cols-2 gap-8">
             {/* Page Transitions */}
-            <Card className="card-dana">
+            <Card className="dana-card">
               <CardHeader>
                 <CardTitle>Page Transitions</CardTitle>
                 <CardDescription>
@@ -62,7 +62,7 @@ export default function LoadingDemoPage() {
                   loadingLabel="Loading your donations..."
                   className="block"
                 >
-                  <Button className="w-full btn-dana-primary">
+                  <Button className="w-full dana-button dana-button-primary">
                     Go to My Donations
                   </Button>
                 </LoadingLink>
@@ -72,7 +72,7 @@ export default function LoadingDemoPage() {
                   loadingLabel="Loading monasteries..."
                   className="block"
                 >
-                  <Button className="w-full btn-dana-secondary">
+                  <Button className="w-full dana-button dana-button-secondary">
                     Go to Monasteries
                   </Button>
                 </LoadingLink>
@@ -90,7 +90,7 @@ export default function LoadingDemoPage() {
             </Card>
 
             {/* Form Submissions */}
-            <Card className="card-dana">
+            <Card className="dana-card">
               <CardHeader>
                 <CardTitle>Form Submissions</CardTitle>
                 <CardDescription>
@@ -100,14 +100,14 @@ export default function LoadingDemoPage() {
               <CardContent className="space-y-4">
                 <Button 
                   onClick={simulateFormSubmission}
-                  className="w-full btn-dana-primary"
+                  className="w-full dana-button dana-button-primary"
                 >
                   Submit Form (2s delay)
                 </Button>
                 
                 <Button 
                   onClick={simulateDataLoading}
-                  className="w-full btn-dana-secondary"
+                  className="w-full dana-button dana-button-secondary"
                 >
                   Load Data (3s delay)
                 </Button>
@@ -127,7 +127,7 @@ export default function LoadingDemoPage() {
           </div>
 
           {/* Features List */}
-          <Card className="card-dana mt-8">
+          <Card className="dana-card mt-8">
             <CardHeader>
               <CardTitle>Loading System Features</CardTitle>
             </CardHeader>

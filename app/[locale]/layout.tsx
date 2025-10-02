@@ -8,6 +8,7 @@ import { Toaster } from "@/components/ui/sonner";
 import AuthErrorBoundary from "@/components/auth-error-boundary";
 import { ErrorProvider } from "@/lib/error-management";
 import { LoadingProvider } from "@/lib/loading-system";
+import { ThemeProvider } from "@/lib/design-system/theme/theme-provider";
 import { Geist, Geist_Mono } from "next/font/google";
 import { Noto_Sans_Sinhala, Abhaya_Libre } from "next/font/google";
 
@@ -86,18 +87,23 @@ export default async function LocaleLayout({
         />
       </head>
       <body className={`${geistSans.variable} ${geistMono.variable} ${notoSansSinhala.variable} ${abhayaLibre.variable} antialiased`}>
-        <NextIntlClientProvider>
-          <ErrorProvider enableLogging={process.env.NODE_ENV === 'development'}>
-            <LoadingProvider>
-              <AuthErrorBoundary>
-                <AuthProvider>
-                  {children}
-                  <Toaster />
-                </AuthProvider>
-              </AuthErrorBoundary>
-            </LoadingProvider>
-          </ErrorProvider>
-        </NextIntlClientProvider>
+        <ThemeProvider
+          defaultCultural={locale === 'si' ? 'sinhala' : 'english'}
+          locale={locale}
+        >
+          <NextIntlClientProvider>
+            <ErrorProvider enableLogging={process.env.NODE_ENV === 'development'}>
+              <LoadingProvider>
+                <AuthErrorBoundary>
+                  <AuthProvider>
+                    {children}
+                    <Toaster />
+                  </AuthProvider>
+                </AuthErrorBoundary>
+              </LoadingProvider>
+            </ErrorProvider>
+          </NextIntlClientProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

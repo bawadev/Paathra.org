@@ -57,7 +57,7 @@ export function AuthGuard({
     return (
       <PageLayout>
         <div className="pt-32 pb-20 px-5">
-          <div className="container-dana">
+          <div className="dana-container">
             <div className="max-w-md mx-auto">
               <Alert className="border-red-200 bg-red-50">
                 <AlertCircle className="h-4 w-4 text-red-600" />
@@ -66,7 +66,7 @@ export function AuthGuard({
                 </AlertDescription>
               </Alert>
               <div className="mt-6 text-center">
-                <Button asChild className="btn-dana-outline">
+                <Button asChild className="dana-button dana-button-outline">
                   <a href="/">Return to Home</a>
                 </Button>
               </div>

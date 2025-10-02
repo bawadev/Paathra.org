@@ -3,8 +3,7 @@
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuthStore } from '@/lib/stores/useAuthStore'
-import { Navigation } from '@/components/organisms/Navigation'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { supabase } from '@/lib/supabase'
 import { LoadingSpinner } from '@/components/loading'
@@ -13,9 +12,10 @@ import {
   Building,
   Calendar,
   TrendingUp,
-  AlertCircle
+  Shield
 } from 'lucide-react'
 import { getUserTypeDisplayName, UserType, hasRole } from '@/types/auth'
+import { PageContainer, PageHeader, StatCard, StatusBadge } from '@/lib/design-system'
 
 interface UserProfile {
   id: string
@@ -157,11 +157,8 @@ export default function AdminDashboard() {
   // Show loading while checking authentication
   if (authLoading || (user && !profile && loading)) {
     return (
-      <div className="min-h-screen bg-[var(--bg-light)]">
-        <Navigation />
-        <div className="flex items-center justify-center min-h-screen">
-          <LoadingSpinner />
-        </div>
+      <div className="flex items-center justify-center min-h-screen">
+        <LoadingSpinner />
       </div>
     )
   }
@@ -179,183 +176,136 @@ export default function AdminDashboard() {
   // Loading dashboard data
   if (loading) {
     return (
-      <div className="min-h-screen bg-[var(--bg-light)]">
-        <Navigation />
-        <div className="flex items-center justify-center min-h-screen">
-          <LoadingSpinner />
-        </div>
+      <div className="flex items-center justify-center min-h-screen">
+        <LoadingSpinner />
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-[var(--bg-light)]">
-      <Navigation />
-      
-      <main className="pt-32 pb-20 px-5">
-        <div className="container-dana">
-        {/* Dashboard Header */}
-        <div className="card-dana gradient-primary text-white p-8 mb-8">
-          <div className="flex justify-between items-center">
-            <div>
-              <h1 className="text-3xl font-bold mb-2 flex items-center gap-3">
-                <span>🛡️</span>
-                Admin Dashboard
-              </h1>
-              <p className="text-white/90 text-lg">
-                Monitor and manage the Dana platform
-              </p>
-            </div>
-            <div className="text-right">
-              <div className="text-2xl font-bold">{stats?.todayBookings || 0}</div>
-              <div className="text-white/80">Today&apos;s Bookings</div>
-            </div>
+    <PageContainer gradient maxWidth="xl">
+      <PageHeader
+        title="Admin Dashboard"
+        description="Monitor and manage the Dana platform"
+        icon={Shield}
+        gradient
+        action={
+          <div className="text-right">
+            <div className="text-2xl font-bold">{stats?.todayBookings || 0}</div>
+            <div className="text-white/80">Today&apos;s Bookings</div>
           </div>
-        </div>
+        }
+      />
 
-        {/* Key Metrics */}
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4 mb-8">
-          <Card className="card-dana group">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-[var(--text-dark)]">Total Users</CardTitle>
-              <div className="w-12 h-12 bg-gradient-to-r from-[var(--primary-color)] to-[var(--accent-color)] rounded-xl flex items-center justify-center transform group-hover:scale-110 transition-transform">
-                <Users className="h-6 w-6 text-white" />
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-bold text-[var(--text-dark)]">{stats?.totalUsers}</div>
-              <p className="text-sm text-[var(--text-light)]">
-                +{stats?.recentUsers.length} new this week
-              </p>
-            </CardContent>
-          </Card>
+      {/* Key Metrics */}
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4 mb-8">
+        <StatCard
+          title="Total Users"
+          value={stats?.totalUsers || 0}
+          description={`+${stats?.recentUsers.length || 0} new this week`}
+          icon={Users}
+          variant="primary"
+        />
 
-          <Card className="card-dana group">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-[var(--text-dark)]">Monasteries</CardTitle>
-              <div className="w-12 h-12 bg-gradient-to-r from-[var(--secondary-color)] to-[var(--primary-color)] rounded-xl flex items-center justify-center transform group-hover:scale-110 transition-transform">
-                <Building className="h-6 w-6 text-white" />
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-bold text-[var(--text-dark)]">{stats?.totalMonasteries}</div>
-              {stats?.pendingMonasteries && stats.pendingMonasteries > 0 && (
-                <div className="flex items-center space-x-1">
-                  <AlertCircle className="h-3 w-3 text-yellow-500" />
-                  <p className="text-sm text-yellow-600">
-                    {stats.pendingMonasteries} pending approval
-                  </p>
+        <StatCard
+          title="Monasteries"
+          value={stats?.totalMonasteries || 0}
+          description={
+            stats?.pendingMonasteries && stats.pendingMonasteries > 0
+              ? `${stats.pendingMonasteries} pending approval`
+              : 'All approved'
+          }
+          icon={Building}
+          variant="secondary"
+        />
+
+        <StatCard
+          title="Total Donations"
+          value={stats?.totalBookings || 0}
+          description={`${stats?.todayBookings || 0} today`}
+          icon={Calendar}
+          variant="accent"
+        />
+
+        <StatCard
+          title="Active Donors"
+          value={stats?.totalDonors || 0}
+          description={`${
+            stats?.totalUsers && stats?.totalDonors
+              ? Math.round((stats.totalDonors / stats.totalUsers) * 100)
+              : 0
+          }% of total users`}
+          icon={TrendingUp}
+          variant="trust"
+        />
+      </div>
+
+      {/* Recent Activity */}
+      <div className="grid gap-8 md:grid-cols-2">
+        {/* Recent Users */}
+        <div className="dana-card">
+          <CardHeader className="pb-3">
+            <CardTitle className="flex items-center gap-2">
+              <Users className="w-5 h-5" />
+              Recent Users
+            </CardTitle>
+            <CardDescription>Latest user registrations</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              {stats?.recentUsers.slice(0, 5).map((user) => (
+                <div key={user.id} className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
+                  <div>
+                    <p className="font-medium">{user.full_name}</p>
+                    <p className="text-sm text-muted-foreground">{user.email}</p>
+                  </div>
+                  <div className="text-right">
+                    <Badge variant="secondary" className="mb-1">
+                      {getUserTypeDisplayName(user.user_types[0] as UserType)}
+                    </Badge>
+                    <p className="text-xs text-muted-foreground">
+                      {new Date(user.created_at).toLocaleDateString()}
+                    </p>
+                  </div>
                 </div>
-              )}
-            </CardContent>
-          </Card>
-
-          <Card className="card-dana group">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-[var(--text-dark)]">Total Donations</CardTitle>
-              <div className="w-12 h-12 bg-gradient-to-r from-[var(--accent-color)] to-[var(--primary-color)] rounded-xl flex items-center justify-center transform group-hover:scale-110 transition-transform">
-                <Calendar className="h-6 w-6 text-white" />
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-bold text-[var(--text-dark)]">{stats?.totalBookings}</div>
-              <p className="text-sm text-[var(--text-light)]">
-                {stats?.todayBookings} today
-              </p>
-            </CardContent>
-          </Card>
-
-          <Card className="card-dana group">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-[var(--text-dark)]">Active Donors</CardTitle>
-              <div className="w-12 h-12 bg-gradient-to-r from-green-500 to-[var(--primary-color)] rounded-xl flex items-center justify-center transform group-hover:scale-110 transition-transform">
-                <TrendingUp className="h-6 w-6 text-white" />
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-bold text-[var(--text-dark)]">{stats?.totalDonors}</div>
-              <p className="text-sm text-[var(--text-light)]">
-                {stats?.totalUsers && stats?.totalDonors 
-                  ? Math.round((stats.totalDonors / stats.totalUsers) * 100)
-                  : 0}% of total users
-              </p>
-            </CardContent>
-          </Card>
+              ))}
+            </div>
+          </CardContent>
         </div>
 
-        {/* Recent Activity */}
-        <div className="grid gap-8 md:grid-cols-2">
-          {/* Recent Users */}
-          <Card className="card-dana">
-            <CardHeader>
-              <CardTitle className="text-[var(--text-dark)] flex items-center gap-2">
-                <Users className="w-5 h-5" />
-                Recent Users
-              </CardTitle>
-              <CardDescription className="text-[var(--text-light)]">Latest user registrations</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {stats?.recentUsers.slice(0, 5).map((user) => (
-                  <div key={user.id} className="flex items-center justify-between p-3 bg-[var(--bg-light)] rounded-lg">
-                    <div>
-                      <p className="font-medium text-[var(--text-dark)]">{user.full_name}</p>
-                      <p className="text-sm text-[var(--text-light)]">{user.email}</p>
-                    </div>
-                    <div className="text-right">
-                      <Badge variant="secondary" className="mb-1">
-                        {getUserTypeDisplayName(user.user_types[0] as UserType)}
-                      </Badge>
-                      <p className="text-xs text-[var(--text-light)]">
-                        {new Date(user.created_at).toLocaleDateString()}
-                      </p>
-                    </div>
+        {/* Recent Bookings */}
+        <div className="dana-card">
+          <CardHeader className="pb-3">
+            <CardTitle className="flex items-center gap-2">
+              <Calendar className="w-5 h-5" />
+              Recent Bookings
+            </CardTitle>
+            <CardDescription>Latest donation bookings</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              {stats?.recentBookings.slice(0, 5).map((booking) => (
+                <div key={booking.id} className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
+                  <div>
+                    <p className="font-medium">
+                      {booking.user_profiles?.full_name}
+                    </p>
+                    <p className="text-sm text-muted-foreground">
+                      {booking.donation_slots?.monasteries?.name}
+                    </p>
                   </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Recent Bookings */}
-          <Card className="card-dana">
-            <CardHeader>
-              <CardTitle className="text-[var(--text-dark)] flex items-center gap-2">
-                <Calendar className="w-5 h-5" />
-                Recent Bookings
-              </CardTitle>
-              <CardDescription className="text-[var(--text-light)]">Latest donation bookings</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {stats?.recentBookings.slice(0, 5).map((booking) => (
-                  <div key={booking.id} className="flex items-center justify-between p-3 bg-[var(--bg-light)] rounded-lg">
-                    <div>
-                      <p className="font-medium text-[var(--text-dark)]">
-                        {booking.user_profiles?.full_name}
-                      </p>
-                      <p className="text-sm text-[var(--text-light)]">
-                        {booking.donation_slots?.monasteries?.name}
-                      </p>
-                    </div>
-                    <div className="text-right">
-                      <Badge 
-                        variant={booking.status === 'confirmed' ? 'default' : 'secondary'}
-                        className={booking.status === 'confirmed' ? 'bg-green-100 text-green-800' : ''}
-                      >
-                        {booking.status}
-                      </Badge>
-                      <p className="text-xs text-[var(--text-light)]">
-                        {new Date(booking.donation_date).toLocaleDateString()}
-                      </p>
-                    </div>
+                  <div className="text-right">
+                    <StatusBadge status={booking.status} className="mb-1" />
+                    <p className="text-xs text-muted-foreground">
+                      {new Date(booking.donation_date).toLocaleDateString()}
+                    </p>
                   </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
+                </div>
+              ))}
+            </div>
+          </CardContent>
         </div>
-        </div>
-      </main>
-    </div>
+      </div>
+    </PageContainer>
   )
 }

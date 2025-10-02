@@ -1,9 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { Navigation } from '@/components/organisms/Navigation'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
+import { CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import {
   Select,
   SelectContent,
@@ -13,14 +11,14 @@ import {
 } from '@/components/ui/select'
 import { supabase } from '@/lib/supabase'
 import { LoadingSpinner } from '@/components/loading'
-import { 
-  TrendingUp, 
-  TrendingDown, 
-  Users, 
-  Building, 
+import {
+  Users,
+  Building,
   Calendar,
-  Activity
+  Activity,
+  BarChart3
 } from 'lucide-react'
+import { PageContainer, PageHeader, StatCard, StatusBadge } from '@/lib/design-system'
 
 interface AnalyticsData {
   totalUsers: number
@@ -221,134 +219,89 @@ export default function Analytics() {
     }
   }
 
-  const formatPercentage = (percentage: number) => {
-    const sign = percentage >= 0 ? '+' : ''
-    return `${sign}${percentage.toFixed(1)}%`
-  }
-
-  const getGrowthIcon = (percentage: number) => {
-    return percentage >= 0 ? (
-      <TrendingUp className="h-4 w-4 text-green-600" />
-    ) : (
-      <TrendingDown className="h-4 w-4 text-red-600" />
-    )
-  }
-
-  const getGrowthColor = (percentage: number) => {
-    return percentage >= 0 ? 'text-green-600' : 'text-red-600'
-  }
-
   if (loading) {
     return (
-      <div className="min-h-screen bg-[var(--bg-light)]">
-        <Navigation />
-        <div className="flex items-center justify-center min-h-screen">
-          <LoadingSpinner />
-        </div>
+      <div className="flex items-center justify-center min-h-screen bg-background">
+        <LoadingSpinner />
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-[var(--bg-light)]">
-      <Navigation />
-      
-      <main className="pt-32 pb-20 px-5">
-        <div className="container-dana">
-          <div className="space-y-6">
-      {/* Header */}
-      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Analytics</h1>
-          <p className="text-muted-foreground">
-            Detailed insights and platform metrics
-          </p>
-        </div>
-        <Select value={timeRange} onValueChange={setTimeRange}>
-          <SelectTrigger className="w-40">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="7d">Last 7 days</SelectItem>
-            <SelectItem value="30d">Last 30 days</SelectItem>
-            <SelectItem value="90d">Last 90 days</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
+    <PageContainer gradient maxWidth="xl">
+      <PageHeader
+        title="Analytics"
+        description="Detailed insights and platform metrics"
+        icon={BarChart3}
+        action={
+          <Select value={timeRange} onValueChange={setTimeRange}>
+            <SelectTrigger className="w-40">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="7d">Last 7 days</SelectItem>
+              <SelectItem value="30d">Last 30 days</SelectItem>
+              <SelectItem value="90d">Last 90 days</SelectItem>
+            </SelectContent>
+          </Select>
+        }
+      />
 
       {/* Key Metrics with Growth */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Users</CardTitle>
-            <Users className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{data?.totalUsers}</div>
-            <div className="flex items-center space-x-1 text-xs">
-              {getGrowthIcon(data?.userGrowth.percentage || 0)}
-              <span className={getGrowthColor(data?.userGrowth.percentage || 0)}>
-                {formatPercentage(data?.userGrowth.percentage || 0)}
-              </span>
-              <span className="text-muted-foreground">from last month</span>
-            </div>
-          </CardContent>
-        </Card>
+        <StatCard
+          title="Total Users"
+          value={data?.totalUsers || 0}
+          icon={Users}
+          variant="primary"
+          trend={{
+            value: Math.abs(data?.userGrowth.percentage || 0),
+            label: 'from last month',
+            direction: (data?.userGrowth.percentage || 0) >= 0 ? 'up' : 'down'
+          }}
+        />
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Monasteries</CardTitle>
-            <Building className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{data?.totalMonasteries}</div>
-            <div className="flex items-center space-x-1 text-xs">
-              {getGrowthIcon(data?.monasteryGrowth.percentage || 0)}
-              <span className={getGrowthColor(data?.monasteryGrowth.percentage || 0)}>
-                {formatPercentage(data?.monasteryGrowth.percentage || 0)}
-              </span>
-              <span className="text-muted-foreground">from last month</span>
-            </div>
-          </CardContent>
-        </Card>
+        <StatCard
+          title="Total Monasteries"
+          value={data?.totalMonasteries || 0}
+          icon={Building}
+          variant="secondary"
+          trend={{
+            value: Math.abs(data?.monasteryGrowth.percentage || 0),
+            label: 'from last month',
+            direction: (data?.monasteryGrowth.percentage || 0) >= 0 ? 'up' : 'down'
+          }}
+        />
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Bookings</CardTitle>
-            <Calendar className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{data?.totalBookings}</div>
-            <div className="flex items-center space-x-1 text-xs">
-              {getGrowthIcon(data?.bookingGrowth.percentage || 0)}
-              <span className={getGrowthColor(data?.bookingGrowth.percentage || 0)}>
-                {formatPercentage(data?.bookingGrowth.percentage || 0)}
-              </span>
-              <span className="text-muted-foreground">from last month</span>
-            </div>
-          </CardContent>
-        </Card>
+        <StatCard
+          title="Total Bookings"
+          value={data?.totalBookings || 0}
+          icon={Calendar}
+          variant="accent"
+          trend={{
+            value: Math.abs(data?.bookingGrowth.percentage || 0),
+            label: 'from last month',
+            direction: (data?.bookingGrowth.percentage || 0) >= 0 ? 'up' : 'down'
+          }}
+        />
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Active Donors</CardTitle>
-            <Activity className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{data?.totalDonors}</div>
-            <p className="text-xs text-muted-foreground">
-              {data?.totalUsers && data?.totalDonors 
-                ? Math.round((data.totalDonors / data.totalUsers) * 100)
-                : 0}% of total users
-            </p>
-          </CardContent>
-        </Card>
+        <StatCard
+          title="Active Donors"
+          value={data?.totalDonors || 0}
+          icon={Activity}
+          variant="trust"
+          description={`${
+            data?.totalUsers && data?.totalDonors
+              ? Math.round((data.totalDonors / data.totalUsers) * 100)
+              : 0
+          }% of total users`}
+        />
       </div>
 
       {/* Distribution Charts */}
       <div className="grid gap-4 md:grid-cols-2">
-        <Card>
-          <CardHeader>
+        <div className="dana-card">
+          <CardHeader className="pb-3">
             <CardTitle>User Type Distribution</CardTitle>
             <CardDescription>Breakdown of user roles</CardDescription>
           </CardHeader>
@@ -392,10 +345,10 @@ export default function Analytics() {
               </div>
             </div>
           </CardContent>
-        </Card>
+        </div>
 
-        <Card>
-          <CardHeader>
+        <div className="dana-card">
+          <CardHeader className="pb-3">
             <CardTitle>Booking Status Distribution</CardTitle>
             <CardDescription>Current status of all bookings</CardDescription>
           </CardHeader>
@@ -451,12 +404,12 @@ export default function Analytics() {
               </div>
             </div>
           </CardContent>
-        </Card>
+        </div>
       </div>
 
       {/* Recent Activity */}
-      <Card>
-        <CardHeader>
+      <div className="dana-card">
+        <CardHeader className="pb-3">
           <CardTitle>Recent Activity</CardTitle>
           <CardDescription>Latest platform activity</CardDescription>
         </CardHeader>
@@ -475,13 +428,7 @@ export default function Analytics() {
                     {new Date(activity.created_at).toLocaleString()}
                   </p>
                 </div>
-                <Badge variant={
-                  activity.status === 'confirmed' ? 'default' :
-                  activity.status === 'pending' ? 'secondary' :
-                  activity.status === 'cancelled' ? 'destructive' : 'outline'
-                }>
-                  {activity.status}
-                </Badge>
+                <StatusBadge status={activity.status} />
               </div>
             ))}
             {(!data?.recentActivity || data.recentActivity.length === 0) && (
@@ -489,10 +436,7 @@ export default function Analytics() {
             )}
           </div>
         </CardContent>
-      </Card>
-          </div>
-        </div>
-      </main>
-    </div>
+      </div>
+    </PageContainer>
   )
 }

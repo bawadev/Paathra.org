@@ -2,21 +2,20 @@
 
 import { useEffect, useState } from 'react'
 import { useAuthStore } from '@/lib/stores/useAuthStore'
-import { Navigation } from '@/components/organisms/Navigation'
 import { AuthForm } from '@/components/auth-form'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { supabase, DonationBooking, Monastery } from '@/lib/supabase'
 import { format, parseISO, isToday, isFuture } from 'date-fns'
 import { hasRole } from '@/types/auth'
-import { 
-  Calendar, 
-  Clock, 
-  Users, 
-  CheckCircle, 
-  XCircle, 
-  AlertCircle, 
+import {
+  Calendar,
+  Clock,
+  Users,
+  CheckCircle,
+  XCircle,
+  AlertCircle,
   TrendingUp,
   Building,
   Utensils,
@@ -154,8 +153,11 @@ export default function MonasteryDashboard() {
 
   if (authLoading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="text-lg">Loading...</div>
+      <div className="flex items-center justify-center min-h-screen bg-[var(--bg-light)]">
+        <div className="text-lg text-[var(--text-light)] flex items-center gap-3">
+          <div className="lotus-icon animate-spin"></div>
+          Loading monastery dashboard...
+        </div>
       </div>
     )
   }
@@ -166,216 +168,202 @@ export default function MonasteryDashboard() {
 
   if (!hasRole(profile, 'monastery_admin')) {
     return (
-      <div className="min-h-screen bg-gray-50">
-        <Navigation />
-        <main className="container mx-auto px-4 py-8">
-          <Card>
-            <CardContent className="text-center py-12">
-              <AlertCircle className="w-16 h-16 text-yellow-500 mx-auto mb-4" />
-              <h3 className="text-lg font-medium mb-2">Access Restricted</h3>
-              <p className="text-gray-600">
+      <div className="min-h-screen bg-[var(--bg-light)]">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <section className="pt-32 pb-20">
+            <div className="dana-card max-w-2xl mx-auto p-12 text-center">
+              <AlertCircle className="w-16 h-16 text-[var(--primary-color)] mx-auto mb-6" />
+              <h3 className="text-2xl font-semibold text-[var(--text-dark)] mb-4">Access Restricted</h3>
+              <p className="text-[var(--text-light)] text-lg">
                 This dashboard is only available to monastery administrators.
               </p>
-            </CardContent>
-          </Card>
-        </main>
+            </div>
+          </section>
+        </div>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <Navigation />
-      
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">
-            {monastery ? `${monastery.name} - Dashboard` : 'Monastery Dashboard'}
-          </h1>
-          <p className="text-gray-600">
-            Manage your monastery's donation bookings and settings.
-          </p>
-        </div>
+    <div className="min-h-screen bg-[var(--bg-light)]">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Hero Section */}
+        <section className="pt-32 pb-12">
+          <div className="text-center space-y-6">
+            <h1 className="text-4xl lg:text-5xl font-bold">
+              <span className="gradient-text">
+                {monastery ? `${monastery.name} - Dashboard` : 'Monastery Dashboard'}
+              </span>
+            </h1>
+            <p className="text-xl text-[var(--text-light)] max-w-2xl mx-auto">
+              Manage your monastery's donation bookings and settings
+            </p>
+          </div>
+        </section>
 
         {loading ? (
-          <div className="text-center py-8">Loading dashboard...</div>
+          <div className="flex justify-center py-20">
+            <div className="flex items-center gap-3 text-[var(--text-light)]">
+              <div className="lotus-icon animate-spin"></div>
+              <span className="text-lg">Loading dashboard data...</span>
+            </div>
+          </div>
         ) : !monastery ? (
-          <Card>
-            <CardContent className="text-center py-12">
-              <Building className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-lg font-medium mb-2">No Monastery Found</h3>
-              <p className="text-gray-600 mb-6">
+          <div className="text-center py-20">
+            <div className="dana-card max-w-2xl mx-auto p-12">
+              <Building className="w-16 h-16 text-[var(--primary-color)] mx-auto mb-6" />
+              <h3 className="text-2xl font-semibold text-[var(--text-dark)] mb-4">No Monastery Found</h3>
+              <p className="text-[var(--text-light)] mb-8 text-lg">
                 You don't seem to be associated with a monastery yet.
               </p>
-              <Button asChild>
+              <Button asChild className="dana-button dana-button-primary">
                 <Link href="/manage/monastery">Set Up Monastery</Link>
               </Button>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
         ) : (
-          <div className="space-y-6">
+          <section className="pb-20">
+            <div className="space-y-6">
             {/* Stats Cards */}
             <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4">
-              <Card>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">Total Bookings</CardTitle>
-                  <TrendingUp className="h-4 w-4 text-muted-foreground" />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold">{stats.totalBookings}</div>
-                  <p className="text-xs text-muted-foreground">All time</p>
-                </CardContent>
-              </Card>
+              <div className="dana-card p-6">
+                <div className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <h3 className="text-sm font-medium text-[var(--text-light)]">Total Bookings</h3>
+                  <TrendingUp className="h-4 w-4 text-[var(--primary-color)]" />
+                </div>
+                <div>
+                  <div className="text-2xl font-bold text-[var(--text-dark)]">{stats.totalBookings}</div>
+                  <p className="text-xs text-[var(--text-light)]">All time</p>
+                </div>
+              </div>
 
-              <Card>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">Pending</CardTitle>
+              <div className="dana-card p-6">
+                <div className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <h3 className="text-sm font-medium text-[var(--text-light)]">Pending</h3>
                   <AlertCircle className="h-4 w-4 text-yellow-500" />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold">{stats.pendingBookings}</div>
-                  <p className="text-xs text-muted-foreground">Need approval</p>
-                </CardContent>
-              </Card>
+                </div>
+                <div>
+                  <div className="text-2xl font-bold text-[var(--text-dark)]">{stats.pendingBookings}</div>
+                  <p className="text-xs text-[var(--text-light)]">Need approval</p>
+                </div>
+              </div>
 
-              <Card>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">Today</CardTitle>
-                  <Calendar className="h-4 w-4 text-blue-500" />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold">{stats.todayBookings}</div>
-                  <p className="text-xs text-muted-foreground">Donations today</p>
-                </CardContent>
-              </Card>
+              <div className="dana-card p-6">
+                <div className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <h3 className="text-sm font-medium text-[var(--text-light)]">Today</h3>
+                  <Calendar className="h-4 w-4 text-[var(--primary-color)]" />
+                </div>
+                <div>
+                  <div className="text-2xl font-bold text-[var(--text-dark)]">{stats.todayBookings}</div>
+                  <p className="text-xs text-[var(--text-light)]">Donations today</p>
+                </div>
+              </div>
 
-              <Card>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">Upcoming</CardTitle>
-                  <Clock className="h-4 w-4 text-green-500" />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold">{stats.upcomingBookings}</div>
-                  <p className="text-xs text-muted-foreground">Future bookings</p>
-                </CardContent>
-              </Card>
+              <div className="dana-card p-6">
+                <div className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <h3 className="text-sm font-medium text-[var(--text-light)]">Upcoming</h3>
+                  <Clock className="h-4 w-4 text-[var(--accent-color)]" />
+                </div>
+                <div>
+                  <div className="text-2xl font-bold text-[var(--text-dark)]">{stats.upcomingBookings}</div>
+                  <p className="text-xs text-[var(--text-light)]">Future bookings</p>
+                </div>
+              </div>
 
-              <Card>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">Guest Bookings</CardTitle>
-                  <Phone className="h-4 w-4 text-purple-500" />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold">{stats.totalGuestBookings}</div>
-                  <p className="text-xs text-muted-foreground">Phone bookings</p>
-                </CardContent>
-              </Card>
+              <div className="dana-card p-6">
+                <div className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <h3 className="text-sm font-medium text-[var(--text-light)]">Guest Bookings</h3>
+                  <Phone className="h-4 w-4 text-[var(--primary-color)]" />
+                </div>
+                <div>
+                  <div className="text-2xl font-bold text-[var(--text-dark)]">{stats.totalGuestBookings}</div>
+                  <p className="text-xs text-[var(--text-light)]">Phone bookings</p>
+                </div>
+              </div>
 
-              <Card>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">Pending Guests</CardTitle>
-                  <UserPlus className="h-4 w-4 text-orange-500" />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold">{stats.pendingGuestBookings}</div>
-                  <p className="text-xs text-muted-foreground">Need approval</p>
-                </CardContent>
-              </Card>
+              <div className="dana-card p-6">
+                <div className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <h3 className="text-sm font-medium text-[var(--text-light)]">Pending Guests</h3>
+                  <UserPlus className="h-4 w-4 text-[var(--accent-color)]" />
+                </div>
+                <div>
+                  <div className="text-2xl font-bold text-[var(--text-dark)]">{stats.pendingGuestBookings}</div>
+                  <p className="text-xs text-[var(--text-light)]">Need approval</p>
+                </div>
+              </div>
             </div>
 
             {/* Quick Actions */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Quick Actions</CardTitle>
-                <CardDescription>
-                  Manage your monastery and donation slots
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                  <Button asChild variant="outline" className="h-auto p-4">
-                    <Link href="/manage/bookings" className="flex flex-col items-center space-y-2">
-                      <Users className="w-6 h-6" />
-                      <div className="text-center">
-                        <div className="font-medium">Manage Bookings</div>
-                        <div className="text-sm text-gray-500">View and approve donations</div>
-                      </div>
-                    </Link>
-                  </Button>
+            <div className="dana-card p-8">
+              <h2 className="text-2xl font-semibold text-[var(--text-dark)] mb-2">Quick Actions</h2>
+              <p className="text-[var(--text-light)] mb-6">
+                Manage your monastery and donation slots
+              </p>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <Link href="/manage/bookings" className="dana-card p-6 hover:shadow-xl transition-all duration-300 text-center group">
+                  <Users className="w-8 h-8 text-[var(--primary-color)] mx-auto mb-3 group-hover:scale-110 transition-transform" />
+                  <div className="font-semibold text-[var(--text-dark)] mb-1">Manage Bookings</div>
+                  <div className="text-sm text-[var(--text-light)]">View and approve donations</div>
+                </Link>
 
-                  <Button asChild variant="outline" className="h-auto p-4">
-                    <Link href="/manage/slots" className="flex flex-col items-center space-y-2">
-                      <Calendar className="w-6 h-6" />
-                      <div className="text-center">
-                        <div className="font-medium">Donation Slots</div>
-                        <div className="text-sm text-gray-500">Create and manage time slots</div>
-                      </div>
-                    </Link>
-                  </Button>
+                <Link href="/manage/slots" className="dana-card p-6 hover:shadow-xl transition-all duration-300 text-center group">
+                  <Calendar className="w-8 h-8 text-[var(--primary-color)] mx-auto mb-3 group-hover:scale-110 transition-transform" />
+                  <div className="font-semibold text-[var(--text-dark)] mb-1">Donation Slots</div>
+                  <div className="text-sm text-[var(--text-light)]">Create and manage time slots</div>
+                </Link>
 
-                  <Button asChild variant="outline" className="h-auto p-4">
-                    <Link href="/manage/monastery" className="flex flex-col items-center space-y-2">
-                      <Building className="w-6 h-6" />
-                      <div className="text-center">
-                        <div className="font-medium">Monastery Info</div>
-                        <div className="text-sm text-gray-500">Update details and settings</div>
-                      </div>
-                    </Link>
-                  </Button>
+                <Link href="/manage/monastery" className="dana-card p-6 hover:shadow-xl transition-all duration-300 text-center group">
+                  <Building className="w-8 h-8 text-[var(--primary-color)] mx-auto mb-3 group-hover:scale-110 transition-transform" />
+                  <div className="font-semibold text-[var(--text-dark)] mb-1">Monastery Info</div>
+                  <div className="text-sm text-[var(--text-light)]">Update details and settings</div>
+                </Link>
 
-                  <Button asChild variant="outline" className="h-auto p-4">
-                    <Link href="/manage/guest-bookings" className="flex flex-col items-center space-y-2">
-                      <Phone className="w-6 h-6" />
-                      <div className="text-center">
-                        <div className="font-medium">Guest Bookings</div>
-                        <div className="text-sm text-gray-500">Phone-based reservations</div>
-                      </div>
-                    </Link>
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
+                <Link href="/manage/guest-bookings" className="dana-card p-6 hover:shadow-xl transition-all duration-300 text-center group">
+                  <Phone className="w-8 h-8 text-[var(--primary-color)] mx-auto mb-3 group-hover:scale-110 transition-transform" />
+                  <div className="font-semibold text-[var(--text-dark)] mb-1">Guest Bookings</div>
+                  <div className="text-sm text-[var(--text-light)]">Phone-based reservations</div>
+                </Link>
+              </div>
+            </div>
 
             {/* Recent Bookings */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Recent Donation Bookings</CardTitle>
-                <CardDescription>
-                  Latest booking requests for your monastery
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
+            <div className="dana-card p-8">
+              <h2 className="text-2xl font-semibold text-[var(--text-dark)] mb-2">Recent Donation Bookings</h2>
+              <p className="text-[var(--text-light)] mb-6">
+                Latest booking requests for your monastery
+              </p>
+              <div>
                 {recentBookings.length === 0 ? (
-                  <div className="text-center py-8 text-gray-500">
-                    <Utensils className="w-12 h-12 mx-auto mb-4 text-gray-300" />
-                    <p>No recent bookings</p>
+                  <div className="text-center py-12">
+                    <Utensils className="w-16 h-16 text-[var(--primary-color)] mx-auto mb-4 opacity-50" />
+                    <p className="text-[var(--text-light)] text-lg">No recent bookings</p>
                   </div>
                 ) : (
                   <div className="space-y-4">
                     {recentBookings.slice(0, 5).map((booking) => (
-                      <div key={booking.id} className="border rounded-lg p-4">
+                      <div key={booking.id} className="dana-card p-6">
                         <div className="flex items-start justify-between">
-                          <div className="space-y-2">
-                            <div className="flex items-center space-x-2">
-                              <h4 className="font-medium">{booking.food_type}</h4>
+                          <div className="space-y-3">
+                            <div className="flex items-center space-x-3">
+                              <h4 className="font-semibold text-[var(--text-dark)]">{booking.food_type}</h4>
                               <Badge className={getStatusColor(booking.status)}>
                                 {booking.status}
                               </Badge>
                             </div>
-                            
-                            <div className="text-sm text-gray-600 space-y-1">
+
+                            <div className="text-sm text-[var(--text-light)] space-y-2">
                               <div className="flex items-center space-x-4">
                                 <span><strong>Food:</strong> {booking.food_type}</span>
                                 <span><strong>Quantity:</strong> {booking.quantity}</span>
                               </div>
-                              <div className="flex items-center space-x-1">
-                                <Calendar className="w-4 h-4" />
+                              <div className="flex items-center space-x-2">
+                                <Calendar className="w-4 h-4 text-[var(--primary-color)]" />
                                 <span>
                                   {format(parseISO(booking.booking_date), 'MMM d, yyyy')}
                                 </span>
                               </div>
                               {booking.special_instructions && (
-                                <div className="bg-gray-50 p-2 rounded text-sm">
+                                <div className="bg-[var(--bg-light)] p-3 rounded-lg text-sm">
                                   <strong>Notes:</strong> {booking.special_instructions}
                                 </div>
                               )}
@@ -387,7 +375,7 @@ export default function MonasteryDashboard() {
                               <Button
                                 size="sm"
                                 onClick={() => updateBookingStatus(booking.id, 'confirmed')}
-                                className="bg-green-600 hover:bg-green-700"
+                                className="dana-button dana-button-primary"
                               >
                                 <CheckCircle className="w-4 h-4 mr-1" />
                                 Accept
@@ -405,19 +393,20 @@ export default function MonasteryDashboard() {
                         </div>
                       </div>
                     ))}
-                    
+
                     {recentBookings.length > 5 && (
-                      <div className="text-center pt-4">
-                        <Button asChild variant="outline">
+                      <div className="text-center pt-6">
+                        <Button asChild className="dana-button dana-button-secondary">
                           <Link href="/manage/bookings">View All Bookings</Link>
                         </Button>
                       </div>
                     )}
                   </div>
                 )}
-              </CardContent>
-            </Card>
-          </div>
+              </div>
+            </div>
+            </div>
+          </section>
         )}
       </main>
     </div>

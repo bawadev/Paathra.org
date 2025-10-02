@@ -5,7 +5,7 @@ import { cva, type VariantProps } from 'class-variance-authority'
 import { cn } from '@/lib/utils'
 
 const cardVariants = cva(
-  'dana-card rounded-lg border bg-card text-card-foreground shadow-sm transition-all duration-300',
+  'bg-card text-card-foreground rounded-2xl shadow-md border border-border/50 transition-all duration-300 hover:shadow-xl hover:-translate-y-1',
   {
     variants: {
       variant: {

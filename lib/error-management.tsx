@@ -252,7 +252,7 @@ export function withErrorBoundary<P extends object>(
             <p className="text-gray-600 mb-4">{error.message}</p>
             <button 
               onClick={retry}
-              className="btn-dana-primary"
+              className="dana-button dana-button-primary"
             >
               Try Again
             </button>

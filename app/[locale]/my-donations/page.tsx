@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { useAuthStore } from '@/lib/stores/useAuthStore'
 import { Navigation } from '@/components/organisms/Navigation'
 import { AuthForm } from '@/components/auth-form'
+import { useTranslations } from 'next-intl'
 
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -15,6 +16,7 @@ import { format, parseISO, isFuture, isToday } from 'date-fns'
 import { Calendar, Clock, MapPin, Phone, Utensils, Users, Gift, Filter } from 'lucide-react'
 
 export default function MyDonationsPage() {
+  const t = useTranslations('MyDonations')
   const { user, loading: authLoading } = useAuthStore()
   const [bookings, setBookings] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
@@ -71,17 +73,17 @@ export default function MyDonationsPage() {
   const getStatusText = (status: string) => {
     switch (status) {
       case 'monastery_approved':
-        return 'Monastery Approved'
+        return t('statusMonasteryApproved')
       case 'confirmed':
-        return 'Confirmed'
+        return t('statusConfirmed')
       case 'pending':
-        return 'Pending Approval'
+        return t('statusPending')
       case 'cancelled':
-        return 'Cancelled'
+        return t('statusCancelled')
       case 'delivered':
-        return 'Delivered'
+        return t('statusDelivered')
       case 'not_delivered':
-        return 'Not Delivered'
+        return t('statusNotDelivered')
       default:
         return status.charAt(0).toUpperCase() + status.slice(1)
     }
@@ -121,7 +123,7 @@ export default function MyDonationsPage() {
       <div className="flex items-center justify-center min-h-screen bg-[var(--bg-light)]">
         <div className="text-lg text-[var(--text-light)] flex items-center gap-3">
           <div className="lotus-icon animate-spin"></div>
-          Loading your donations...
+          {t('loadingDonations')}
         </div>
       </div>
     )
@@ -136,17 +138,17 @@ export default function MyDonationsPage() {
       <Navigation />
       
       {/* Hero Section */}
-      <section className="pt-32 pb-12">
+      <section className="pt-20 md:pt-28 lg:pt-32 pb-8 md:pb-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center space-y-6">
-            <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-amber-500 to-orange-500 rounded-full mb-4">
-              <Gift className="w-8 h-8 text-white" />
+          <div className="text-center space-y-4 md:space-y-6">
+            <div className="inline-flex items-center justify-center w-12 h-12 md:w-16 md:h-16 bg-gradient-to-br from-amber-500 to-orange-500 rounded-full mb-2 md:mb-4">
+              <Gift className="w-6 h-6 md:w-8 md:h-8 text-white" />
             </div>
-            <h1 className="text-4xl lg:text-5xl font-bold text-gray-900">
-              My Donations
+            <h1 className="text-2xl md:text-4xl lg:text-5xl font-bold text-gray-900 px-4">
+              {t('title')}
             </h1>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              Track your contributions and see the impact of your generosity
+            <p className="text-base md:text-xl text-gray-600 max-w-2xl mx-auto px-4">
+              {t('description')}
             </p>
           </div>
         </div>
@@ -160,7 +162,7 @@ export default function MyDonationsPage() {
             <div className="flex justify-center py-20">
               <div className="text-center">
                 <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-amber-500 mx-auto mb-4"></div>
-                <p className="text-lg text-gray-600">Loading your donations...</p>
+                <p className="text-lg text-gray-600">{t('loadingDonations')}</p>
               </div>
             </div>
           ) : bookings.length === 0 ? (
@@ -170,17 +172,17 @@ export default function MyDonationsPage() {
                   <Calendar className="w-10 h-10 text-amber-600" />
                 </div>
                 <h3 className="text-2xl font-semibold text-gray-900 mb-4">
-                  No donations yet
+                  {t('noDonationsYet')}
                 </h3>
                 <p className="text-gray-600 mb-8 text-lg">
-                  Your donation journey begins with a single act of kindness. Start by finding monasteries near you.
+                  {t('donationJourneyStarts')}
                 </p>
-                <Button 
+                <Button
                   className="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-semibold px-8 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200"
                   onClick={() => window.location.href = '/donate'}
                 >
                   <Calendar className="w-5 h-5 mr-2" />
-                  Make Your First Donation
+                  {t('makeFirstDonation')}
                 </Button>
               </div>
             </div>
@@ -188,54 +190,54 @@ export default function MyDonationsPage() {
             <div className="space-y-8">
               <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                 <h2 className="text-3xl font-bold text-gray-900">
-                  Your Donation History
+                  {t('yourDonationHistory')}
                 </h2>
                 <div className="text-sm text-gray-600">
-                  {bookings.length} donation{bookings.length !== 1 ? 's' : ''} total
-                  {upcomingCount > 0 && ` (${upcomingCount} upcoming)`}
+                  {bookings.length} {bookings.length !== 1 ? t('donationsTotal') : t('donationTotal')}
+                  {upcomingCount > 0 && ` (${upcomingCount} ${t('upcoming').toLowerCase()})`}
                 </div>
               </div>
               
               {/* Filter Buttons */}
-              <div className="flex flex-wrap gap-3">
+              <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
                 <Button
                   variant={filter === 'all' ? 'default' : 'outline'}
-                  size="sm"
                   onClick={() => setFilter('all')}
                   className={cn(
-                    filter === 'all' 
-                      ? 'bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600' 
+                    "min-h-[44px] justify-start sm:justify-center text-sm",
+                    filter === 'all'
+                      ? 'bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600'
                       : 'border-amber-200 text-amber-700 hover:bg-amber-50'
                   )}
                 >
-                  <Filter className="w-4 h-4 mr-2" />
-                  All Donations ({bookings.length})
+                  <Filter className="w-4 h-4 mr-2 flex-shrink-0" />
+                  <span className="whitespace-nowrap">{t('allDonations')} ({bookings.length})</span>
                 </Button>
                 <Button
                   variant={filter === 'upcoming' ? 'default' : 'outline'}
-                  size="sm"
                   onClick={() => setFilter('upcoming')}
                   className={cn(
-                    filter === 'upcoming' 
-                      ? 'bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600' 
+                    "min-h-[44px] justify-start sm:justify-center text-sm",
+                    filter === 'upcoming'
+                      ? 'bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600'
                       : 'border-green-200 text-green-700 hover:bg-green-50'
                   )}
                 >
-                  <Calendar className="w-4 h-4 mr-2" />
-                  Upcoming ({upcomingCount})
+                  <Calendar className="w-4 h-4 mr-2 flex-shrink-0" />
+                  <span className="whitespace-nowrap">{t('upcoming')} ({upcomingCount})</span>
                 </Button>
                 <Button
                   variant={filter === 'past' ? 'default' : 'outline'}
-                  size="sm"
                   onClick={() => setFilter('past')}
                   className={cn(
-                    filter === 'past' 
-                      ? 'bg-gradient-to-r from-gray-500 to-slate-500 hover:from-gray-600 hover:to-slate-600' 
+                    "min-h-[44px] justify-start sm:justify-center text-sm",
+                    filter === 'past'
+                      ? 'bg-gradient-to-r from-gray-500 to-slate-500 hover:from-gray-600 hover:to-slate-600'
                       : 'border-gray-200 text-gray-700 hover:bg-gray-50'
                   )}
                 >
-                  <Clock className="w-4 h-4 mr-2" />
-                  Past ({bookings.length - upcomingCount})
+                  <Clock className="w-4 h-4 mr-2 flex-shrink-0" />
+                  <span className="whitespace-nowrap">{t('past')} ({bookings.length - upcomingCount})</span>
                 </Button>
               </div>
               
@@ -245,74 +247,35 @@ export default function MyDonationsPage() {
                     <Calendar className="w-8 h-8 text-amber-600" />
                   </div>
                   <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                    No {filter === 'upcoming' ? 'upcoming' : filter === 'past' ? 'past' : ''} donations found
+                    {filter === 'upcoming' ? t('noUpcomingDonations') : filter === 'past' ? t('noPastDonations') : t('noDonationsFilter')}
                   </h3>
                   <p className="text-gray-600">
-                    {filter === 'upcoming' 
-                      ? 'You have no upcoming donations scheduled.' 
-                      : filter === 'past' 
-                        ? 'You have no past donations recorded.' 
-                        : 'No donations match your current filter.'}
+                    {filter === 'upcoming'
+                      ? t('noUpcomingScheduled')
+                      : filter === 'past'
+                        ? t('noPastRecorded')
+                        : t('noMatchingFilter')}
                   </p>
                 </div>
               ) : (
                 <div className="grid gap-6">
                   {filteredBookings.map((booking) => (
-                  <Card key={booking.id} className="hover:shadow-lg transition-all duration-300">
-                    <CardContent className="p-6">
-                      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
-                        {/* Booking Info */}
-                        <div className="flex-1">
-                          <div className="flex items-start gap-4">
-                            <div className="w-14 h-14 bg-gradient-to-br from-amber-500 to-orange-500 rounded-full flex items-center justify-center">
-                              <Utensils className="w-7 h-7 text-white" />
+                  <Card key={booking.id} className="hover:shadow-lg transition-all duration-300 overflow-hidden">
+                    <CardContent className="p-4 md:p-6">
+                      <div className="flex flex-col gap-4">
+                        {/* Header with Status */}
+                        <div className="flex items-start justify-between gap-2">
+                          <div className="flex items-start gap-3 flex-1 min-w-0">
+                            <div className="w-12 h-12 md:w-14 md:h-14 bg-gradient-to-br from-amber-500 to-orange-500 rounded-full flex items-center justify-center flex-shrink-0">
+                              <Utensils className="w-6 h-6 md:w-7 md:h-7 text-white" />
                             </div>
-                            <div className="flex-1">
-                              <h3 className="font-bold text-xl text-gray-900 mb-3">
+                            <div className="flex-1 min-w-0">
+                              <h3 className="font-bold text-base md:text-xl text-gray-900 mb-1 break-words">
                                 {booking.donation_slots?.monasteries?.name || 'Unknown Monastery'}
                               </h3>
-                              <div className="grid md:grid-cols-2 gap-4 text-sm text-gray-600">
-                                <div className="flex items-center gap-2">
-                                  <Calendar className="w-4 h-4 text-amber-600" />
-                                  <span className="font-medium">
-                                    {booking.donation_slots?.date
-                                      ? format(parseISO(booking.donation_slots.date), 'MMMM d, yyyy')
-                                      : 'Date not available'}
-                                  </span>
-                                </div>
-                                <div className="flex items-center gap-2">
-                                  <Clock className="w-4 h-4 text-amber-600" />
-                                  <span className="font-medium">
-                                    {booking.donation_slots?.time_slot || 'Time not available'}
-                                  </span>
-                                </div>
-                                <div className="flex items-center gap-2">
-                                  <Users className="w-4 h-4 text-amber-600" />
-                                  <span>
-                                    {booking.donation_slots?.max_donors || 0} donors capacity
-                                  </span>
-                                </div>
-                                <div className="flex items-center gap-2">
-                                  <MapPin className="w-4 h-4 text-amber-600" />
-                                  <span className="truncate">
-                                    {booking.donation_slots?.monasteries?.address || 'Location not available'}
-                                  </span>
-                                </div>
-                              </div>
-                              {booking.special_notes && (
-                                <div className="mt-4 p-3 bg-amber-50 rounded-lg">
-                                  <p className="text-sm text-gray-800">
-                                    <strong>Your note:</strong> {booking.special_notes}
-                                  </p>
-                                </div>
-                              )}
                             </div>
                           </div>
-                        </div>
-
-                        {/* Status & Actions */}
-                        <div className="flex flex-col items-end gap-4">
-                          <Badge 
+                          <Badge
                             variant={
                               booking.status === 'confirmed' ? 'default' :
                               booking.status === 'monastery_approved' ? 'secondary' :
@@ -321,7 +284,7 @@ export default function MyDonationsPage() {
                               booking.status === 'cancelled' ? 'destructive' : 'outline'
                             }
                             className={cn(
-                              "text-sm px-3 py-1.5",
+                              "text-xs px-2.5 py-1 min-h-[32px] flex-shrink-0",
                               booking.status === 'delivered' && "bg-green-100 text-green-800",
                               booking.status === 'confirmed' && "bg-blue-100 text-blue-800",
                               booking.status === 'monastery_approved' && "bg-amber-100 text-amber-800",
@@ -331,72 +294,107 @@ export default function MyDonationsPage() {
                           >
                             {getStatusText(booking.status)}
                           </Badge>
-                          
-                          <div className="flex gap-3">
-                            {booking.status === 'monastery_approved' && (
-                              <>
-                                <Button
-                                  size="sm"
-                                  onClick={() => updateBookingStatus(booking.id, 'confirm')}
-                                  className="bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white text-sm font-medium"
-                                >
-                                  Confirm
-                                </Button>
-                                <Button
-                                  size="sm"
-                                  variant="outline"
-                                  onClick={() => updateBookingStatus(booking.id, 'cancel')}
-                                  className="text-sm border-red-300 text-red-600 hover:bg-red-50"
-                                >
-                                  Cancel
-                                </Button>
-                              </>
-                            )}
-                            
-                            {booking.status === 'pending' && (
+                        </div>
+
+                        {/* Booking Details */}
+                        <div className="grid gap-3 text-sm text-gray-600 pl-0 md:pl-0">
+                          <div className="flex items-start gap-2 min-h-[24px]">
+                            <Calendar className="w-4 h-4 text-amber-600 mt-0.5 flex-shrink-0" />
+                            <span className="font-medium break-words">
+                              {booking.donation_slots?.date
+                                ? format(parseISO(booking.donation_slots.date), 'MMMM d, yyyy')
+                                : 'Date not available'}
+                            </span>
+                          </div>
+                          <div className="flex items-start gap-2 min-h-[24px]">
+                            <Clock className="w-4 h-4 text-amber-600 mt-0.5 flex-shrink-0" />
+                            <span className="font-medium">
+                              {booking.donation_slots?.time_slot || 'Time not available'}
+                            </span>
+                          </div>
+                          <div className="flex items-start gap-2 min-h-[24px]">
+                            <Users className="w-4 h-4 text-amber-600 mt-0.5 flex-shrink-0" />
+                            <span>
+                              {booking.donation_slots?.max_donors || 0} {t('donorsCapacity')}
+                            </span>
+                          </div>
+                          <div className="flex items-start gap-2 min-h-[24px]">
+                            <MapPin className="w-4 h-4 text-amber-600 mt-0.5 flex-shrink-0" />
+                            <span className="break-words">
+                              {booking.donation_slots?.monasteries?.address || 'Location not available'}
+                            </span>
+                          </div>
+                        </div>
+
+                        {/* Special Notes */}
+                        {booking.special_notes && (
+                          <div className="p-3 bg-amber-50 rounded-lg">
+                            <p className="text-sm text-gray-800 break-words">
+                              <strong>{t('yourNote')}</strong> {booking.special_notes}
+                            </p>
+                          </div>
+                        )}
+
+                        {/* Actions */}
+                        <div className="flex flex-col sm:flex-row gap-2 pt-2 border-t border-gray-100">
+                          {booking.status === 'monastery_approved' && (
+                            <>
                               <Button
-                                size="sm"
+                                onClick={() => updateBookingStatus(booking.id, 'confirm')}
+                                className="flex-1 sm:flex-none min-h-[44px] bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white text-sm font-medium"
+                              >
+                                {t('confirmButton')}
+                              </Button>
+                              <Button
                                 variant="outline"
                                 onClick={() => updateBookingStatus(booking.id, 'cancel')}
-                                className="text-sm border-red-300 text-red-600 hover:bg-red-50"
+                                className="flex-1 sm:flex-none min-h-[44px] text-sm border-red-300 text-red-600 hover:bg-red-50"
                               >
-                                Cancel Request
+                                {t('cancelButton')}
                               </Button>
-                            )}
+                            </>
+                          )}
 
-                            {(booking.status === 'confirmed' || booking.status === 'delivered' || booking.status === 'not_delivered') && (
-                              <div className="text-center text-xs">
-                                {booking.status === 'confirmed' && (
-                                  <div className="text-green-700 bg-green-50 px-3 py-1.5 rounded-full font-medium">
-                                    Ready for donation day
-                                  </div>
-                                )}
-                                {booking.status === 'delivered' && (
-                                  <div className="text-emerald-700 bg-emerald-50 px-3 py-1.5 rounded-full font-medium"
-                                  >
-                                    Successfully delivered
-                                  </div>
-                                )}
-                                {booking.status === 'not_delivered' && (
-                                  <div className="text-orange-700 bg-orange-50 px-3 py-1.5 rounded-full font-medium"
-                                  >
-                                    Not delivered
-                                  </div>
-                                )}
-                              </div>
-                            )}
+                          {booking.status === 'pending' && (
+                            <Button
+                              variant="outline"
+                              onClick={() => updateBookingStatus(booking.id, 'cancel')}
+                              className="w-full sm:w-auto min-h-[44px] text-sm border-red-300 text-red-600 hover:bg-red-50"
+                            >
+                              {t('cancelRequestButton')}
+                            </Button>
+                          )}
 
-                            {booking.donation_slots?.monasteries?.phone && (
-                              <Button
-                                size="sm"
-                                variant="outline"
-                                className="text-sm border-gray-300 text-gray-600 hover:bg-gray-50"
-                              >
-                                <Phone className="w-4 h-4 mr-1" />
-                                Contact
-                              </Button>
-                            )}
-                          </div>
+                          {(booking.status === 'confirmed' || booking.status === 'delivered' || booking.status === 'not_delivered') && (
+                            <div className="flex justify-center sm:justify-start w-full">
+                              {booking.status === 'confirmed' && (
+                                <div className="text-green-700 bg-green-50 px-4 py-2.5 rounded-full font-medium text-xs sm:text-sm">
+                                  {t('readyForDonationDay')}
+                                </div>
+                              )}
+                              {booking.status === 'delivered' && (
+                                <div className="text-emerald-700 bg-emerald-50 px-4 py-2.5 rounded-full font-medium text-xs sm:text-sm">
+                                  {t('successfullyDelivered')}
+                                </div>
+                              )}
+                              {booking.status === 'not_delivered' && (
+                                <div className="text-orange-700 bg-orange-50 px-4 py-2.5 rounded-full font-medium text-xs sm:text-sm">
+                                  {t('notDeliveredStatus')}
+                                </div>
+                              )}
+                            </div>
+                          )}
+
+                          {booking.donation_slots?.monasteries?.phone && (
+                            <Button
+                              variant="outline"
+                              className="w-full sm:w-auto min-h-[44px] text-sm border-gray-300 text-gray-600 hover:bg-gray-50"
+                              onClick={() => window.open(`tel:${booking.donation_slots?.monasteries?.phone}`)}
+                            >
+                              <Phone className="w-4 h-4 mr-2" />
+                              {t('contactButton')}
+                            </Button>
+                          )}
                         </div>
                       </div>
                     </CardContent>

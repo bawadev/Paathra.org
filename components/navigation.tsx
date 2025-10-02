@@ -3,269 +3,463 @@
 import { Link } from '@/src/i18n/navigation'
 import { useAuth } from '@/lib/auth-context'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import {
-  NavigationMenu,
-  NavigationMenuContent,
-  NavigationMenuItem,
-  NavigationMenuLink,
-  NavigationMenuList,
-  NavigationMenuTrigger,
-} from '@/components/ui/navigation-menu'
-import { Calendar, Users, Building, LogOut, User, Shield, BarChart3, Phone } from 'lucide-react'
+import { UnifiedDropdown, DropdownPresets, createDropdownTrigger, createDropdownItems, getCulturalDropdownProps } from '@/components/ui/unified-dropdown'
+import { Calendar, Users, Building, LogOut, User, Shield, BarChart3, Phone, Menu, X } from 'lucide-react'
 import { hasRole, isSuperAdmin } from '@/types/auth'
-import { useTranslations } from 'next-intl'
+import { useTranslations, useLocale } from 'next-intl'
 import { LanguageSwitcher } from '@/components/language-switcher'
+import { useState } from 'react'
+import { Button } from '@/components/ui/button'
 
 export function Navigation() {
   const { user, profile, signOut } = useAuth()
   const t = useTranslations('Navigation')
+  const locale = useLocale()
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
   if (!user) return null
 
+  // Get cultural theming props
+  const culturalProps = getCulturalDropdownProps(locale)
+
+  // Donations dropdown configuration
+  const donationsDropdownItems = createDropdownItems([
+    {
+      key: 'make-donation',
+      icon: Calendar,
+      label: t('makeDonation'),
+      description: t('makeDonationDesc'),
+      href: '/donate',
+    },
+    {
+      key: 'my-donations',
+      icon: User,
+      label: t('myDonations'),
+      description: t('myDonationsDesc'),
+      href: '/my-donations',
+    },
+  ])
+
+  // Monasteries dropdown configuration
+  const monasteriesDropdownItems = createDropdownItems([
+    {
+      key: 'browse-monasteries',
+      icon: Building,
+      label: t('browseMonasteries'),
+      description: t('browseMonasteriesDesc'),
+      href: '/monasteries',
+    },
+  ])
+
+  // Management dropdown configuration (for monastery admins)
+  const manageDropdownItems = createDropdownItems([
+    {
+      key: 'upcoming-confirmations',
+      icon: Calendar,
+      label: t('upcomingConfirmations'),
+      description: t('upcomingConfirmationsDesc'),
+      href: '/monastery-admin/upcoming-bookings',
+    },
+    {
+      key: 'bookings',
+      icon: Users,
+      label: t('bookings'),
+      description: t('bookingsDesc'),
+      href: '/manage/bookings',
+    },
+    {
+      key: 'monastery-info',
+      icon: Building,
+      label: t('monasteryInfo'),
+      description: t('monasteryInfoDesc'),
+      href: '/manage/monastery',
+    },
+  ])
+
+  // Admin dropdown configuration (for super admins)
+  const adminDropdownItems = createDropdownItems([
+    {
+      key: 'dashboard',
+      icon: BarChart3,
+      label: t('dashboard'),
+      description: t('dashboardDesc'),
+      href: '/admin/dashboard',
+    },
+    {
+      key: 'user-management',
+      icon: Users,
+      label: t('userManagement'),
+      description: t('userManagementDesc'),
+      href: '/admin/users',
+    },
+    {
+      key: 'monasteries-admin',
+      icon: Building,
+      label: t('monasteriesAdmin'),
+      description: t('monasteriesAdminDesc'),
+      href: '/admin/monasteries',
+    },
+    {
+      key: 'analytics',
+      icon: BarChart3,
+      label: t('analytics'),
+      description: t('analyticsDesc'),
+      href: '/admin/analytics',
+    },
+    {
+      key: 'settings',
+      icon: Shield,
+      label: t('settings'),
+      description: t('settingsDesc'),
+      href: '/admin/settings',
+    },
+  ])
+
+  // Profile dropdown configuration with translated labels
+  const profileDropdownItems = createDropdownItems([
+    {
+      key: 'profile',
+      icon: User,
+      label: t('myProfile'),
+      href: '/profile',
+    },
+    {
+      type: 'separator',
+      key: 'sep-1',
+    },
+    {
+      key: 'signout',
+      icon: LogOut,
+      label: t('signOut'),
+      variant: 'destructive',
+      onClick: async (e: React.MouseEvent) => {
+        e.preventDefault()
+        await signOut()
+        if (typeof window !== 'undefined') {
+          window.location.href = '/'
+        }
+      },
+    },
+  ])
+
   return (
-    <nav className="navbar-fixed glass-effect shadow-lg border-b border-white/20">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex h-20 items-center justify-between">
-          <div className="flex items-center space-x-8">
-            <Link href="/" className="flex items-center gap-4 text-2xl font-bold text-[var(--primary-color)] hover:scale-105 transition-transform">
-              <div className="lotus-icon text-3xl"></div>
-              <span className="font-bold">{t('brand')}</span>
-            </Link>
-            
-            <NavigationMenu>
-              <NavigationMenuList>
-                <NavigationMenuItem>
-                  <NavigationMenuTrigger className="text-lg font-bold">{t('donations')}</NavigationMenuTrigger>
-                  <NavigationMenuContent>
-                    <div className="grid gap-3 p-6 w-[400px]">
-                      <NavigationMenuLink asChild>
-                        <Link
-                          href="/donate"
-                          className="flex flex-row items-center space-x-2 p-3 rounded-md dropdown-item-hover transition-all duration-300"
-                        >
-                          <Calendar className="w-4 h-4 flex-shrink-0 text-[var(--primary-color)]" />
-                          <div>
-                            <div className="font-medium">{t('makeDonation')}</div>
-                            <div className="text-sm text-gray-500">{t('makeDonationDesc')}</div>
-                          </div>
-                        </Link>
-                      </NavigationMenuLink>
-                      <NavigationMenuLink asChild>
-                        <Link
-                          href="/my-donations"
-                          className="flex flex-row items-center space-x-2 p-3 rounded-md dropdown-item-hover transition-all duration-300"
-                        >
-                          <User className="w-4 h-4 flex-shrink-0 text-[var(--primary-color)]" />
-                          <div>
-                            <div className="font-medium">{t('myDonations')}</div>
-                            <div className="text-sm text-gray-500">{t('myDonationsDesc')}</div>
-                          </div>
-                        </Link>
-                      </NavigationMenuLink>
-                    </div>
-                  </NavigationMenuContent>
-                </NavigationMenuItem>
+    <nav className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-md border-b border-border/50">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="flex h-16 md:h-20 items-center justify-between">
+          {/* Logo - Always visible */}
+          <Link href="/" className="flex items-center gap-2 md:gap-4 text-lg md:text-h3 text-gradient-primary hover:scale-105 transition-all duration-300">
+            <div className="w-7 h-7 md:w-8 md:h-8 rounded-full bg-gradient-primary flex items-center justify-center text-white font-bold animate-dana-float">
+              ☸
+            </div>
+            <span className="font-bold">{t('brand')}</span>
+          </Link>
 
-                <NavigationMenuItem>
-                  <NavigationMenuTrigger className="text-lg font-bold">{t('monasteries')}</NavigationMenuTrigger>
-                  <NavigationMenuContent>
-                    <div className="grid gap-3 p-6 w-[250px]">
-                      <NavigationMenuLink asChild>
-                        <Link
-                          href="/monasteries"
-                          className="flex flex-row items-center space-x-2 p-3 rounded-md dropdown-item-hover transition-all duration-300"
-                        >
-                          <Building className="w-4 h-4 flex-shrink-0 text-[var(--primary-color)]" />
-                          <div>
-                            <div className="font-medium">{t('browseMonasteries')}</div>
-                            <div className="text-sm text-gray-500">{t('browseMonasteriesDesc')}</div>
-                          </div>
-                        </Link>
-                      </NavigationMenuLink>
-                    </div>
-                  </NavigationMenuContent>
-                </NavigationMenuItem>
+          {/* Desktop Navigation */}
+          <div className="hidden lg:flex items-center space-x-6">
+            <UnifiedDropdown
+              items={donationsDropdownItems}
+              trigger={createDropdownTrigger(t('donations'))}
+              width="lg"
+              align="start"
+              sideOffset={8}
+              aria-label="Donations menu"
+              {...culturalProps}
+            />
 
-                {!hasRole(profile, 'monastery_admin') && (
-                  <NavigationMenuItem>
-                    <NavigationMenuLink asChild>
-                      <Link href="/manage/monastery" className="px-3 py-2 text-lg font-bold rounded-md dropdown-item-hover transition-all duration-300">
-                        {t('createMonastery')}
-                      </Link>
-                    </NavigationMenuLink>
-                  </NavigationMenuItem>
-                )}
+            <UnifiedDropdown
+              items={monasteriesDropdownItems}
+              trigger={createDropdownTrigger(t('monasteries'))}
+              width="md"
+              align="start"
+              sideOffset={8}
+              aria-label="Monasteries menu"
+              {...culturalProps}
+            />
 
-                {hasRole(profile, 'monastery_admin') && (
-                  <NavigationMenuItem>
-                    <NavigationMenuTrigger className="text-lg font-bold">{t('manage')}</NavigationMenuTrigger>
-                    <NavigationMenuContent>
-                      <div className="grid gap-3 p-6 w-[400px]">
-                        <NavigationMenuLink asChild>
-                          <Link
-                            href="/monastery-admin/upcoming-bookings"
-                            className="flex flex-row items-center space-x-2 p-3 rounded-md dropdown-item-hover transition-all duration-300"
-                          >
-                            <Calendar className="w-4 h-4 flex-shrink-0 text-[var(--primary-color)]" />
-                            <div>
-                              <div className="font-medium">{t('upcomingConfirmations')}</div>
-                              <div className="text-sm text-gray-500">{t('upcomingConfirmationsDesc')}</div>
-                            </div>
-                          </Link>
-                        </NavigationMenuLink>
-                        <NavigationMenuLink asChild>
-                          <Link
-                            href="/manage/bookings"
-                            className="flex flex-row items-center space-x-2 p-3 rounded-md dropdown-item-hover transition-all duration-300"
-                          >
-                            <Users className="w-4 h-4 flex-shrink-0 text-[var(--primary-color)]" />
-                            <div>
-                              <div className="font-medium">{t('bookings')}</div>
-                              <div className="text-sm text-gray-500">{t('bookingsDesc')}</div>
-                            </div>
-                          </Link>
-                        </NavigationMenuLink>
-                        <NavigationMenuLink asChild>
-                          <Link
-                            href="/manage/monastery"
-                            className="flex flex-row items-center space-x-2 p-3 rounded-md dropdown-item-hover transition-all duration-300"
-                          >
-                            <Building className="w-4 h-4 flex-shrink-0 text-[var(--primary-color)]" />
-                            <div>
-                              <div className="font-medium">{t('monasteryInfo')}</div>
-                              <div className="text-sm text-gray-500">{t('monasteryInfoDesc')}</div>
-                            </div>
-                          </Link>
-                        </NavigationMenuLink>
-                      </div>
-                    </NavigationMenuContent>
-                  </NavigationMenuItem>
-                )}
+            {!hasRole(profile, 'monastery_admin') && (
+              <Link href="/manage/monastery" className="dana-nav-trigger px-4 py-2 rounded-xl hover:bg-primary/10 transition-all duration-300">
+                {t('createMonastery')}
+              </Link>
+            )}
 
-                {isSuperAdmin(profile) && (
-                  <NavigationMenuItem>
-                    <NavigationMenuTrigger className="text-lg font-bold">{t('admin')}</NavigationMenuTrigger>
-                    <NavigationMenuContent>
-                      <div className="grid gap-3 p-6 w-[400px]">
-                        <NavigationMenuLink asChild>
-                          <Link
-                            href="/admin/dashboard"
-                            className="flex flex-row items-center space-x-2 p-3 rounded-md dropdown-item-hover transition-all duration-300"
-                          >
-                            <BarChart3 className="w-4 h-4 flex-shrink-0 text-[var(--primary-color)]" />
-                            <div>
-                              <div className="font-medium">{t('dashboard')}</div>
-                              <div className="text-sm text-gray-500">{t('dashboardDesc')}</div>
-                            </div>
-                          </Link>
-                        </NavigationMenuLink>
-                        <NavigationMenuLink asChild>
-                          <Link
-                            href="/admin/users"
-                            className="flex flex-row items-center space-x-2 p-3 rounded-md dropdown-item-hover transition-all duration-300"
-                          >
-                            <Users className="w-4 h-4 flex-shrink-0 text-[var(--primary-color)]" />
-                            <div>
-                              <div className="font-medium">{t('userManagement')}</div>
-                              <div className="text-sm text-gray-500">{t('userManagementDesc')}</div>
-                            </div>
-                          </Link>
-                        </NavigationMenuLink>
-                        <NavigationMenuLink asChild>
-                          <Link
-                            href="/admin/monasteries"
-                            className="flex flex-row items-center space-x-2 p-3 rounded-md dropdown-item-hover transition-all duration-300"
-                          >
-                            <Building className="w-4 h-4 flex-shrink-0 text-[var(--primary-color)]" />
-                            <div>
-                              <div className="font-medium">{t('monasteriesAdmin')}</div>
-                              <div className="text-sm text-gray-500">{t('monasteriesAdminDesc')}</div>
-                            </div>
-                          </Link>
-                        </NavigationMenuLink>
-                        <NavigationMenuLink asChild>
-                          <Link
-                            href="/admin/analytics"
-                            className="flex flex-row items-center space-x-2 p-3 rounded-md dropdown-item-hover transition-all duration-300"
-                          >
-                            <BarChart3 className="w-4 h-4 flex-shrink-0 text-[var(--primary-color)]" />
-                            <div>
-                              <div className="font-medium">{t('analytics')}</div>
-                              <div className="text-sm text-gray-500">{t('analyticsDesc')}</div>
-                            </div>
-                          </Link>
-                        </NavigationMenuLink>
-                        <NavigationMenuLink asChild>
-                          <Link
-                            href="/admin/settings"
-                            className="flex flex-row items-center space-x-2 p-3 rounded-md dropdown-item-hover transition-all duration-300"
-                          >
-                            <Shield className="w-4 h-4 flex-shrink-0 text-[var(--primary-color)]" />
-                            <div>
-                              <div className="font-medium">{t('settings')}</div>
-                              <div className="text-sm text-gray-500">{t('settingsDesc')}</div>
-                            </div>
-                          </Link>
-                        </NavigationMenuLink>
-                      </div>
-                    </NavigationMenuContent>
-                  </NavigationMenuItem>
-                )}
-              </NavigationMenuList>
-            </NavigationMenu>
+            {hasRole(profile, 'monastery_admin') && (
+              <UnifiedDropdown
+                items={manageDropdownItems}
+                trigger={createDropdownTrigger(t('manage'))}
+                width="lg"
+                align="start"
+                sideOffset={8}
+                aria-label="Manage menu"
+                {...culturalProps}
+              />
+            )}
+
+            {isSuperAdmin(profile) && (
+              <UnifiedDropdown
+                items={adminDropdownItems}
+                trigger={createDropdownTrigger(t('admin'))}
+                width="lg"
+                align="start"
+                sideOffset={8}
+                aria-label="Admin menu"
+                {...culturalProps}
+              />
+            )}
           </div>
 
-          <div className="flex items-center space-x-4">
+          {/* Desktop Right Side */}
+          <div className="hidden lg:flex items-center space-x-4">
             <LanguageSwitcher />
-            
-            <NavigationMenu>
-              <NavigationMenuList>
-                <NavigationMenuItem>
-                  <NavigationMenuTrigger className="text-lg font-bold">
-                    <div className="flex items-center space-x-2">
-                      <Avatar className="w-8 h-8">
-                        <AvatarImage src={profile?.avatar_url} />
-                        <AvatarFallback>
-                          {profile?.full_name?.split(' ').map((n: string) => n[0]).join('') || 'U'}
-                        </AvatarFallback>
-                      </Avatar>
-                      <span className="text-base font-bold">{profile?.full_name}</span>
-                    </div>
-                  </NavigationMenuTrigger>
-                  <NavigationMenuContent>
-                    <div className="p-4 w-48">
-                      <NavigationMenuLink asChild>
-                        <Link
-                          href="/profile"
-                          className="flex items-center space-x-2 p-3 rounded-md dropdown-item-hover transition-all duration-300"
-                        >
-                          <User className="w-4 h-4 flex-shrink-0 text-[var(--primary-color)]" />
-                          <span>{t('myProfile')}</span>
-                        </Link>
-                      </NavigationMenuLink>
-                      <NavigationMenuLink asChild>
-                        <Link
-                          href="/"
-                          onClick={async (e: React.MouseEvent<HTMLAnchorElement>) => {
-                            e.preventDefault();
-                            await signOut();
-                            if (typeof window !== 'undefined') {
-                              window.location.href = '/';
-                            }
-                          }}
-                          className="flex items-center space-x-2 p-3 rounded-md dropdown-item-hover transition-all duration-300"
-                        >
-                          <LogOut className="w-4 h-4 flex-shrink-0 text-[var(--primary-color)]" />
-                          <span>{t('signOut')}</span>
-                        </Link>
-                      </NavigationMenuLink>
-                    </div>
-                  </NavigationMenuContent>
-                </NavigationMenuItem>
-              </NavigationMenuList>
-            </NavigationMenu>
+
+            <UnifiedDropdown
+              items={profileDropdownItems}
+              trigger={createDropdownTrigger(
+                <div className="flex items-center space-x-3">
+                  <Avatar className="w-9 h-9 ring-2 ring-primary/20 hover:ring-primary/40 transition-all duration-300">
+                    <AvatarImage src={profile?.avatar_url} />
+                    <AvatarFallback className="bg-gradient-primary text-white font-semibold">
+                      {profile?.full_name?.split(' ').map((n: string) => n[0]).join('') || 'U'}
+                    </AvatarFallback>
+                  </Avatar>
+                  <span className="text-foreground">{profile?.full_name}</span>
+                </div>
+              )}
+              width="sm"
+              align="end"
+              sideOffset={8}
+              aria-label="Profile menu"
+              {...culturalProps}
+            />
+          </div>
+
+          {/* Mobile Menu Button & Profile */}
+          <div className="flex lg:hidden items-center space-x-2">
+            <LanguageSwitcher />
+
+            <Avatar className="w-8 h-8 ring-2 ring-primary/20">
+              <AvatarImage src={profile?.avatar_url} />
+              <AvatarFallback className="bg-gradient-primary text-white font-semibold text-sm">
+                {profile?.full_name?.split(' ').map((n: string) => n[0]).join('') || 'U'}
+              </AvatarFallback>
+            </Avatar>
+
+            <Button
+              variant="ghost"
+              size="icon"
+              className="min-w-11 min-h-11 w-11 h-11"
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              aria-label="Toggle menu"
+            >
+              {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+            </Button>
           </div>
         </div>
+
+        {/* Mobile Menu Dropdown */}
+        {mobileMenuOpen && (
+          <div className="lg:hidden border-t border-border/50 py-4 space-y-2 max-h-[calc(100vh-4rem)] overflow-y-auto">
+            {/* Profile Section */}
+            <div className="px-4 py-3 bg-muted/50 rounded-xl mb-4">
+              <div className="flex items-center space-x-3 mb-3">
+                <Avatar className="w-10 h-10 ring-2 ring-primary/20">
+                  <AvatarImage src={profile?.avatar_url} />
+                  <AvatarFallback className="bg-gradient-primary text-white font-semibold">
+                    {profile?.full_name?.split(' ').map((n: string) => n[0]).join('') || 'U'}
+                  </AvatarFallback>
+                </Avatar>
+                <div>
+                  <p className="font-semibold text-sm">{profile?.full_name}</p>
+                  <p className="text-xs text-muted-foreground">{profile?.email}</p>
+                </div>
+              </div>
+              <Link
+                href="/profile"
+                className="block w-full text-left px-4 py-2.5 text-sm rounded-lg hover:bg-background transition-colors"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                <div className="flex items-center gap-3">
+                  <User className="h-4 w-4" />
+                  <span>{t('myProfile')}</span>
+                </div>
+              </Link>
+            </div>
+
+            {/* Donations Section */}
+            <div className="px-2 space-y-1">
+              <p className="px-4 py-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider">{t('donations')}</p>
+              <Link
+                href="/donate"
+                className="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-muted/50 transition-colors min-h-[44px]"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                <Calendar className="h-5 w-5 text-primary" />
+                <div>
+                  <p className="font-medium text-sm">{t('makeDonation')}</p>
+                  <p className="text-xs text-muted-foreground">{t('makeDonationDesc')}</p>
+                </div>
+              </Link>
+              <Link
+                href="/my-donations"
+                className="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-muted/50 transition-colors min-h-[44px]"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                <User className="h-5 w-5 text-primary" />
+                <div>
+                  <p className="font-medium text-sm">{t('myDonations')}</p>
+                  <p className="text-xs text-muted-foreground">{t('myDonationsDesc')}</p>
+                </div>
+              </Link>
+            </div>
+
+            {/* Monasteries Section */}
+            <div className="px-2 space-y-1">
+              <p className="px-4 py-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider">{t('monasteries')}</p>
+              <Link
+                href="/monasteries"
+                className="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-muted/50 transition-colors min-h-[44px]"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                <Building className="h-5 w-5 text-primary" />
+                <div>
+                  <p className="font-medium text-sm">{t('browseMonasteries')}</p>
+                  <p className="text-xs text-muted-foreground">{t('browseMonasteriesDesc')}</p>
+                </div>
+              </Link>
+              {!hasRole(profile, 'monastery_admin') && (
+                <Link
+                  href="/manage/monastery"
+                  className="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-muted/50 transition-colors min-h-[44px]"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  <Building className="h-5 w-5 text-primary" />
+                  <div>
+                    <p className="font-medium text-sm">{t('createMonastery')}</p>
+                  </div>
+                </Link>
+              )}
+            </div>
+
+            {/* Management Section (for monastery admins) */}
+            {hasRole(profile, 'monastery_admin') && (
+              <div className="px-2 space-y-1">
+                <p className="px-4 py-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider">{t('manage')}</p>
+                <Link
+                  href="/monastery-admin/upcoming-bookings"
+                  className="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-muted/50 transition-colors min-h-[44px]"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  <Calendar className="h-5 w-5 text-primary" />
+                  <div>
+                    <p className="font-medium text-sm">{t('upcomingConfirmations')}</p>
+                    <p className="text-xs text-muted-foreground">{t('upcomingConfirmationsDesc')}</p>
+                  </div>
+                </Link>
+                <Link
+                  href="/manage/bookings"
+                  className="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-muted/50 transition-colors min-h-[44px]"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  <Users className="h-5 w-5 text-primary" />
+                  <div>
+                    <p className="font-medium text-sm">{t('bookings')}</p>
+                    <p className="text-xs text-muted-foreground">{t('bookingsDesc')}</p>
+                  </div>
+                </Link>
+                <Link
+                  href="/manage/monastery"
+                  className="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-muted/50 transition-colors min-h-[44px]"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  <Building className="h-5 w-5 text-primary" />
+                  <div>
+                    <p className="font-medium text-sm">{t('monasteryInfo')}</p>
+                    <p className="text-xs text-muted-foreground">{t('monasteryInfoDesc')}</p>
+                  </div>
+                </Link>
+              </div>
+            )}
+
+            {/* Admin Section (for super admins) */}
+            {isSuperAdmin(profile) && (
+              <div className="px-2 space-y-1">
+                <p className="px-4 py-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider">{t('admin')}</p>
+                <Link
+                  href="/admin/dashboard"
+                  className="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-muted/50 transition-colors min-h-[44px]"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  <BarChart3 className="h-5 w-5 text-primary" />
+                  <div>
+                    <p className="font-medium text-sm">{t('dashboard')}</p>
+                    <p className="text-xs text-muted-foreground">{t('dashboardDesc')}</p>
+                  </div>
+                </Link>
+                <Link
+                  href="/admin/users"
+                  className="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-muted/50 transition-colors min-h-[44px]"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  <Users className="h-5 w-5 text-primary" />
+                  <div>
+                    <p className="font-medium text-sm">{t('userManagement')}</p>
+                    <p className="text-xs text-muted-foreground">{t('userManagementDesc')}</p>
+                  </div>
+                </Link>
+                <Link
+                  href="/admin/monasteries"
+                  className="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-muted/50 transition-colors min-h-[44px]"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  <Building className="h-5 w-5 text-primary" />
+                  <div>
+                    <p className="font-medium text-sm">{t('monasteriesAdmin')}</p>
+                    <p className="text-xs text-muted-foreground">{t('monasteriesAdminDesc')}</p>
+                  </div>
+                </Link>
+                <Link
+                  href="/admin/analytics"
+                  className="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-muted/50 transition-colors min-h-[44px]"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  <BarChart3 className="h-5 w-5 text-primary" />
+                  <div>
+                    <p className="font-medium text-sm">{t('analytics')}</p>
+                    <p className="text-xs text-muted-foreground">{t('analyticsDesc')}</p>
+                  </div>
+                </Link>
+                <Link
+                  href="/admin/settings"
+                  className="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-muted/50 transition-colors min-h-[44px]"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  <Shield className="h-5 w-5 text-primary" />
+                  <div>
+                    <p className="font-medium text-sm">{t('settings')}</p>
+                    <p className="text-xs text-muted-foreground">{t('settingsDesc')}</p>
+                  </div>
+                </Link>
+              </div>
+            )}
+
+            {/* Sign Out */}
+            <div className="px-2 pt-2 border-t border-border/50 mt-4">
+              <button
+                onClick={async (e) => {
+                  e.preventDefault()
+                  setMobileMenuOpen(false)
+                  await signOut()
+                  if (typeof window !== 'undefined') {
+                    window.location.href = '/'
+                  }
+                }}
+                className="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-destructive/10 text-destructive transition-colors w-full min-h-[44px]"
+              >
+                <LogOut className="h-5 w-5" />
+                <span className="font-medium text-sm">{t('signOut')}</span>
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </nav>
   )

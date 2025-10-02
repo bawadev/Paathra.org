@@ -94,7 +94,7 @@ export default function DonationsPage() {
             </div>
           ) : slots.length === 0 ? (
             <div className="text-center py-20">
-              <div className="card-dana max-w-2xl mx-auto p-12">
+              <div className="dana-card max-w-2xl mx-auto p-12">
                 <Calendar className="w-16 h-16 text-[var(--primary-color)] mx-auto mb-6" />
                 <h3 className="text-2xl font-semibold text-[var(--text-dark)] mb-4">
                   No available slots
@@ -103,7 +103,7 @@ export default function DonationsPage() {
                   There are currently no available donation slots. Please check back later or explore monasteries to learn more.
                 </p>
                 <Link href="/monasteries">
-                  <Button className="btn-dana-primary large">
+                  <Button className="dana-button dana-button-primary">
                     <MapPin className="w-5 h-5 mr-2" />
                     Explore Monasteries
                   </Button>
@@ -120,7 +120,7 @@ export default function DonationsPage() {
               
               <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {slots.map((slot) => (
-                  <div key={slot.id} className="card-dana overflow-hidden hover:shadow-xl transition-all duration-300">
+                  <div key={slot.id} className="dana-card overflow-hidden hover:shadow-xl transition-all duration-300">
                     {/* Monastery Image */}
                     <div className="h-48 bg-gradient-to-br from-[var(--primary-color)] to-[var(--accent-color)] relative overflow-hidden">
                       {slot.monastery.image_url ? (
@@ -197,7 +197,7 @@ export default function DonationsPage() {
                           Feed up to {slot.monks_capacity - slot.monks_fed} monks
                         </div>
                         <Button 
-                          className="btn-dana-primary"
+                          className="dana-button dana-button-primary"
                           disabled={slot.monks_fed >= slot.monks_capacity}
                         >
                           <Heart className="w-4 h-4 mr-2" />
@@ -211,7 +211,7 @@ export default function DonationsPage() {
 
               {/* Call to Action */}
               <div className="text-center mt-12">
-                <div className="card-dana max-w-3xl mx-auto p-8">
+                <div className="dana-card max-w-3xl mx-auto p-8">
                   <h3 className="text-2xl font-semibold text-[var(--text-dark)] mb-4">
                     Can&apos;t find a suitable time?
                   </h3>
@@ -220,13 +220,13 @@ export default function DonationsPage() {
                   </p>
                   <div className="flex flex-wrap gap-4 justify-center">
                     <Link href="/monasteries">
-                      <Button className="btn-dana-secondary">
+                      <Button className="dana-button dana-button-secondary">
                         <MapPin className="w-5 h-5 mr-2" />
                         Browse All Monasteries
                       </Button>
                     </Link>
                     <Link href="/my-donations">
-                      <Button className="btn-dana-primary">
+                      <Button className="dana-button dana-button-primary">
                         <ArrowRight className="w-5 h-5 mr-2" />
                         View My Donations
                       </Button>

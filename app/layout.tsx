@@ -5,9 +5,7 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  return (
-    <>
-      {children}
-    </>
-  );
+  // Don't wrap in html/body here - the locale layout handles that
+  // This fixes hydration errors from nested <html> tags
+  return children;
 }

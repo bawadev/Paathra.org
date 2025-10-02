@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from 'react'
 import { useAuthStore } from '@/lib/stores/useAuthStore'
-import { Navigation } from '@/components/organisms/Navigation'
 import { AuthForm } from '@/components/auth-form'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -14,7 +13,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert'
 import { supabase, Monastery } from '@/lib/supabase'
 import { ImageUpload } from '@/components/image-upload'
 import { imageUploadService } from '@/lib/services/image-upload'
-import { Building, Phone, Mail, Globe, CheckCircle, X, Image as ImageIcon } from 'lucide-react'
+import { Building, Phone, Mail, Globe, CheckCircle, X, Image as ImageIcon, AlertCircle } from 'lucide-react'
 import { hasRole } from '@/types/auth'
 import { MonasteryLocationPicker } from '@/components/monastery-location-picker'
 
@@ -242,8 +241,11 @@ export default function ManageMonasteryPage() {
 
   if (authLoading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="text-lg">Loading...</div>
+      <div className="flex items-center justify-center min-h-screen bg-[var(--bg-light)]">
+        <div className="text-lg text-[var(--text-light)] flex items-center gap-3">
+          <div className="lotus-icon animate-spin"></div>
+          Loading monastery information...
+        </div>
       </div>
     )
   }
@@ -257,51 +259,64 @@ export default function ManageMonasteryPage() {
 
   if (!canAccess && !hasRole(profile, 'monastery_admin')) {
     return (
-      <div className="min-h-screen bg-gray-50">
-        <Navigation />
-        <main className="container mx-auto px-4 py-8 max-w-4xl">
-          <div className="text-center">
-            <h1 className="text-2xl font-bold text-gray-900 mb-4">Access Denied</h1>
-            <p className="text-gray-600">You don't have permission to access this page.</p>
-          </div>
-        </main>
+      <div className="min-h-screen bg-[var(--bg-light)]">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <section className="pt-32 pb-20">
+            <div className="dana-card max-w-2xl mx-auto p-12 text-center">
+              <AlertCircle className="w-16 h-16 text-[var(--primary-color)] mx-auto mb-6" />
+              <h3 className="text-2xl font-semibold text-[var(--text-dark)] mb-4">Access Denied</h3>
+              <p className="text-[var(--text-light)] text-lg">
+                You don't have permission to access this page.
+              </p>
+            </div>
+          </section>
+        </div>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <Navigation />
-      
-      <main className="container mx-auto px-4 py-8 max-w-4xl">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">
-            {monastery ? 'Manage Monastery Information' : 'Set Up Your Monastery'}
-          </h1>
-          <p className="text-gray-600">
-            {monastery 
-              ? 'Update your monastery details and preferences' 
-              : 'Complete the form below to set up your monastery profile'
-            }
-          </p>
-        </div>
+    <div className="min-h-screen bg-[var(--bg-light)]">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Hero Section */}
+        <section className="pt-32 pb-12">
+          <div className="text-center space-y-6">
+            <h1 className="text-4xl lg:text-5xl font-bold">
+              <span className="gradient-text">
+                {monastery ? 'Manage Monastery Information' : 'Set Up Your Monastery'}
+              </span>
+            </h1>
+            <p className="text-xl text-[var(--text-light)] max-w-2xl mx-auto">
+              {monastery
+                ? 'Update your monastery details and preferences'
+                : 'Complete the form below to set up your monastery profile'
+              }
+            </p>
+          </div>
+        </section>
 
         {loading ? (
-          <div className="text-center py-8">Loading monastery information...</div>
+          <div className="flex justify-center py-20">
+            <div className="flex items-center gap-3 text-[var(--text-light)]">
+              <div className="lotus-icon animate-spin"></div>
+              <span className="text-lg">Loading monastery information...</span>
+            </div>
+          </div>
         ) : (
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <section className="pb-20">
+            <form onSubmit={handleSubmit} className="space-y-6 max-w-4xl mx-auto">
             {/* Basic Information */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center space-x-2">
-                  <Building className="w-5 h-5" />
+            <div className="dana-card p-8">
+              <div className="mb-6">
+                <h2 className="text-2xl font-semibold text-[var(--text-dark)] flex items-center space-x-2 mb-2">
+                  <Building className="w-6 h-6 text-[var(--primary-color)]" />
                   <span>Basic Information</span>
-                </CardTitle>
-                <CardDescription>
+                </h2>
+                <p className="text-[var(--text-light)]">
                   Essential details about your monastery
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
+                </p>
+              </div>
+              <div className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="name">Monastery Name *</Label>
@@ -350,8 +365,8 @@ export default function ManageMonasteryPage() {
                     required
                   />
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
 
             {/* Location Information */}
             {monastery && (
@@ -378,14 +393,14 @@ export default function ManageMonasteryPage() {
             )}
 
             {/* Contact Information */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Contact Information</CardTitle>
-                <CardDescription>
+            <div className="dana-card p-8">
+              <div className="mb-6">
+                <h2 className="text-2xl font-semibold text-[var(--text-dark)] mb-2">Contact Information</h2>
+                <p className="text-[var(--text-light)]">
                   How donors can reach your monastery
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
+                </p>
+              </div>
+              <div className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="phone" className="flex items-center space-x-1">
@@ -429,18 +444,18 @@ export default function ManageMonasteryPage() {
                     placeholder="https://www.monastery.org"
                   />
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
 
             {/* Portfolio Information */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Portfolio Information</CardTitle>
-                <CardDescription>
+            <div className="dana-card p-8">
+              <div className="mb-6">
+                <h2 className="text-2xl font-semibold text-[var(--text-dark)] mb-2">Portfolio Information</h2>
+                <p className="text-[var(--text-light)]">
                   Detailed information for your monastery portfolio page
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
+                </p>
+              </div>
+              <div className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="established_year">Established Year</Label>
@@ -489,21 +504,21 @@ export default function ManageMonasteryPage() {
                     rows={4}
                   />
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
 
             {/* Images */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center space-x-2">
-                  <ImageIcon className="w-5 h-5" />
+            <div className="dana-card p-8">
+              <div className="mb-6">
+                <h2 className="text-2xl font-semibold text-[var(--text-dark)] mb-2 flex items-center space-x-2">
+                  <ImageIcon className="w-6 h-6 text-[var(--primary-color)]" />
                   <span>Images</span>
-                </CardTitle>
-                <CardDescription>
+                </h2>
+                <p className="text-[var(--text-light)]">
                   Upload photos for your monastery portfolio
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-6">
+                </p>
+              </div>
+              <div className="space-y-6">
                 {/* Monastery Logo/Avatar */}
                 <div className="space-y-2">
                   <Label>Monastery Logo/Avatar</Label>
@@ -554,18 +569,18 @@ export default function ManageMonasteryPage() {
                     }}
                   />
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
 
             {/* Contact Person */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Contact Person</CardTitle>
-                <CardDescription>
+            <div className="dana-card p-8">
+              <div className="mb-6">
+                <h2 className="text-2xl font-semibold text-[var(--text-dark)] mb-2">Contact Person</h2>
+                <p className="text-[var(--text-light)]">
                   Primary contact for monastery inquiries
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
+                </p>
+              </div>
+              <div className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="contact_person_name">Full Name</Label>
@@ -587,18 +602,18 @@ export default function ManageMonasteryPage() {
                     />
                   </div>
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
 
             {/* Facilities */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Facilities</CardTitle>
-                <CardDescription>
+            <div className="dana-card p-8">
+              <div className="mb-6">
+                <h2 className="text-2xl font-semibold text-[var(--text-dark)] mb-2">Facilities</h2>
+                <p className="text-[var(--text-light)]">
                   Available facilities at your monastery
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
+                </p>
+              </div>
+              <div>
                 <div className="space-y-2">
                   <Label htmlFor="facilities">Facilities (comma-separated)</Label>
                   <Textarea
@@ -611,18 +626,18 @@ export default function ManageMonasteryPage() {
                     rows={2}
                   />
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
 
             {/* Daily Schedule */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Daily Schedule</CardTitle>
-                <CardDescription>
+            <div className="dana-card p-8">
+              <div className="mb-6">
+                <h2 className="text-2xl font-semibold text-[var(--text-dark)] mb-2">Daily Schedule</h2>
+                <p className="text-[var(--text-light)]">
                   Typical daily routine at the monastery
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
+                </p>
+              </div>
+              <div className="space-y-4">
                 <div className="space-y-2">
                   <Label htmlFor="morning_schedule">Morning Schedule</Label>
                   <Textarea
@@ -664,18 +679,18 @@ export default function ManageMonasteryPage() {
                     rows={2}
                   />
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
 
             {/* Rules & Guidelines */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Rules & Guidelines</CardTitle>
-                <CardDescription>
+            <div className="dana-card p-8">
+              <div className="mb-6">
+                <h2 className="text-2xl font-semibold text-[var(--text-dark)] mb-2">Rules & Guidelines</h2>
+                <p className="text-[var(--text-light)]">
                   Important rules and guidelines for visitors and donors
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
+                </p>
+              </div>
+              <div>
                 <div className="space-y-2">
                   <Label htmlFor="rules_guidelines">Rules and Guidelines</Label>
                   <Textarea
@@ -686,18 +701,18 @@ export default function ManageMonasteryPage() {
                     rows={4}
                   />
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
 
             {/* Social Media */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Social Media</CardTitle>
-                <CardDescription>
+            <div className="dana-card p-8">
+              <div className="mb-6">
+                <h2 className="text-2xl font-semibold text-[var(--text-dark)] mb-2">Social Media</h2>
+                <p className="text-[var(--text-light)]">
                   Links to your monastery's social media profiles
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
+                </p>
+              </div>
+              <div className="space-y-4">
                 <div className="space-y-2">
                   <Label htmlFor="facebook">Facebook</Label>
                   <Input
@@ -736,18 +751,18 @@ export default function ManageMonasteryPage() {
                     placeholder="https://instagram.com/monastery"
                   />
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
 
             {/* Dietary Requirements */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Dietary Requirements</CardTitle>
-                <CardDescription>
+            <div className="dana-card p-8">
+              <div className="mb-6">
+                <h2 className="text-2xl font-semibold text-[var(--text-dark)] mb-2">Dietary Requirements</h2>
+                <p className="text-[var(--text-light)]">
                   Select all dietary restrictions or preferences that apply to your monastery
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
+                </p>
+              </div>
+              <div>
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                   {DIETARY_REQUIREMENTS.map((requirement) => (
                     <div
@@ -792,18 +807,18 @@ export default function ManageMonasteryPage() {
                     </div>
                   </div>
                 )}
-              </CardContent>
-            </Card>
+              </div>
+            </div>
 
             {/* Donation Preferences */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Donation Preferences</CardTitle>
-                <CardDescription>
+            <div className="dana-card p-8">
+              <div className="mb-6">
+                <h2 className="text-2xl font-semibold text-[var(--text-dark)] mb-2">Donation Preferences</h2>
+                <p className="text-[var(--text-light)]">
                   Let donors know your preferred donation times and any special instructions
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
+                </p>
+              </div>
+              <div className="space-y-4">
                 <div className="space-y-2">
                   <Label htmlFor="preferred_donation_times">Preferred Donation Times</Label>
                   <Textarea
@@ -828,8 +843,8 @@ export default function ManageMonasteryPage() {
                     These special requirements will be shown to donors when they book any donation slot at your monastery
                   </p>
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
 
             {/* Messages */}
             {message && (
@@ -851,14 +866,16 @@ export default function ManageMonasteryPage() {
                 type="button"
                 variant="outline"
                 onClick={() => window.history.back()}
+                className="dana-button dana-button-outline"
               >
                 Cancel
               </Button>
-              <Button type="submit" disabled={saving}>
+              <Button type="submit" disabled={saving} className="dana-button dana-button-primary">
                 {saving ? 'Saving...' : (monastery ? 'Update Monastery' : 'Create Monastery')}
               </Button>
             </div>
           </form>
+          </section>
         )}
       </main>
     </div>

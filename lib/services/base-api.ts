@@ -301,7 +301,7 @@ export class BookingService extends BaseApiService {
       query = query.eq('status', status)
     }
 
-    query = query.order('booking_date', { ascending: false })
+    query = query.order('donation_date', { ascending: false })
 
     return this.handleResponse(await query)
   }
@@ -320,7 +320,7 @@ export class BookingService extends BaseApiService {
       query = query.eq('status', status)
     }
 
-    query = query.order('booking_date', { ascending: false })
+    query = query.order('donation_date', { ascending: false })
 
     return this.handleResponse(await query)
   }
@@ -343,7 +343,7 @@ export class BookingService extends BaseApiService {
         quantity: booking.quantity,
         special_instructions: booking.specialInstructions,
         status: 'pending',
-        booking_date: new Date().toISOString()
+        donation_date: new Date().toISOString()
       })
       .select()
 

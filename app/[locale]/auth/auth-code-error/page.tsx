@@ -58,7 +58,7 @@ function AuthCodeErrorContent() {
 
   return (
     <div className="min-h-screen flex items-center justify-center p-8 bg-[var(--bg-light)]">
-      <Card className="card-dana p-8 max-w-md w-full">
+      <Card className="dana-card p-8 max-w-md w-full">
         <CardHeader className="text-center">
           <CardTitle className="text-2xl font-bold text-[var(--text-dark)]">
             Authentication Error
@@ -92,7 +92,7 @@ function AuthCodeErrorContent() {
           <div className="flex gap-3">
             <Button
               onClick={() => router.push('/en/auth')}
-              className="flex-1 btn-dana-primary"
+              className="flex-1 dana-button dana-button-primary"
             >
               Try Again
             </Button>
@@ -114,7 +114,7 @@ export default function AuthCodeError() {
   return (
     <Suspense fallback={
       <div className="min-h-screen flex items-center justify-center p-8 bg-[var(--bg-light)]">
-        <Card className="card-dana p-8 max-w-md w-full">
+        <Card className="dana-card p-8 max-w-md w-full">
           <CardHeader className="text-center">
             <CardTitle className="text-2xl font-bold text-[var(--text-dark)]">
               Loading...

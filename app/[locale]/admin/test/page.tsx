@@ -29,7 +29,7 @@ export default function AdminTest() {
       <Navigation />
       
       <main className="pt-32 pb-20 px-5">
-        <div className="container-dana">
+        <div className="dana-container">
           <div className="space-y-6">
       <h1 className="text-3xl font-bold">Admin Test Page</h1>
       

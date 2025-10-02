@@ -16,11 +16,21 @@ function isValidUrl(string: string): boolean {
 // Client-side Supabase client - always return a client (real or mock)
 export const supabase = (() => {
   if (supabaseConfig.url && supabaseConfig.anonKey && isValidUrl(supabaseConfig.url)) {
+    console.log('✅ Supabase client initialized with:', {
+      url: supabaseConfig.url.substring(0, 30) + '...',
+      keyLength: supabaseConfig.anonKey.length
+    })
     return createClient(supabaseConfig.url, supabaseConfig.anonKey)
   }
 
   // Return mock client to prevent null errors
-  console.warn('Supabase environment variables not configured properly. Using mock client.')
+  console.error('🚨 SUPABASE MOCK CLIENT ACTIVE - NO DATA WILL BE FETCHED!')
+  console.error('Issue details:', {
+    url: supabaseConfig.url || 'Missing',
+    urlValid: supabaseConfig.url ? isValidUrl(supabaseConfig.url) : false,
+    anonKeyLength: supabaseConfig.anonKey?.length || 0,
+  })
+  console.warn('⚠️ Check your .env.local file for NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY')
   return {
     auth: {
       getUser: () => Promise.resolve({ data: { user: null }, error: null }),

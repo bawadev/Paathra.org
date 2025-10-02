@@ -56,7 +56,7 @@ export default function AdminDashboardSimple() {
       <Navigation />
       
       <main className="pt-32 pb-20 px-5">
-        <div className="container-dana">
+        <div className="dana-container">
           <div className="space-y-8">
       {/* Header */}
       <div>

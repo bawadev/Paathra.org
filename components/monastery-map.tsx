@@ -45,18 +45,21 @@ export function MonasteryMap({
 
         // Default center (India center)
         let center: [number, number] = [20.5937, 78.9629];
-        let zoom = 5;
+
+        // Adjust zoom based on screen size
+        const isMobile = window.innerWidth < 768;
+        let zoom = isMobile ? 3 : 5; // More zoomed out on mobile
 
         // If user location is available, center on it
         if (userLocation) {
           center = [userLocation.latitude, userLocation.longitude];
-          zoom = 10;
+          zoom = isMobile ? 8 : 10; // Less zoom on mobile for better context
         } else if (monasteries.length > 0) {
           // Center on first monastery with location
           const firstMonastery = monasteries.find(m => m.latitude && m.longitude);
           if (firstMonastery && firstMonastery.latitude && firstMonastery.longitude) {
             center = [firstMonastery.latitude, firstMonastery.longitude];
-            zoom = 8;
+            zoom = isMobile ? 6 : 8; // Less zoom on mobile
           }
         }
 
@@ -221,7 +224,13 @@ export function MonasteryMap({
 
         // Fit map to show all markers if we have valid locations
         if (hasValidLocations && bounds.isValid()) {
-          map.fitBounds(bounds, { padding: [20, 20] });
+          // Use larger padding on mobile for better overview
+          const padding = isMobile ? [50, 50] : [20, 20];
+          const maxZoom = isMobile ? 12 : 15; // Limit max zoom on mobile
+          map.fitBounds(bounds, {
+            padding,
+            maxZoom
+          });
         }
 
         setIsLoading(false);

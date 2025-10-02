@@ -820,27 +820,30 @@ const createBooking = async () => {
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
       {/* Calendar Section */}
       <div className="lg:col-span-2">
-        <Card>
-          <CardHeader>
+        <Card className="shadow-elegant hover:shadow-elegant-lg transition-all duration-300 bg-gradient-to-br from-white to-amber-50/20 rounded-2xl border border-amber-100/50 overflow-hidden">
+          <CardHeader className="pb-4">
             <div className="flex items-center justify-between">
-              <CardTitle>Calendar View</CardTitle>
-              <div className="flex items-center space-x-2">
+              <CardTitle className="text-xl flex items-center gap-2">
+                <Calendar className="w-5 h-5 text-amber-600" />
+                {tCalendar('calendarView')}
+              </CardTitle>
+              <div className="flex items-center gap-2">
                 <Button
-                  variant="ghost"
+                  variant="outline"
                   size="sm"
                   onClick={() => navigateMonth('prev')}
-                  className="p-2"
+                  className="hover:bg-gradient-to-r hover:from-amber-50 hover:to-orange-50 hover:text-amber-700 border-amber-200 transition-all duration-200 hover:scale-105 hover:shadow-md"
                 >
                   <ChevronLeft className="w-4 h-4" />
                 </Button>
-                <span className="text-sm font-medium">
+                <span className="text-sm font-medium px-2">
                   {format(currentDate, 'MMMM yyyy')}
                 </span>
                 <Button
-                  variant="ghost"
+                  variant="outline"
                   size="sm"
                   onClick={() => navigateMonth('next')}
-                  className="p-2"
+                  className="hover:bg-gradient-to-r hover:from-amber-50 hover:to-orange-50 hover:text-amber-700 border-amber-200 transition-all duration-200 hover:scale-105 hover:shadow-md"
                 >
                   <ChevronRight className="w-4 h-4" />
                 </Button>
@@ -848,9 +851,9 @@ const createBooking = async () => {
             </div>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-7 gap-1 text-center text-sm font-medium text-gray-500 mb-2">
+            <div className="grid grid-cols-7 gap-1 mb-4">
               {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
-                <div key={day} className="py-2">
+                <div key={day} className="text-center text-sm font-semibold text-gray-700 py-3 bg-gray-50 rounded-t-lg">
                   {day}
                 </div>
               ))}
@@ -873,31 +876,45 @@ const createBooking = async () => {
                     key={index}
                     onClick={() => handleDateClick(day)}
                     className={cn(
-                      'relative p-2 text-center rounded-lg transition-all duration-200 flex flex-col min-h-[70px] border-2',
-                      !isCurrentMonth && 'text-gray-400 opacity-50',
-                      isSelected && 'bg-blue-100 text-blue-900 border-blue-500 shadow-md scale-105',
-                      isToday && !isSelected && 'bg-blue-50 border-blue-300 font-semibold',
-                      !isSelected && !isToday && isCurrentMonth && 'border-gray-200 hover:border-gray-400 hover:shadow-sm',
-                      'hover:border-gray-400 hover:shadow-sm active:scale-95'
+                      'relative p-2 text-center rounded-xl transition-all duration-300 flex flex-col min-h-[70px] border',
+                      'hover:shadow-elegant focus:outline-none focus:ring-2 focus:ring-amber-500 hover:scale-105',
+                      !isCurrentMonth && 'text-gray-400 bg-gray-50/50',
+                      isSelected && 'bg-gradient-to-br from-amber-500 to-orange-500 text-white shadow-elegant scale-105',
+                      isToday && !isSelected && 'ring-2 ring-amber-500 ring-offset-2',
+                      !isSelected && !isToday && isCurrentMonth && hasSlots && 'bg-gradient-to-br from-green-50 to-emerald-50 border-green-300 hover:from-green-100 hover:to-emerald-100 hover:border-green-400',
+                      !isSelected && !isToday && isCurrentMonth && !hasSlots && 'bg-gradient-to-br from-gray-50 to-slate-50 border-gray-200 hover:from-gray-100 hover:to-slate-100',
+                      totalBookings > 0 && !isSelected && 'bg-gradient-to-br from-amber-50 to-orange-50 border-amber-300 hover:from-amber-100 hover:to-orange-100 hover:border-amber-400'
                     )}
                   >
                     <div className={cn(
-                      "text-sm font-semibold mb-1",
-                      isToday && "text-blue-600"
+                      "text-lg font-semibold mb-1",
+                      isToday && !isSelected && "text-amber-600"
                     )}>{format(day, 'd')}</div>
-                    
+
                     {totalBookings > 0 && (
                       <div className="w-full px-1 mt-auto">
-                        <div className="text-xs text-gray-700 font-medium">
+                        <div className={cn(
+                          "text-xs font-medium",
+                          isSelected ? "text-white" : "text-gray-700"
+                        )}>
                           {totalBookings} {totalBookings === 1 ? tCalendar('booking') : tCalendar('bookings')}
                         </div>
                       </div>
                     )}
-                    
+
                     {hasSlots && (
-                      <div className="text-xs text-green-600 font-medium">
-                        {dateSlots.length} slots
+                      <div className="mt-1">
+                        <div className={cn(
+                          "w-2 h-2 rounded-full mx-auto",
+                          isSelected ? "bg-white" : "bg-green-500"
+                        )}></div>
                       </div>
+                    )}
+
+                    {isToday && !isSelected && (
+                      <span className="absolute -top-1 -right-1 text-xs bg-amber-500 text-white px-1.5 py-0.5 rounded-full">
+                        {tCalendar('today')}
+                      </span>
                     )}
                   </button>
                 )
@@ -908,16 +925,16 @@ const createBooking = async () => {
 
         {/* Bookings Section */}
         {selectedDate && (
-          <Card className="mt-6">
+          <Card className="mt-6 shadow-xl bg-white rounded-2xl">
             <CardHeader>
-              <CardTitle>
+              <CardTitle className="text-xl">
                 {tCalendar('bookingsFor', { date: format(selectedDate, 'MMMM d, yyyy') })}
               </CardTitle>
-              <CardDescription>
-                {tCalendar('bookingsScheduled', { 
-                  count: bookings.filter(booking => 
+              <CardDescription className="text-gray-600">
+                {tCalendar('bookingsScheduled', {
+                  count: bookings.filter(booking =>
                     booking.donation_slots.date === format(selectedDate, 'yyyy-MM-dd')
-                  ).length 
+                  ).length
                 })}
               </CardDescription>
             </CardHeader>
@@ -934,18 +951,19 @@ const createBooking = async () => {
                   {bookings.filter(booking => 
                     booking.donation_slots.date === format(selectedDate, 'yyyy-MM-dd')
                   ).map((booking) => (
-                    <div key={booking.id} className="border rounded-lg p-4 hover:shadow-md transition-shadow group">
+                    <div key={booking.id} className="border border-gray-200 rounded-xl p-4 hover:shadow-lg hover:border-amber-200 transition-all group bg-white">
                       <div className="flex items-start justify-between">
                         <div className="flex-1">
                           <div className="flex items-center justify-between mb-2">
-                            <div className="font-medium text-lg">{booking.user_profiles.full_name}</div>
+                            <div className="font-semibold text-lg text-gray-900">{booking.user_profiles.full_name}</div>
                             <Badge className={cn(
-                              booking.status === 'pending' && 'bg-yellow-100 text-yellow-800',
-                              booking.status === 'monastery_approved' && 'bg-blue-100 text-blue-800',
-                              booking.status === 'confirmed' && 'bg-green-100 text-green-800',
-                              booking.status === 'delivered' && 'bg-emerald-100 text-emerald-800',
-                              booking.status === 'not_delivered' && 'bg-orange-100 text-orange-800',
-                              booking.status === 'cancelled' && 'bg-red-100 text-red-800'
+                              'font-medium',
+                              booking.status === 'pending' && 'bg-yellow-100 text-yellow-800 border-yellow-200',
+                              booking.status === 'monastery_approved' && 'bg-blue-100 text-blue-800 border-blue-200',
+                              booking.status === 'confirmed' && 'bg-green-100 text-green-800 border-green-200',
+                              booking.status === 'delivered' && 'bg-emerald-100 text-emerald-800 border-emerald-200',
+                              booking.status === 'not_delivered' && 'bg-orange-100 text-orange-800 border-orange-200',
+                              booking.status === 'cancelled' && 'bg-red-100 text-red-800 border-red-200'
                             )}>
                               {booking.status.replace('_', ' ').toUpperCase()}
                             </Badge>
@@ -972,7 +990,7 @@ const createBooking = async () => {
                           <>
                             <Button
                               size="sm"
-                              className="bg-green-600 hover:bg-green-700 text-white"
+                              className="bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white rounded-lg shadow-md"
                               onClick={() => onBookingAction?.(booking.id, 'approve')}
                             >
                               <Check className="w-4 h-4 mr-1" />
@@ -980,7 +998,7 @@ const createBooking = async () => {
                             </Button>
                             <Button
                               size="sm"
-                              variant="destructive"
+                              className="bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white rounded-lg shadow-md"
                               onClick={() => onBookingAction?.(booking.id, 'cancel')}
                             >
                               <X className="w-4 h-4 mr-1" />
@@ -993,7 +1011,7 @@ const createBooking = async () => {
                           <>
                             <Button
                               size="sm"
-                              className="bg-blue-600 hover:bg-blue-700 text-white"
+                              className="bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white rounded-lg shadow-md"
                               onClick={() => onBookingAction?.(booking.id, 'markDelivered')}
                             >
                               <Check className="w-4 h-4 mr-1" />
@@ -1002,7 +1020,7 @@ const createBooking = async () => {
                             <Button
                               size="sm"
                               variant="outline"
-                              className="border-orange-500 text-orange-600 hover:bg-orange-50"
+                              className="border-orange-300 text-orange-600 hover:bg-orange-50 hover:border-orange-400 rounded-lg"
                               onClick={() => onBookingAction?.(booking.id, 'cancel')}
                             >
                               <X className="w-4 h-4 mr-1" />
@@ -1044,12 +1062,12 @@ const createBooking = async () => {
       {/* Slots Section */}
       <div className="lg:col-span-1">
         {selectedDate && (
-          <Card>
+          <Card className="shadow-elegant hover:shadow-elegant-lg transition-all duration-300 bg-gradient-to-br from-amber-50 to-orange-50/30 rounded-2xl border border-amber-100/50">
             <CardHeader>
-              <CardTitle>
+              <CardTitle className="text-xl text-amber-900">
                 {tCalendar('slotsFor', { date: format(selectedDate, 'MMM d') })}
               </CardTitle>
-              <CardDescription>
+              <CardDescription className="text-gray-700">
                 {tCalendar('manageSlots')}
               </CardDescription>
             </CardHeader>
@@ -1057,10 +1075,9 @@ const createBooking = async () => {
               <div className="space-y-4">
                 {/* Bulk Slot Creation */}
                 <div className="space-y-2">
-                  <Button 
+                  <Button
                     onClick={() => setBulkSlotDialogOpen(true)}
-                    className="w-full"
-                    variant="outline"
+                    className="w-full bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white rounded-lg shadow-elegant hover:shadow-elegant-lg hover:scale-105 transition-all duration-300"
                     size="sm"
                   >
                     <Plus className="w-4 h-4 mr-2" />
@@ -1070,7 +1087,7 @@ const createBooking = async () => {
 
                 {/* Meal Type Quick Buttons */}
                 <div className="grid grid-cols-1 gap-2">
-                  <Button 
+                  <Button
                     onClick={() => {
                       setFormData({
                         date: format(selectedDate, 'yyyy-MM-dd'),
@@ -1084,11 +1101,12 @@ const createBooking = async () => {
                     }}
                     size="sm"
                     variant="outline"
+                    className="border-amber-200 text-amber-700 hover:bg-gradient-to-r hover:from-amber-50 hover:to-orange-50 hover:border-amber-300 rounded-lg transition-all duration-300 hover:scale-105 hover:shadow-md"
                   >
                     {tCalendar('breakfast', { time: '7:00 AM' })}
                   </Button>
-                  
-                  <Button 
+
+                  <Button
                     onClick={() => {
                       setFormData({
                         date: format(selectedDate, 'yyyy-MM-dd'),
@@ -1102,11 +1120,12 @@ const createBooking = async () => {
                     }}
                     size="sm"
                     variant="outline"
+                    className="border-amber-200 text-amber-700 hover:bg-gradient-to-r hover:from-amber-50 hover:to-orange-50 hover:border-amber-300 rounded-lg transition-all duration-300 hover:scale-105 hover:shadow-md"
                   >
                     {tCalendar('lunch', { time: '11:30 AM' })}
                   </Button>
-                  
-                  <Button 
+
+                  <Button
                     onClick={() => {
                       setFormData({
                         date: format(selectedDate, 'yyyy-MM-dd'),
@@ -1120,14 +1139,15 @@ const createBooking = async () => {
                     }}
                     size="sm"
                     variant="outline"
+                    className="border-amber-200 text-amber-700 hover:bg-amber-50 hover:border-amber-300 rounded-lg"
                   >
                     {tCalendar('dinner', { time: '5:00 PM' })}
                   </Button>
                 </div>
 
                 {/* Instructions for slot booking */}
-                <div className="text-center py-2 px-4 bg-blue-50 rounded-lg border border-blue-200">
-                  <p className="text-sm text-blue-700 font-medium">
+                <div className="text-center py-2 px-4 bg-amber-50 rounded-lg border border-amber-200">
+                  <p className="text-sm text-amber-800 font-medium">
                     {tCalendar('clickSlotInstructions')}
                   </p>
                 </div>
@@ -1200,19 +1220,22 @@ const createBooking = async () => {
                             </div>
                           )}
                         </div>
-                        
+
                         <div className={cn(
-                          "border rounded-lg p-3 transition-all duration-200",
-                          slot.is_available 
-                            ? "group-hover:border-gray-400 group-hover:shadow-md cursor-pointer" 
-                            : "opacity-60"
+                          "border rounded-xl p-3 transition-all duration-200 bg-white",
+                          slot.is_available
+                            ? "border-gray-200 group-hover:border-amber-300 group-hover:shadow-lg cursor-pointer"
+                            : "opacity-60 border-gray-200"
                         )}>
                         <div className="flex items-center justify-between mb-1">
-                          <div className="font-medium text-sm capitalize">
+                          <div className="font-semibold text-sm capitalize text-gray-900">
                             {slot.meal_type} - {slot.time_slot}
                           </div>
-                          <Badge 
-                            className={slot.is_available ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}
+                          <Badge
+                            className={cn(
+                              'font-medium',
+                              slot.is_available ? 'bg-green-100 text-green-800 border-green-200' : 'bg-red-100 text-red-800 border-red-200'
+                            )}
                           >
                             {slot.is_available ? tCalendar('active') : tCalendar('disabled')}
                           </Badge>
@@ -1273,10 +1296,10 @@ const createBooking = async () => {
         )}
 
         {!selectedDate && (
-          <Card>
+          <Card className="shadow-xl bg-white rounded-2xl">
             <CardHeader>
-              <CardTitle>{tCalendar('selectDate')}</CardTitle>
-              <CardDescription>
+              <CardTitle className="text-xl">{tCalendar('selectDate')}</CardTitle>
+              <CardDescription className="text-gray-600">
                 {tCalendar('chooseDateMessage')}
               </CardDescription>
             </CardHeader>
@@ -1360,10 +1383,10 @@ const createBooking = async () => {
           </div>
 
           <DialogFooter>
-            <Button variant="outline" onClick={() => setCreateSlotDialogOpen(false)}>
+            <Button variant="outline" onClick={() => setCreateSlotDialogOpen(false)} className="border-amber-200 text-amber-700 hover:bg-amber-50 rounded-lg">
               Cancel
             </Button>
-            <Button onClick={createSlot}>
+            <Button onClick={createSlot} className="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white rounded-lg shadow-md">
               Create Slot
             </Button>
           </DialogFooter>
@@ -1422,10 +1445,10 @@ const createBooking = async () => {
           </div>
 
           <DialogFooter>
-            <Button variant="outline" onClick={() => setEditSlotDialogOpen(false)}>
+            <Button variant="outline" onClick={() => setEditSlotDialogOpen(false)} className="border-amber-200 text-amber-700 hover:bg-amber-50 rounded-lg">
               Cancel
             </Button>
-            <Button onClick={updateSlot}>
+            <Button onClick={updateSlot} className="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white rounded-lg shadow-md">
               Update Slot
             </Button>
           </DialogFooter>
@@ -1468,10 +1491,10 @@ const createBooking = async () => {
           </div>
 
           <DialogFooter>
-            <Button variant="outline" onClick={() => setBulkSlotDialogOpen(false)}>
+            <Button variant="outline" onClick={() => setBulkSlotDialogOpen(false)} className="border-amber-200 text-amber-700 hover:bg-amber-50 rounded-lg">
               Cancel
             </Button>
-            <Button onClick={createBulkSlots}>
+            <Button onClick={createBulkSlots} className="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white rounded-lg shadow-md">
               Create {30 * 3} Slots
             </Button>
           </DialogFooter>
@@ -1626,17 +1649,18 @@ const createBooking = async () => {
           </div>
 
           <DialogFooter>
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               onClick={() => setBookingDialogOpen(false)}
               disabled={creatingBooking}
+              className="border-amber-200 text-amber-700 hover:bg-amber-50 rounded-lg"
             >
               Cancel
             </Button>
-            <Button 
+            <Button
               onClick={createBooking}
               disabled={creatingBooking || !bookingFormData.donor_name || !bookingFormData.donor_email || !bookingFormData.food_type}
-              className="bg-green-600 hover:bg-green-700"
+              className="bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white rounded-lg shadow-md"
             >
               {creatingBooking ? 'Creating...' : 'Create Booking'}
             </Button>
