@@ -365,7 +365,7 @@ export function AuthForm() {
           <div className="mb-8 fade-in-1 backdrop-blur-md bg-white/10 border border-white/20 rounded-2xl p-8 shadow-2xl">
             <div className="relative w-32 h-32 mx-auto mb-6">
               <Image
-                src="/images/Gemini_Generated_Image_qul0nmqul0nmqul0.png"
+                src="/images/paathra-logo-icon.png"
                 alt="Paathra"
                 fill
                 className="object-contain drop-shadow-2xl"
@@ -414,7 +414,7 @@ export function AuthForm() {
           <div className="lg:hidden flex flex-col items-center mb-8 fade-in-1">
             <div className="relative w-20 h-20 mb-4">
               <Image
-                src="/images/Gemini_Generated_Image_qul0nmqul0nmqul0.png"
+                src="/images/paathra-logo-icon.png"
                 alt="Paathra"
                 fill
                 className="object-contain"

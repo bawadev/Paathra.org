@@ -161,7 +161,7 @@ export function Navigation() {
             >
               <div className="relative w-10 h-10 sm:w-12 sm:h-12 flex-shrink-0">
                 <Image
-                  src="/images/Gemini_Generated_Image_qul0nmqul0nmqul0.png"
+                  src="/images/paathra-logo-icon.png"
                   alt="Paathra"
                   fill
                   className="object-contain"
