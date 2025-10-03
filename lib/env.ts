@@ -146,18 +146,8 @@ export function validateEnvironment() {
   }
 }
 
-// Development helpers
-if (isDevelopment) {
-  console.log('🔧 Environment configuration loaded')
-  console.log('📝 Features enabled:', features)
-  
-  if (features.debugMode) {
-    console.log('🐛 Debug mode enabled')
-    console.log('🔍 Environment variables:', {
-      NODE_ENV: env.NODE_ENV,
-      SUPABASE_URL: env.NEXT_PUBLIC_SUPABASE_URL,
-      APP_NAME: env.NEXT_PUBLIC_APP_NAME,
-      FEATURES: features,
-    })
-  }
+// Development helpers - only log critical issues
+if (isDevelopment && features.debugMode) {
+  // Only log environment variables if explicitly in debug mode
+  // This reduces console noise during regular development
 }

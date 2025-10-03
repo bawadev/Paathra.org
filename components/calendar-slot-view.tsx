@@ -127,7 +127,6 @@ export function CalendarSlotView({ monasteryId, bookings, onBookingAction, userI
         // Clear the stored data after using it
         sessionStorage.removeItem('guestBookingPreselection')
       } catch (error) {
-        console.error('Error parsing stored booking data:', error)
         sessionStorage.removeItem('guestBookingPreselection')
       }
     }
@@ -249,7 +248,6 @@ export function CalendarSlotView({ monasteryId, bookings, onBookingAction, userI
 
   const createSlot = async () => {
     if (!selectedDate || !monastery) {
-      console.error('Missing selectedDate or monastery');
       return;
     }
 
@@ -263,8 +261,6 @@ export function CalendarSlotView({ monasteryId, bookings, onBookingAction, userI
         alert(`A ${formData.meal_type} slot already exists for this date`)
         return
       }
-
-      console.log('Creating slot with data:', formData);
       
       const { error } = await supabase
         .from('donation_slots')
@@ -283,7 +279,6 @@ export function CalendarSlotView({ monasteryId, bookings, onBookingAction, userI
         })
 
       if (error) {
-        console.error('Error creating slot:', error);
         alert(`Error creating slot: ${error.message}`);
       } else {
         setCreateSlotDialogOpen(false)
@@ -304,7 +299,6 @@ export function CalendarSlotView({ monasteryId, bookings, onBookingAction, userI
         }
       }
     } catch (error) {
-      console.error('Unexpected error creating slot:', error);
       alert('An unexpected error occurred while creating the slot');
     }
   }
@@ -497,7 +491,6 @@ export function CalendarSlotView({ monasteryId, bookings, onBookingAction, userI
         isGuest: false
       });
     } catch (error) {
-      console.error('Phone lookup error:', error);
       setPhoneLookup({
         loading: false,
         found: false,
@@ -780,9 +773,8 @@ const createBooking = async () => {
       if (onBookingCreated) {
         onBookingCreated()
       }
-      
+
     } catch (error) {
-      console.error('Error creating booking:', error)
       alert('Failed to create booking. Please try again.')
     } finally {
       setCreatingBooking(false)

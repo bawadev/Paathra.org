@@ -131,6 +131,7 @@ function SignInForm({ onSuccess, onError }: { onSuccess: () => void; onError: (e
                 type="email"
                 id="email"
                 {...form.register('email')}
+                autoComplete="email"
                 className="flex h-12 w-full rounded-xl border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 pl-12 transition-all duration-200 hover:border-primary/50"
                 placeholder="Enter your email"
                 required
@@ -141,7 +142,7 @@ function SignInForm({ onSuccess, onError }: { onSuccess: () => void; onError: (e
               <p className="text-red-500 text-sm mt-1">{form.formState.errors.email.message}</p>
             )}
           </div>
-          
+
           <div>
             <label htmlFor="password" className="block text-sm font-medium text-foreground mb-2">
               Password
@@ -151,6 +152,7 @@ function SignInForm({ onSuccess, onError }: { onSuccess: () => void; onError: (e
                 type={showPassword ? 'text' : 'password'}
                 id="password"
                 {...form.register('password')}
+                autoComplete="current-password"
                 className="flex h-12 w-full rounded-xl border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 pl-12 pr-12 transition-all duration-200 hover:border-primary/50"
                 placeholder="Enter your password"
                 required
@@ -257,6 +259,7 @@ function SignUpForm({ onSuccess, onError }: { onSuccess: (message: string) => vo
                 type="email"
                 id="email"
                 {...form.register('email')}
+                autoComplete="email"
                 className="flex h-12 w-full rounded-xl border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 pl-12 transition-all duration-200 hover:border-primary/50"
                 placeholder="Enter your email"
                 required
@@ -277,6 +280,7 @@ function SignUpForm({ onSuccess, onError }: { onSuccess: (message: string) => vo
                 type={showPassword ? 'text' : 'password'}
                 id="password"
                 {...form.register('password')}
+                autoComplete="new-password"
                 className="flex h-12 w-full rounded-xl border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 pl-12 pr-12 transition-all duration-200 hover:border-primary/50"
                 placeholder="Create a strong password"
                 required

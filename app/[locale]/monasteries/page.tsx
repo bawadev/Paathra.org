@@ -140,7 +140,6 @@ export default function MonasteriesPage() {
 
   const handleMonasterySelect = (monastery: MonasteryWithDistance) => {
     // You can add navigation or modal logic here
-    console.log('Selected monastery:', monastery)
   }
 
   if (authLoading) {

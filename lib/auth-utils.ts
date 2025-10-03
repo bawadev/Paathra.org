@@ -4,19 +4,17 @@ export async function clearAuthState() {
   try {
     // Sign out from Supabase
     await supabase.auth.signOut()
-    
+
     // Clear all local storage
     localStorage.clear()
     sessionStorage.clear()
-    
+
     // Clear any cookies (if needed)
     document.cookie.split(";").forEach((c) => {
       const eqPos = c.indexOf("=")
       const name = eqPos > -1 ? c.slice(0, eqPos) : c
       document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/`
     })
-    
-    console.log('Auth state cleared successfully')
   } catch (error) {
     console.error('Error clearing auth state:', error)
   }
@@ -31,33 +29,30 @@ export async function refreshAuthSession() {
       
       // Handle specific refresh token errors
       if (isRefreshTokenError(error)) {
-        console.log('Refresh token error detected during refresh attempt')
         await clearAuthState()
-        return { 
-          success: false, 
-          error, 
+        return {
+          success: false,
+          error,
           shouldRedirect: true,
           message: 'Your session has expired. Please sign in again.'
         }
       }
-      
+
       // If refresh fails for other reasons, clear everything and redirect to login
       await clearAuthState()
       return { success: false, error }
     }
-    
-    console.log('Session refreshed successfully')
+
     return { success: true, data }
   } catch (error: any) {
     console.error('Unexpected error during session refresh:', error)
-    
+
     // Check if it's a refresh token error
     if (isRefreshTokenError(error)) {
-      console.log('Refresh token error caught during refresh attempt')
       await clearAuthState()
-      return { 
-        success: false, 
-        error, 
+      return {
+        success: false,
+        error,
         shouldRedirect: true,
         message: 'Your session has expired. Please sign in again.'
       }
@@ -77,7 +72,6 @@ export async function withAuthErrorHandling<T>(
     return await apiCall()
   } catch (error: any) {
     if (isRefreshTokenError(error)) {
-      console.log('Refresh token error detected in API call')
       await clearAuthState()
       if (onRefreshTokenError) {
         onRefreshTokenError()
@@ -123,31 +117,29 @@ export function isRefreshTokenError(error: any): boolean {
 
 export async function handleAuthError(error: any) {
   console.error('Handling auth error:', error)
-  
+
   // Handle specific refresh token errors
   if (isRefreshTokenError(error)) {
-    console.log('Refresh token error detected, clearing auth state and redirecting')
     await clearAuthState()
-    
+
     return {
       shouldRedirect: true,
       message: 'Your session has expired. Please sign in again.',
       errorType: 'refresh_token'
     }
   }
-  
+
   // Handle general token-related errors
   if (isTokenError(error)) {
-    console.log('Token-related error detected, clearing auth state')
     await clearAuthState()
-    
+
     return {
       shouldRedirect: true,
       message: 'Your session has expired. Please sign in again.',
       errorType: 'token'
     }
   }
-  
+
   return {
     shouldRedirect: false,
     message: 'An authentication error occurred. Please try again.',

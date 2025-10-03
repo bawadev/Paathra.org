@@ -25,19 +25,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       isInitializing = true
 
       try {
-        console.log('Initializing auth session...')
         const { data: { session }, error } = await supabase.auth.getSession()
 
         if (error) {
-          console.warn('Error getting session:', error.message)
 
           // Handle specific refresh token errors gracefully
           if (error.message.toLowerCase().includes('invalid refresh token') ||
               error.message.toLowerCase().includes('refresh token not found')) {
-            console.log('Invalid refresh token detected, clearing session')
             await supabase.auth.signOut()
           } else if (error.message.includes('refresh') || error.message.includes('token')) {
-            console.log('Token error detected, clearing session')
             await supabase.auth.signOut()
           }
 
@@ -53,14 +49,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         }
 
         if (mounted) {
-          console.log('Session status:', session ? 'authenticated' : 'not authenticated')
           setSession(session)
           setUser(session?.user ?? null)
 
           if (session?.user) {
             // Fetch profile without blocking the UI
-            fetchProfile(session.user.id).catch((err) => {
-              console.warn('Profile fetch failed during initialization:', err)
+            fetchProfile(session.user.id).catch(() => {
               // Don't set loading to false here - let fetchProfile handle it
             })
           } else {
@@ -68,7 +62,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           }
         }
       } catch (err) {
-        console.warn('Unexpected auth initialization error:', err)
         if (mounted) {
           // Don't show errors to users during initialization
           setError(null)
@@ -83,26 +76,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (event, session) => {
-      console.log('Auth state change:', event, session?.user?.id)
-
       if (!mounted) return
 
       try {
         switch (event) {
           case 'SIGNED_IN':
-            console.log('User signed in')
             clearError()
             setSession(session)
             setUser(session?.user ?? null)
             if (session?.user) {
-              fetchProfile(session.user.id).catch((err) => {
-                console.warn('Profile fetch failed after sign in:', err)
-              })
+              fetchProfile(session.user.id).catch(() => {})
             }
             break
 
           case 'SIGNED_OUT':
-            console.log('User signed out')
             setSession(null)
             setUser(null)
             setProfile(null)
@@ -111,7 +98,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             break
 
           case 'TOKEN_REFRESHED':
-            console.log('Token refreshed')
             clearError()
             setSession(session)
             setUser(session?.user ?? null)
@@ -119,24 +105,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             break
 
           case 'USER_UPDATED':
-            console.log('User updated')
             setSession(session)
             setUser(session?.user ?? null)
             if (session?.user) {
-              fetchProfile(session.user.id).catch((err) => {
-                console.warn('Profile fetch failed after user update:', err)
-              })
+              fetchProfile(session.user.id).catch(() => {})
             }
             break
 
           case 'INITIAL_SESSION':
-            console.log('Initial session loaded')
             setSession(session)
             setUser(session?.user ?? null)
             if (session?.user) {
-              fetchProfile(session.user.id).catch((err) => {
-                console.warn('Profile fetch failed for initial session:', err)
-              })
+              fetchProfile(session.user.id).catch(() => {})
             } else {
               setProfile(null)
               setLoading(false)
@@ -144,13 +124,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             break
 
           default:
-            console.log('Auth state change:', event)
             setSession(session)
             setUser(session?.user ?? null)
             if (session?.user) {
-              fetchProfile(session.user.id).catch((err) => {
-                console.warn('Profile fetch failed for auth event:', event, err)
-              })
+              fetchProfile(session.user.id).catch(() => {})
             } else {
               setProfile(null)
               setLoading(false)
@@ -162,7 +139,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         // Handle refresh token errors specifically
         if (err?.message?.toLowerCase().includes('invalid refresh token') ||
             err?.message?.toLowerCase().includes('refresh token not found')) {
-          console.log('Refresh token error in auth state change, clearing session')
           await supabase.auth.signOut()
           setError('Your session has expired. Please sign in again.')
           setSession(null)

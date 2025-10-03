@@ -67,13 +67,11 @@ export const useAuthStore = create<AuthState>()(
             // Handle specific error cases
             if (error.code === 'PGRST116') {
               // Profile not found - this is expected for new users
-              console.log('Profile not found for user:', userId, '- this is normal for new users')
               set({ profile: null, loading: false, error: null })
               return
             }
 
-            // For other errors, log them but don't show to user
-            console.warn('Profile fetch error:', error.message, error.code)
+            // For other errors, don't show to user
             set({ profile: null, loading: false, error: null })
             return
           }
@@ -81,9 +79,6 @@ export const useAuthStore = create<AuthState>()(
           // Successfully got profile data
           set({ profile: data || null, loading: false, error: null })
         } catch (error: any) {
-          // Catch any network or other errors
-          console.warn('Profile fetch exception:', error.name, error.message)
-
           // Don't show errors to users for profile fetching - just set profile to null
           set({ profile: null, loading: false, error: null })
         }
@@ -110,20 +105,13 @@ export const useAuthStore = create<AuthState>()(
         // Store locale in localStorage so we can redirect properly after auth
         localStorage.setItem('auth_redirect_locale', locale)
 
-        console.log('OAuth starting for provider:', provider)
-        console.log('Current path:', currentPath)
-        console.log('Detected locale:', locale)
-
         const { data, error } = await supabase.auth.signInWithOAuth({
           provider,
           // Don't set custom redirectTo - let Supabase handle the callback
           // We'll handle the locale redirect in the callback route
         })
 
-        console.log('OAuth response:', { data, error })
-
         if (error) {
-          console.error('OAuth error:', error)
           set({ error: error.message })
         } else {
           set({ error: null })

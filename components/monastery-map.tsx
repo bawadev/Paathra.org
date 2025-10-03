@@ -145,12 +145,8 @@ export function MonasteryMap({
         const bounds = L.latLngBounds([]);
         let hasValidLocations = false;
 
-        console.log('Monasteries data:', monasteries);
-        console.log('Monasteries with coordinates:', monasteries.filter(m => m.latitude && m.longitude));
-
         monasteries.forEach((monastery) => {
           if (monastery.latitude && monastery.longitude) {
-            console.log('Adding marker for:', monastery.name, 'at', monastery.latitude, monastery.longitude);
             hasValidLocations = true;
             const latLng = L.latLng(monastery.latitude, monastery.longitude);
             bounds.extend(latLng);
