@@ -49,7 +49,7 @@ export default function HomePage() {
               </p>
               <div className="flex flex-wrap gap-4 fade-in-4">
                 <Link href="/monasteries">
-                  <Button className="inline-flex items-center gap-2 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-semibold px-6 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200">
+                  <Button className="inline-flex items-center gap-2 bg-gradient-to-r from-[#D4A574] to-[#EA8B6F] hover:from-[#C69564] hover:to-[#DA7B5F] text-white font-semibold px-6 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200">
                     {t('startDonating')}
                     <ArrowRight className="w-5 h-5" />
                   </Button>

@@ -171,11 +171,11 @@ function SignInForm({ onSuccess, onError }: { onSuccess: () => void; onError: (e
         </div>
         
         <div className="flex items-center justify-between">
-          <label className="flex items-center">
-            <input type="checkbox" className="min-w-[44px] min-h-[44px] text-[var(--primary-color)] border-gray-300 rounded focus:ring-[var(--primary-color)]" />
-            <span className="ml-2 text-sm text-[var(--text-light)]">Remember me</span>
+          <label className="flex items-center gap-2 cursor-pointer min-h-[44px]">
+            <input type="checkbox" className="w-4 h-4 text-primary border-gray-300 rounded focus:ring-primary focus:ring-2" />
+            <span className="text-sm text-muted-foreground">Remember me</span>
           </label>
-          <a href="#" className="text-sm text-[var(--primary-color)] hover:underline min-h-[44px] inline-flex items-center">
+          <a href="#" className="text-sm text-primary hover:underline min-h-[44px] inline-flex items-center">
             Forgot password?
           </a>
         </div>
@@ -183,7 +183,7 @@ function SignInForm({ onSuccess, onError }: { onSuccess: () => void; onError: (e
         <Button
           type="submit"
           disabled={loading}
-          className="w-full h-12 text-base font-semibold bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 shadow-lg hover:shadow-xl transition-all duration-200 rounded-xl"
+          className="w-full h-12 text-base font-semibold bg-gradient-to-r from-[#D4A574] to-[#EA8B6F] hover:from-[#C69564] hover:to-[#DA7B5F] text-white shadow-lg hover:shadow-xl transition-all duration-200 rounded-xl"
         >
           {loading ? 'Signing in...' : 'Sign In'}
         </Button>
@@ -299,7 +299,7 @@ function SignUpForm({ onSuccess, onError }: { onSuccess: (message: string) => vo
         <Button
           type="submit"
           disabled={loading}
-          className="w-full h-12 text-base font-semibold bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 shadow-lg hover:shadow-xl transition-all duration-200 rounded-xl"
+          className="w-full h-12 text-base font-semibold bg-gradient-to-r from-[#D4A574] to-[#EA8B6F] hover:from-[#C69564] hover:to-[#DA7B5F] text-white shadow-lg hover:shadow-xl transition-all duration-200 rounded-xl"
         >
           {loading ? 'Creating account...' : 'Create Account'}
         </Button>
