@@ -55,3 +55,39 @@ next-env.d.ts
 
 # temporary test files
 test-slot-creation.js
+
+# test output and logs
+*.log
+*-output.log
+test-output*.log
+mobile-*.log
+*-test-results.log
+comprehensive-*.log
+
+# test and analysis reports
+*-report.md
+*-summary.md
+*REPORT.md
+*FINDINGS.md
+
+# test screenshots
+debug-*.png
+
+# playwright mobile config
+playwright.mobile.config.ts
+
+# temporary test specs
+tests/admin-monasteries-simple.spec.ts
+tests/auth-mobile-detailed.spec.ts
+tests/comprehensive-flow.spec.ts
+tests/detailed-workflows.spec.ts
+tests/full-user-flows.spec.ts
+tests/mobile-improvements.spec.ts
+tests/mobile-ux-analysis.spec.ts
+tests/verify-monasteries-map.spec.ts
+
+# UI template files
+ui-template/
+
+# Zone Identifier files (Windows)
+*.Zone.Identifier

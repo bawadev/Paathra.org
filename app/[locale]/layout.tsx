@@ -52,8 +52,8 @@ export async function generateMetadata({
   const {locale} = await params;
   
   return {
-    title: locale === 'si' ? "ධාන - ආහාර දාන වේදිකාව" : "Dhaana - Food Donation Platform",
-    description: locale === 'si' 
+    title: locale === 'si' ? "පාත්‍ර - ආහාර දාන වේදිකාව" : "Paathra - Food Donation Platform",
+    description: locale === 'si'
       ? "අර්ථවත් ආහාර දානය සඳහා දායකයින් පන්සල් සමඟ සම්බන්ධ කරන්න"
       : "Connect donors with monasteries for meaningful food donations",
   };

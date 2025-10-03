@@ -9,6 +9,9 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Eye, EyeOff, Chrome, Facebook, Twitter, Lock, User, AtSign } from 'lucide-react'
+import Image from 'next/image'
+import { useLocale } from 'next-intl'
+import { LanguageSwitcher } from '@/components/language-switcher'
 
 interface SocialAuthButtonsProps {
   onSuccess: () => void;
@@ -54,9 +57,9 @@ function SocialAuthButtons({ onSuccess, onError }: SocialAuthButtonsProps) {
           variant="outline"
           onClick={() => handleSocialLogin('google')}
           disabled={!!loading}
-          className="w-full flex items-center justify-center gap-2 min-h-[48px]"
+          className="w-full flex items-center justify-center gap-2 h-12 rounded-xl border-2 hover:border-primary hover:bg-primary/5 transition-all duration-200 hover:scale-105"
         >
-          <Chrome className="w-4 h-4" />
+          <Chrome className="w-5 h-5" />
           <span className="sr-only">Google</span>
         </Button>
 
@@ -65,9 +68,9 @@ function SocialAuthButtons({ onSuccess, onError }: SocialAuthButtonsProps) {
           variant="outline"
           onClick={() => handleSocialLogin('facebook')}
           disabled={!!loading}
-          className="w-full flex items-center justify-center gap-2 min-h-[48px]"
+          className="w-full flex items-center justify-center gap-2 h-12 rounded-xl border-2 hover:border-primary hover:bg-primary/5 transition-all duration-200 hover:scale-105"
         >
-          <Facebook className="w-4 h-4" />
+          <Facebook className="w-5 h-5" />
           <span className="sr-only">Facebook</span>
         </Button>
 
@@ -76,9 +79,9 @@ function SocialAuthButtons({ onSuccess, onError }: SocialAuthButtonsProps) {
           variant="outline"
           onClick={() => handleSocialLogin('twitter')}
           disabled={!!loading}
-          className="w-full flex items-center justify-center gap-2 min-h-[48px]"
+          className="w-full flex items-center justify-center gap-2 h-12 rounded-xl border-2 hover:border-primary hover:bg-primary/5 transition-all duration-200 hover:scale-105"
         >
-          <Twitter className="w-4 h-4" />
+          <Twitter className="w-5 h-5" />
           <span className="sr-only">Twitter</span>
         </Button>
       </div>
@@ -123,16 +126,16 @@ function SignInForm({ onSuccess, onError }: { onSuccess: () => void; onError: (e
             <label htmlFor="email" className="block text-sm font-medium text-foreground mb-2">
               Email Address
             </label>
-            <div className="relative">
+            <div className="relative group">
               <input
                 type="email"
                 id="email"
                 {...form.register('email')}
-                className="flex h-11 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 pl-12"
+                className="flex h-12 w-full rounded-xl border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 pl-12 transition-all duration-200 hover:border-primary/50"
                 placeholder="Enter your email"
                 required
               />
-              <AtSign className="absolute left-4 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
+              <AtSign className="absolute left-4 top-1/2 transform -translate-y-1/2 text-muted-foreground group-focus-within:text-primary transition-colors w-5 h-5" />
             </div>
             {form.formState.errors.email && (
               <p className="text-red-500 text-sm mt-1">{form.formState.errors.email.message}</p>
@@ -143,22 +146,22 @@ function SignInForm({ onSuccess, onError }: { onSuccess: () => void; onError: (e
             <label htmlFor="password" className="block text-sm font-medium text-foreground mb-2">
               Password
             </label>
-            <div className="relative">
+            <div className="relative group">
               <input
                 type={showPassword ? 'text' : 'password'}
                 id="password"
                 {...form.register('password')}
-                className="flex h-11 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 pl-12 pr-12"
+                className="flex h-12 w-full rounded-xl border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 pl-12 pr-12 transition-all duration-200 hover:border-primary/50"
                 placeholder="Enter your password"
                 required
               />
-              <Lock className="absolute left-4 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
+              <Lock className="absolute left-4 top-1/2 transform -translate-y-1/2 text-muted-foreground group-focus-within:text-primary transition-colors w-5 h-5" />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 min-w-[44px] min-h-[44px] flex items-center justify-center"
+                className="absolute right-4 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-primary min-w-[44px] min-h-[44px] flex items-center justify-center transition-colors"
               >
-                {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
               </button>
             </div>
             {form.formState.errors.password && (
@@ -180,7 +183,7 @@ function SignInForm({ onSuccess, onError }: { onSuccess: () => void; onError: (e
         <Button
           type="submit"
           disabled={loading}
-          className="w-full "
+          className="w-full h-12 text-base font-semibold bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 shadow-lg hover:shadow-xl transition-all duration-200 rounded-xl"
         >
           {loading ? 'Signing in...' : 'Sign In'}
         </Button>
@@ -229,16 +232,16 @@ function SignUpForm({ onSuccess, onError }: { onSuccess: (message: string) => vo
             <label htmlFor="fullName" className="block text-sm font-medium text-foreground mb-2">
               Full Name
             </label>
-            <div className="relative">
+            <div className="relative group">
               <input
                 type="text"
                 id="fullName"
                 {...form.register('fullName')}
-                className="flex h-11 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 pl-12"
+                className="flex h-12 w-full rounded-xl border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 pl-12 transition-all duration-200 hover:border-primary/50"
                 placeholder="Enter your full name"
                 required
               />
-              <User className="absolute left-4 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
+              <User className="absolute left-4 top-1/2 transform -translate-y-1/2 text-muted-foreground group-focus-within:text-primary transition-colors w-5 h-5" />
             </div>
             {form.formState.errors.fullName && (
               <p className="text-red-500 text-sm mt-1">{form.formState.errors.fullName.message}</p>
@@ -249,16 +252,16 @@ function SignUpForm({ onSuccess, onError }: { onSuccess: (message: string) => vo
             <label htmlFor="email" className="block text-sm font-medium text-foreground mb-2">
               Email Address
             </label>
-            <div className="relative">
+            <div className="relative group">
               <input
                 type="email"
                 id="email"
                 {...form.register('email')}
-                className="flex h-11 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 pl-12"
+                className="flex h-12 w-full rounded-xl border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 pl-12 transition-all duration-200 hover:border-primary/50"
                 placeholder="Enter your email"
                 required
               />
-              <AtSign className="absolute left-4 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
+              <AtSign className="absolute left-4 top-1/2 transform -translate-y-1/2 text-muted-foreground group-focus-within:text-primary transition-colors w-5 h-5" />
             </div>
             {form.formState.errors.email && (
               <p className="text-red-500 text-sm mt-1">{form.formState.errors.email.message}</p>
@@ -269,22 +272,22 @@ function SignUpForm({ onSuccess, onError }: { onSuccess: (message: string) => vo
             <label htmlFor="password" className="block text-sm font-medium text-foreground mb-2">
               Password
             </label>
-            <div className="relative">
+            <div className="relative group">
               <input
                 type={showPassword ? 'text' : 'password'}
                 id="password"
                 {...form.register('password')}
-                className="flex h-11 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 pl-12 pr-12"
+                className="flex h-12 w-full rounded-xl border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 pl-12 pr-12 transition-all duration-200 hover:border-primary/50"
                 placeholder="Create a strong password"
                 required
               />
-              <Lock className="absolute left-4 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
+              <Lock className="absolute left-4 top-1/2 transform -translate-y-1/2 text-muted-foreground group-focus-within:text-primary transition-colors w-5 h-5" />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 min-w-[44px] min-h-[44px] flex items-center justify-center"
+                className="absolute right-4 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-primary min-w-[44px] min-h-[44px] flex items-center justify-center transition-colors"
               >
-                {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
               </button>
             </div>
             {form.formState.errors.password && (
@@ -296,7 +299,7 @@ function SignUpForm({ onSuccess, onError }: { onSuccess: (message: string) => vo
         <Button
           type="submit"
           disabled={loading}
-          className="w-full "
+          className="w-full h-12 text-base font-semibold bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 shadow-lg hover:shadow-xl transition-all duration-200 rounded-xl"
         >
           {loading ? 'Creating account...' : 'Create Account'}
         </Button>
@@ -316,6 +319,7 @@ export function AuthForm() {
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
   const { error: authError, clearError } = useAuthStore()
+  const locale = useLocale()
 
   // Show auth context errors
   const displayError = error || authError
@@ -342,49 +346,98 @@ export function AuthForm() {
 
   return (
     <div className="min-h-screen flex">
-      {/* Left Side - Hero */}
+      {/* Left Side - Hero with Animation Background */}
       <div className="hidden lg:flex lg:flex-1 gradient-primary relative overflow-hidden">
-        <div className="flex flex-col justify-between p-12 relative z-10">
-          {/* Logo */}
-          <div className="flex items-center gap-3 text-white text-xl font-bold">
-            <div className="lotus-icon bg-white"></div>
-            <span>Dana</span>
+        {/* Animated Background - Bottom Left */}
+        <div className="absolute bottom-0 left-0 w-80 h-80 opacity-30">
+          <div className="relative w-full h-full">
+            <div className="absolute top-1/4 left-1/4 w-32 h-32 bg-gradient-to-br from-amber-300/40 to-orange-300/40 rounded-full animate-dana-float"></div>
+            <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-yellow-300/40 to-amber-300/40 rounded-full particle particle-1"></div>
+            <div className="absolute bottom-0 left-0 w-28 h-28 bg-gradient-to-br from-orange-300/40 to-red-300/40 rounded-full particle particle-2"></div>
+            <div className="absolute top-1/2 right-1/4 w-20 h-20 bg-gradient-to-br from-pink-300/40 to-red-300/40 rounded-full particle particle-3"></div>
+            <div className="absolute bottom-1/3 left-1/3 w-24 h-24 bg-gradient-to-br from-amber-300/40 to-yellow-300/40 rounded-full animate-dana-float" style={{ animationDelay: '1.5s' }}></div>
           </div>
-          
-          {/* Hero Content */}
-          <div className="max-w-lg">
-            <h1 className="text-4xl font-bold text-white mb-6 fade-in-1">
-              {isSignUp ? 'Join Our Community' : 'Welcome Back'}
+        </div>
+
+        {/* Content */}
+        <div className="relative z-10 flex flex-col items-center justify-center w-full p-12 text-center">
+          {/* Logo and Name - with frosted glass */}
+          <div className="mb-8 fade-in-1 backdrop-blur-md bg-white/10 border border-white/20 rounded-2xl p-8 shadow-2xl">
+            <div className="relative w-32 h-32 mx-auto mb-6">
+              <Image
+                src="/images/Gemini_Generated_Image_qul0nmqul0nmqul0.png"
+                alt="Paathra"
+                fill
+                className="object-contain drop-shadow-2xl"
+                priority
+              />
+            </div>
+            <h1 className="text-6xl font-bold text-gray-900 mb-2">
+              {locale === 'si' ? 'පාත්‍ර' : 'Paathra'}
             </h1>
-            <p className="text-xl text-white/90 fade-in-2">
-              {isSignUp 
-                ? 'Start your journey of compassion and generosity with Buddhist monasteries around the world.'
-                : 'Continue your journey of compassion and generosity'
-              }
+            <p className="text-xl text-gray-700 font-medium">
+              {locale === 'si' ? 'ආහාර දාන වේදිකාව' : 'Food Donation Platform'}
             </p>
-            
-            {/* Floating Elements */}
-            <div className="absolute top-10 right-[-100px] w-48 h-48 bg-white/10 rounded-full animate-pulse"></div>
-            <div className="absolute bottom-20 left-[-75px] w-36 h-36 bg-white/10 rounded-full animate-pulse"></div>
-            <div className="absolute top-60 right-20 w-24 h-24 bg-white/10 rounded-full animate-pulse"></div>
           </div>
-          
-          <div></div>
+
+          {/* Inspiring Text - with frosted glass */}
+          <div className="max-w-md space-y-6 fade-in-2">
+            <div className="backdrop-blur-md bg-white/10 border border-white/20 rounded-xl p-6 shadow-xl">
+              <p className="text-2xl text-gray-900 font-semibold leading-relaxed">
+                {locale === 'si'
+                  ? '"දානං දානානං අග්‍ගං"'
+                  : '"Generosity is the highest virtue"'
+                }
+              </p>
+            </div>
+            <div className="backdrop-blur-md bg-white/10 border border-white/20 rounded-xl p-6 shadow-xl">
+              <p className="text-lg text-gray-800 leading-relaxed">
+                {locale === 'si'
+                  ? 'ලොව පුරා බෞද්ධ පන්සල්වලට සහාය වීමට හා දායකත්වය සැපයීමට අපව එක් කරවන්න'
+                  : 'Connect with Buddhist monasteries worldwide and make a meaningful difference through your generosity'
+                }
+              </p>
+            </div>
+          </div>
         </div>
       </div>
       
       {/* Right Side - Form */}
-      <div className="flex-1 flex items-center justify-center p-8 bg-[var(--bg-light)]">
+      <div className="flex-1 flex items-center justify-center p-4 sm:p-8 bg-gradient-to-br from-amber-50 via-orange-50 to-red-50 relative">
+        {/* Language Switcher - Top Right */}
+        <div className="absolute top-4 right-4 z-20">
+          <LanguageSwitcher />
+        </div>
+
         <div className="w-full max-w-md">
-          <Card className="p-8">
+          {/* Mobile Logo and Name */}
+          <div className="lg:hidden flex flex-col items-center mb-8 fade-in-1">
+            <div className="relative w-20 h-20 mb-4">
+              <Image
+                src="/images/Gemini_Generated_Image_qul0nmqul0nmqul0.png"
+                alt="Paathra"
+                fill
+                className="object-contain"
+                priority
+              />
+            </div>
+            <h1 className="text-4xl font-bold text-primary mb-1">
+              {locale === 'si' ? 'පාත්‍ර' : 'Paathra'}
+            </h1>
+            <p className="text-muted-foreground">
+              {locale === 'si' ? 'ආහාර දාන වේදිකාව' : 'Food Donation Platform'}
+            </p>
+          </div>
+
+          <Card className="p-6 sm:p-8 shadow-elegant-lg border-border/50 backdrop-blur-sm bg-white/95 fade-in-2">
             <CardHeader className="text-center pb-6">
-              <CardTitle className="text-2xl font-bold text-[var(--text-dark)]">
-                {isSignUp ? 'Create Account' : 'Sign In'}
+              <CardTitle className="text-2xl sm:text-3xl font-bold text-foreground">
+                {isSignUp ? (locale === 'si' ? 'ගිණුමක් සාදන්න' : 'Create Account') : (locale === 'si' ? 'ඇතුළු වන්න' : 'Sign In')}
               </CardTitle>
-              <CardDescription className="text-[var(--text-light)]">
-                {isSignUp 
-                  ? 'Create your account to start making donations'
-                  : 'Enter your credentials to access your account'
+              <CardDescription className="text-muted-foreground text-base mt-2">
+                {isSignUp
+                  ? (locale === 'si' ? 'දාන සැපයීම ආරම්භ කිරීමට ඔබේ ගිණුම නිර්මාණය කරන්න' : 'Create your account to start making donations')
+                  : (locale === 'si' ? 'ඔබේ ගිණුමට ප්‍රවේශ වීමට ඔබේ විස්තර ඇතුළත් කරන්න' : 'Enter your credentials to access your account')
                 }
               </CardDescription>
             </CardHeader>
@@ -408,16 +461,22 @@ export function AuthForm() {
                 <SignInForm onSuccess={handleSuccess} onError={handleError} />
               )}
               
-              <div className="text-center">
-                <span className="text-[var(--text-light)]">
-                  {isSignUp ? 'Already have an account?' : "Don't have an account?"}
-                </span>
+              <div className="text-center pt-4 border-t border-border">
+                <p className="text-muted-foreground mb-2">
+                  {isSignUp
+                    ? (locale === 'si' ? 'ගිණුමක් තිබේද?' : 'Already have an account?')
+                    : (locale === 'si' ? 'ගිණුමක් නැද්ද?' : "Don't have an account?")
+                  }
+                </p>
                 <button
                   type="button"
                   onClick={handleModeSwitch}
-                  className="ml-1 text-[var(--primary-color)] hover:underline font-medium inline-flex items-center min-h-[44px] py-2"
+                  className="text-primary hover:text-primary/80 font-semibold inline-flex items-center min-h-[44px] py-2 transition-colors"
                 >
-                  {isSignUp ? 'Sign In' : 'Sign Up'}
+                  {isSignUp
+                    ? (locale === 'si' ? 'ඇතුළු වන්න' : 'Sign In')
+                    : (locale === 'si' ? 'ගිණුමක් සාදන්න' : 'Sign Up')
+                  }
                 </button>
               </div>
             </CardContent>

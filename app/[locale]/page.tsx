@@ -41,13 +41,13 @@ export default function HomePage() {
             {/* Hero Content */}
             <div className="space-y-8">
               <h1 className="text-5xl lg:text-6xl font-bold leading-tight text-gray-900">
-                <span className="block">{t('heroTitle1')}</span>
-                <span className="block bg-gradient-to-r from-amber-600 to-orange-600 bg-clip-text text-transparent">{t('heroTitle2')}</span>
+                <span className="block fade-in-1">{t('heroTitle1')}</span>
+                <span className="block bg-gradient-to-r from-amber-600 to-orange-600 bg-clip-text text-transparent fade-in-2">{t('heroTitle2')}</span>
               </h1>
-              <p className="text-xl text-gray-600 leading-relaxed">
+              <p className="text-xl text-gray-600 leading-relaxed fade-in-3">
                 {t('heroDescription')}
               </p>
-              <div className="flex flex-wrap gap-4">
+              <div className="flex flex-wrap gap-4 fade-in-4">
                 <Link href="/monasteries">
                   <Button className="inline-flex items-center gap-2 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-semibold px-6 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200">
                     {t('startDonating')}

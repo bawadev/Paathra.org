@@ -5,6 +5,7 @@ import { useAuthStore } from '@/lib/stores/useAuthStore'
 import { useUIStore } from '@/lib/stores/useUIStore'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
+import Image from 'next/image'
 import {
   NavigationMenu,
   NavigationMenuContent,
@@ -156,12 +157,18 @@ export function Navigation() {
             {/* Logo */}
             <Link
               href="/"
-              className="flex items-center gap-3 text-xl font-bold text-primary hover:scale-105 transition-transform duration-200"
+              className="flex items-center gap-2 sm:gap-3 text-lg sm:text-xl font-bold text-primary hover:scale-105 transition-transform duration-200"
             >
-              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center">
-                <div className="w-4 h-4 rounded-full bg-white opacity-80" />
+              <div className="relative w-10 h-10 sm:w-12 sm:h-12 flex-shrink-0">
+                <Image
+                  src="/images/Gemini_Generated_Image_qul0nmqul0nmqul0.png"
+                  alt="Paathra"
+                  fill
+                  className="object-contain"
+                  priority
+                />
               </div>
-              <span>{t('brand')}</span>
+              <span className="whitespace-nowrap">{t('brand')}</span>
             </Link>
 
             {/* Desktop Navigation */}

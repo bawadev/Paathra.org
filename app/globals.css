@@ -917,3 +917,120 @@ html[lang="si"] select {
     padding-bottom: max(1rem, env(safe-area-inset-bottom));
   }
 }
+
+/* ============================================
+   HERO SECTION ANIMATIONS
+   ============================================ */
+
+/* Fade-in animations with staggered timing */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in-1 {
+  animation: fadeInUp 0.8s ease-out;
+}
+
+.fade-in-2 {
+  animation: fadeInUp 0.8s ease-out 0.2s both;
+}
+
+.fade-in-3 {
+  animation: fadeInUp 0.8s ease-out 0.4s both;
+}
+
+.fade-in-4 {
+  animation: fadeInUp 0.8s ease-out 0.6s both;
+}
+
+/* Floating bowl animation */
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-20px);
+  }
+}
+
+.floating-bowl {
+  width: 300px;
+  height: 300px;
+  background: linear-gradient(135deg, oklch(0.74 0.12 85), oklch(0.70 0.18 25));
+  border-radius: 50%;
+  position: relative;
+  animation: float 6s ease-in-out infinite;
+  box-shadow: 0 20px 40px oklch(from var(--color-primary-500) l c h / 0.3);
+}
+
+.floating-bowl::before {
+  content: '';
+  position: absolute;
+  top: 10%;
+  left: 10%;
+  width: 80%;
+  height: 80%;
+  background: oklch(from white l c h / 0.2);
+  border-radius: 50%;
+  filter: blur(20px);
+}
+
+/* Particle animations */
+@keyframes particle-float {
+  0%, 100% {
+    transform: translate(0, 0) scale(1);
+  }
+  33% {
+    transform: translate(30px, -30px) scale(1.1);
+  }
+  66% {
+    transform: translate(-20px, 20px) scale(0.9);
+  }
+}
+
+.particle {
+  position: absolute;
+  width: 80px;
+  height: 80px;
+  background: radial-gradient(circle, oklch(from var(--color-primary-500) l c h / 0.6), transparent);
+  border-radius: 50%;
+  opacity: 0.6;
+}
+
+.particle-1 {
+  top: 20%;
+  left: -10%;
+  animation: particle-float 8s ease-in-out infinite;
+}
+
+.particle-2 {
+  bottom: 20%;
+  right: -10%;
+  animation: particle-float 10s ease-in-out infinite reverse;
+}
+
+.particle-3 {
+  top: 50%;
+  right: 20%;
+  animation: particle-float 12s ease-in-out infinite;
+}
+
+/* Responsive adjustments for hero animations */
+@media (max-width: 768px) {
+  .floating-bowl {
+    width: 200px;
+    height: 200px;
+  }
+
+  .particle {
+    width: 60px;
+    height: 60px;
+  }
+}
