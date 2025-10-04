@@ -16,6 +16,7 @@ import {
 } from 'lucide-react'
 import { getUserTypeDisplayName, UserType, hasRole } from '@/types/auth'
 import { PageContainer, PageHeader, StatCard, StatusBadge } from '@/lib/design-system'
+import { useTranslations } from 'next-intl'
 
 interface UserProfile {
   id: string
@@ -57,6 +58,7 @@ interface DashboardStats {
 export default function AdminDashboard() {
   const { user, profile, loading: authLoading } = useAuthStore()
   const router = useRouter()
+  const t = useTranslations('Admin.dashboard')
   const [stats, setStats] = useState<DashboardStats | null>(null)
   const [loading, setLoading] = useState(true)
 
@@ -148,7 +150,7 @@ export default function AdminDashboard() {
         recentBookings: recentBookings || []
       })
     } catch (error) {
-      console.error('Error fetching dashboard stats:', error)
+      console.error(t('fetchError'), error)
     } finally {
       setLoading(false)
     }
@@ -185,14 +187,14 @@ export default function AdminDashboard() {
   return (
     <PageContainer gradient maxWidth="xl">
       <PageHeader
-        title="Admin Dashboard"
-        description="Monitor and manage the Dana platform"
+        title={t('title')}
+        description={t('description')}
         icon={Shield}
         gradient
         action={
           <div className="text-right">
             <div className="text-2xl font-bold">{stats?.todayBookings || 0}</div>
-            <div className="text-white/80">Today&apos;s Bookings</div>
+            <div className="text-white/80">{t('todayBookings')}</div>
           </div>
         }
       />
@@ -200,41 +202,41 @@ export default function AdminDashboard() {
       {/* Key Metrics */}
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4 mb-8">
         <StatCard
-          title="Total Users"
+          title={t('totalUsers')}
           value={stats?.totalUsers || 0}
-          description={`+${stats?.recentUsers.length || 0} new this week`}
+          description={t('newThisWeek', { count: stats?.recentUsers.length || 0 })}
           icon={Users}
           variant="primary"
         />
 
         <StatCard
-          title="Monasteries"
+          title={t('monasteries')}
           value={stats?.totalMonasteries || 0}
           description={
             stats?.pendingMonasteries && stats.pendingMonasteries > 0
-              ? `${stats.pendingMonasteries} pending approval`
-              : 'All approved'
+              ? t('pendingApproval', { count: stats.pendingMonasteries })
+              : t('allApproved')
           }
           icon={Building}
           variant="secondary"
         />
 
         <StatCard
-          title="Total Donations"
+          title={t('totalDonations')}
           value={stats?.totalBookings || 0}
-          description={`${stats?.todayBookings || 0} today`}
+          description={t('today', { count: stats?.todayBookings || 0 })}
           icon={Calendar}
           variant="accent"
         />
 
         <StatCard
-          title="Active Donors"
+          title={t('activeDonors')}
           value={stats?.totalDonors || 0}
-          description={`${
-            stats?.totalUsers && stats?.totalDonors
+          description={t('percentOfUsers', {
+            percent: stats?.totalUsers && stats?.totalDonors
               ? Math.round((stats.totalDonors / stats.totalUsers) * 100)
               : 0
-          }% of total users`}
+          })}
           icon={TrendingUp}
           variant="trust"
         />
@@ -247,9 +249,9 @@ export default function AdminDashboard() {
           <CardHeader className="pb-3">
             <CardTitle className="flex items-center gap-2">
               <Users className="w-5 h-5" />
-              Recent Users
+              {t('recentUsers')}
             </CardTitle>
-            <CardDescription>Latest user registrations</CardDescription>
+            <CardDescription>{t('latestRegistrations')}</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
@@ -278,9 +280,9 @@ export default function AdminDashboard() {
           <CardHeader className="pb-3">
             <CardTitle className="flex items-center gap-2">
               <Calendar className="w-5 h-5" />
-              Recent Bookings
+              {t('recentBookings')}
             </CardTitle>
-            <CardDescription>Latest donation bookings</CardDescription>
+            <CardDescription>{t('latestDonationBookings')}</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">

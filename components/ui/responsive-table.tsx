@@ -122,8 +122,8 @@ export function ResponsiveTable({
 
   // Desktop Table View
   return (
-    <div className={cn('w-full overflow-x-auto', className)}>
-      <Table>
+    <div className={cn('w-full', className)}>
+      <Table className="table-fixed">
         <TableHeader>
           <TableRow>
             {displayColumns.map((column, index) => (
@@ -154,6 +154,7 @@ export function ResponsiveTable({
                   <TableCell
                     key={column.key}
                     className={cn(
+                      'align-top',
                       column.className,
                       stickyFirstColumn && colIndex === 0 && 'sticky left-0 bg-background z-10'
                     )}
@@ -198,12 +199,15 @@ export function createTableColumn(
     className?: string
   }
 ): ResponsiveTableColumn {
-  return {
+  const column: ResponsiveTableColumn = {
     key,
     label,
-    mobileLabel: options?.mobileLabel,
     priority: options?.priority || 'medium',
-    render: options?.render,
-    className: options?.className,
   }
+
+  if (options?.mobileLabel !== undefined) column.mobileLabel = options.mobileLabel
+  if (options?.render !== undefined) column.render = options.render
+  if (options?.className !== undefined) column.className = options.className
+
+  return column
 }

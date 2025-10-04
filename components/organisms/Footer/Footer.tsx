@@ -6,7 +6,8 @@ import { Heart, Mail, Phone, MapPin } from 'lucide-react'
 import Image from 'next/image'
 
 export function Footer() {
-  const t = useTranslations('Navigation')
+  const tNav = useTranslations('Navigation')
+  const t = useTranslations('Footer')
   const currentYear = new Date().getFullYear()
 
   return (
@@ -24,39 +25,39 @@ export function Footer() {
                   className="object-contain"
                 />
               </div>
-              <span className="text-xl font-bold text-primary">{t('brand')}</span>
+              <span className="text-xl font-bold text-primary">{tNav('brand')}</span>
             </Link>
             <p className="text-sm text-muted-foreground">
-              Connect donors with monasteries for meaningful food donations and support Buddhist spiritual practice.
+              {t('description')}
             </p>
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
               <Heart className="w-4 h-4 text-primary" />
-              <span>Made with compassion</span>
+              <span>{t('madeWithCompassion')}</span>
             </div>
           </div>
 
           {/* Quick Links */}
           <div className="space-y-4">
-            <h3 className="font-semibold text-foreground">Quick Links</h3>
+            <h3 className="font-semibold text-foreground">{t('quickLinks')}</h3>
             <ul className="space-y-2">
               <li>
                 <Link href="/monasteries" className="text-sm text-muted-foreground hover:text-primary transition-colors">
-                  Find Monasteries
+                  {t('findMonasteries')}
                 </Link>
               </li>
               <li>
                 <Link href="/donate" className="text-sm text-muted-foreground hover:text-primary transition-colors">
-                  Make a Donation
+                  {t('makeDonation')}
                 </Link>
               </li>
               <li>
                 <Link href="/my-donations" className="text-sm text-muted-foreground hover:text-primary transition-colors">
-                  My Donations
+                  {t('myDonations')}
                 </Link>
               </li>
               <li>
                 <Link href="/profile" className="text-sm text-muted-foreground hover:text-primary transition-colors">
-                  Profile
+                  {t('profile')}
                 </Link>
               </li>
             </ul>
@@ -64,21 +65,21 @@ export function Footer() {
 
           {/* For Monasteries */}
           <div className="space-y-4">
-            <h3 className="font-semibold text-foreground">For Monasteries</h3>
+            <h3 className="font-semibold text-foreground">{t('forMonasteries')}</h3>
             <ul className="space-y-2">
               <li>
                 <Link href="/manage" className="text-sm text-muted-foreground hover:text-primary transition-colors">
-                  Monastery Dashboard
+                  {t('monasteryDashboard')}
                 </Link>
               </li>
               <li>
                 <Link href="/manage/monastery" className="text-sm text-muted-foreground hover:text-primary transition-colors">
-                  Register Monastery
+                  {t('registerMonastery')}
                 </Link>
               </li>
               <li>
                 <Link href="/manage/bookings" className="text-sm text-muted-foreground hover:text-primary transition-colors">
-                  Manage Bookings
+                  {t('manageBookings')}
                 </Link>
               </li>
             </ul>
@@ -86,24 +87,24 @@ export function Footer() {
 
           {/* Contact Info */}
           <div className="space-y-4">
-            <h3 className="font-semibold text-foreground">Contact</h3>
+            <h3 className="font-semibold text-foreground">{t('contact')}</h3>
             <ul className="space-y-3">
               <li className="flex items-start gap-2">
                 <Mail className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
-                <a href="mailto:support@paathra.org" className="text-sm text-muted-foreground hover:text-primary transition-colors">
-                  support@paathra.org
+                <a href={`mailto:${t('email')}`} className="text-sm text-muted-foreground hover:text-primary transition-colors">
+                  {t('email')}
                 </a>
               </li>
               <li className="flex items-start gap-2">
                 <Phone className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
                 <span className="text-sm text-muted-foreground">
-                  +94 123 456 789
+                  {t('phone')}
                 </span>
               </li>
               <li className="flex items-start gap-2">
                 <MapPin className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
                 <span className="text-sm text-muted-foreground">
-                  Colombo, Sri Lanka
+                  {t('location')}
                 </span>
               </li>
             </ul>
@@ -114,14 +115,14 @@ export function Footer() {
         <div className="mt-12 pt-8 border-t border-amber-200">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
             <p className="text-sm text-muted-foreground text-center md:text-left">
-              © {currentYear} Paathra. All rights reserved.
+              {t('copyright', { year: currentYear })}
             </p>
             <div className="flex items-center gap-6">
               <Link href="/privacy" className="text-sm text-muted-foreground hover:text-primary transition-colors">
-                Privacy Policy
+                {t('privacyPolicy')}
               </Link>
               <Link href="/terms" className="text-sm text-muted-foreground hover:text-primary transition-colors">
-                Terms of Service
+                {t('termsOfService')}
               </Link>
             </div>
           </div>

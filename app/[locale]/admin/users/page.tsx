@@ -35,8 +35,10 @@ import { Search, Edit, Trash2, Filter, Users } from 'lucide-react'
 import { toast } from 'sonner'
 import { UserType, hasRole, getUserTypeDisplayName } from '@/types/auth'
 import { PageContainer, PageHeader, StatCard } from '@/lib/design-system'
+import { useTranslations } from 'next-intl'
 
 export default function UserManagement() {
+  const t = useTranslations('Admin.users')
   const [users, setUsers] = useState<UserProfile[]>([])
   const [filteredUsers, setFilteredUsers] = useState<UserProfile[]>([])
   const [loading, setLoading] = useState(true)
@@ -74,7 +76,7 @@ export default function UserManagement() {
       setUsers(data || [])
     } catch (error) {
       console.error('Error fetching users:', error)
-      toast.error("Failed to fetch users")
+      toast.error(t('fetchError'))
     } finally {
       setLoading(false)
     }
@@ -110,19 +112,19 @@ export default function UserManagement() {
 
       if (error) throw error
 
-      setUsers(users.map(user => 
+      setUsers(users.map(user =>
         user.id === userId ? { ...user, user_types: [newUserType] } : user
       ))
 
-      toast.success("User type updated successfully")
+      toast.success(t('userTypeUpdated'))
     } catch (error) {
       console.error('Error updating user:', error)
-      toast.error("Failed to update user type")
+      toast.error(t('updateError'))
     }
   }
 
   const deleteUser = async (userId: string) => {
-    if (!confirm('Are you sure you want to delete this user? This action cannot be undone.')) {
+    if (!confirm(t('deleteConfirm'))) {
       return
     }
 
@@ -135,10 +137,10 @@ export default function UserManagement() {
       if (error) throw error
 
       setUsers(users.filter(user => user.id !== userId))
-      toast.success("User deleted successfully")
+      toast.success(t('userDeleted'))
     } catch (error) {
       console.error('Error deleting user:', error)
-      toast.error("Failed to delete user")
+      toast.error(t('deleteError'))
     }
   }
 
@@ -166,31 +168,31 @@ export default function UserManagement() {
   return (
     <PageContainer gradient maxWidth="xl">
       <PageHeader
-        title="User Management"
-        description="Manage all users in the platform"
+        title={t('title')}
+        description={t('description')}
         icon={Users}
       />
 
       {/* Stats Cards */}
       <div className="grid gap-4 md:grid-cols-4">
         <StatCard
-          title="Total Users"
+          title={t('totalUsers')}
           value={users.length}
           icon={Users}
           variant="primary"
         />
         <StatCard
-          title="Donors"
+          title={t('donors')}
           value={users.filter(u => hasRole(u, 'donor')).length}
           variant="trust"
         />
         <StatCard
-          title="Monastery Admins"
+          title={t('monasteryAdmins')}
           value={users.filter(u => hasRole(u, 'monastery_admin')).length}
           variant="secondary"
         />
         <StatCard
-          title="Platform Admins"
+          title={t('platformAdmins')}
           value={users.filter(u => hasRole(u, 'super_admin')).length}
           variant="accent"
         />
@@ -199,32 +201,32 @@ export default function UserManagement() {
       {/* Filters and Search */}
       <div className="dana-card">
         <CardHeader className="pb-3">
-          <CardTitle>Users</CardTitle>
-          <CardDescription>View and manage all platform users</CardDescription>
+          <CardTitle>{t('usersTable')}</CardTitle>
+          <CardDescription>{t('viewManageUsers')}</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="flex flex-col gap-4 mb-6 md:flex-row md:items-center md:justify-between">
             <div className="flex flex-1 items-center space-x-2">
               <Search className="h-4 w-4 text-muted-foreground" />
               <Input
-                placeholder="Search users by name or email..."
+                placeholder={t('searchPlaceholder')}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="max-w-sm"
               />
             </div>
-            
+
             <div className="flex items-center space-x-2">
               <Filter className="h-4 w-4 text-muted-foreground" />
               <Select value={filterType} onValueChange={setFilterType}>
                 <SelectTrigger className="w-40">
-                  <SelectValue placeholder="Filter by type" />
+                  <SelectValue placeholder={t('filterByType')} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">All Users</SelectItem>
-                  <SelectItem value="donor">Donors</SelectItem>
-                  <SelectItem value="monastery_admin">Monastery Admins</SelectItem>
-                  <SelectItem value="super_admin">Platform Admins</SelectItem>
+                  <SelectItem value="all">{t('allUsers')}</SelectItem>
+                  <SelectItem value="donor">{t('donors')}</SelectItem>
+                  <SelectItem value="monastery_admin">{t('monasteryAdmins')}</SelectItem>
+                  <SelectItem value="super_admin">{t('platformAdmins')}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -235,12 +237,12 @@ export default function UserManagement() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Name</TableHead>
-                  <TableHead>Email</TableHead>
-                  <TableHead>Type</TableHead>
-                  <TableHead>Phone</TableHead>
-                  <TableHead>Joined</TableHead>
-                  <TableHead className="text-right">Actions</TableHead>
+                  <TableHead>{t('name')}</TableHead>
+                  <TableHead>{t('email')}</TableHead>
+                  <TableHead>{t('type')}</TableHead>
+                  <TableHead>{t('phone')}</TableHead>
+                  <TableHead>{t('joined')}</TableHead>
+                  <TableHead className="text-right">{t('actions')}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -255,7 +257,7 @@ export default function UserManagement() {
                         {getUserTypeDisplayName(getPrimaryUserType(user))}
                       </Badge>
                     </TableCell>
-                    <TableCell>{user.phone || 'Not provided'}</TableCell>
+                    <TableCell>{user.phone || t('notProvided')}</TableCell>
                     <TableCell>
                       {new Date(user.created_at).toLocaleDateString()}
                     </TableCell>
@@ -269,21 +271,21 @@ export default function UserManagement() {
                           </DialogTrigger>
                           <DialogContent>
                             <DialogHeader>
-                              <DialogTitle>Edit User Type</DialogTitle>
+                              <DialogTitle>{t('editUserType')}</DialogTitle>
                               <DialogDescription>
-                                Change the user type for {user.full_name}
+                                {t('changeUserType', { name: user.full_name })}
                               </DialogDescription>
                             </DialogHeader>
                             <div className="space-y-4">
                               <div>
-                                <Label>Current Type</Label>
+                                <Label>{t('currentType')}</Label>
                                 <p className="text-sm text-muted-foreground">
                                   {getUserTypesString(user)}
                                 </p>
                               </div>
                               <div>
-                                <Label>New Type</Label>
-                                <Select 
+                                <Label>{t('newType')}</Label>
+                                <Select
                                   defaultValue={getPrimaryUserType(user)}
                                   onValueChange={(value) => updateUserType(user.id, value as UserType)}
                                 >
@@ -291,9 +293,9 @@ export default function UserManagement() {
                                     <SelectValue />
                                   </SelectTrigger>
                                   <SelectContent>
-                                    <SelectItem value="donor">Donor</SelectItem>
-                                    <SelectItem value="monastery_admin">Monastery Admin</SelectItem>
-                                    <SelectItem value="super_admin">Platform Admin</SelectItem>
+                                    <SelectItem value="donor">{t('donor')}</SelectItem>
+                                    <SelectItem value="monastery_admin">{t('monasteryAdmin')}</SelectItem>
+                                    <SelectItem value="super_admin">{t('platformAdmin')}</SelectItem>
                                   </SelectContent>
                                 </Select>
                               </div>
@@ -316,7 +318,7 @@ export default function UserManagement() {
                 {filteredUsers.length === 0 && (
                   <TableRow>
                     <TableCell colSpan={6} className="h-24 text-center">
-                      No users found.
+                      {t('noUsersFound')}
                     </TableCell>
                   </TableRow>
                 )}
