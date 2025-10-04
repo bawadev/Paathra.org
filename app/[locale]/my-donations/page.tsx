@@ -120,10 +120,10 @@ export default function MyDonationsPage() {
 
   if (authLoading) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-[var(--bg-light)]">
-        <div className="text-lg text-[var(--text-light)] flex items-center gap-3">
-          <div className="lotus-icon animate-spin"></div>
-          {t('loadingDonations')}
+      <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-red-50">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#D4A574] mx-auto mb-4"></div>
+          <div className="text-lg text-gray-600">{t('loadingDonations')}</div>
         </div>
       </div>
     )
@@ -138,16 +138,16 @@ export default function MyDonationsPage() {
       <Navigation />
       
       {/* Hero Section */}
-      <section className="pt-20 md:pt-28 lg:pt-32 pb-8 md:pb-12">
+      <section className="pt-24 md:pt-32 lg:pt-36 pb-12 md:pb-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center space-y-4 md:space-y-6">
-            <div className="inline-flex items-center justify-center w-12 h-12 md:w-16 md:h-16 bg-gradient-to-br from-amber-500 to-orange-500 rounded-full mb-2 md:mb-4">
-              <Gift className="w-6 h-6 md:w-8 md:h-8 text-white" />
+          <div className="text-center space-y-6">
+            <div className="inline-flex items-center justify-center w-16 h-16 md:w-20 md:h-20 bg-gradient-to-br from-[#D4A574] to-[#EA8B6F] rounded-full shadow-lg">
+              <Gift className="w-8 h-8 md:w-10 md:h-10 text-white" />
             </div>
-            <h1 className="text-2xl md:text-4xl lg:text-5xl font-bold text-gray-900 px-4">
+            <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900">
               {t('title')}
             </h1>
-            <p className="text-base md:text-xl text-gray-600 max-w-2xl mx-auto px-4">
+            <p className="text-lg md:text-xl text-gray-600 max-w-2xl mx-auto">
               {t('description')}
             </p>
           </div>
@@ -161,30 +161,28 @@ export default function MyDonationsPage() {
           {loading ? (
             <div className="flex justify-center py-20">
               <div className="text-center">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-amber-500 mx-auto mb-4"></div>
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#D4A574] mx-auto mb-4"></div>
                 <p className="text-lg text-gray-600">{t('loadingDonations')}</p>
               </div>
             </div>
           ) : bookings.length === 0 ? (
-            <div className="text-center py-20">
-              <div className="max-w-2xl mx-auto">
-                <div className="w-20 h-20 bg-amber-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                  <Calendar className="w-10 h-10 text-amber-600" />
-                </div>
-                <h3 className="text-2xl font-semibold text-gray-900 mb-4">
-                  {t('noDonationsYet')}
-                </h3>
-                <p className="text-gray-600 mb-8 text-lg">
-                  {t('donationJourneyStarts')}
-                </p>
-                <Button
-                  className="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-semibold px-8 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200"
-                  onClick={() => window.location.href = '/donate'}
-                >
-                  <Calendar className="w-5 h-5 mr-2" />
-                  {t('makeFirstDonation')}
-                </Button>
+            <div className="bg-white rounded-2xl shadow-lg p-12 text-center max-w-2xl mx-auto">
+              <div className="w-24 h-24 bg-gradient-to-br from-[#D4A574]/20 to-[#EA8B6F]/20 rounded-full flex items-center justify-center mx-auto mb-6">
+                <Calendar className="w-12 h-12 text-[#D4A574]" />
               </div>
+              <h3 className="text-2xl font-semibold text-gray-900 mb-4">
+                {t('noDonationsYet')}
+              </h3>
+              <p className="text-gray-600 mb-8 text-lg">
+                {t('donationJourneyStarts')}
+              </p>
+              <Button
+                className="bg-gradient-to-r from-[#D4A574] to-[#EA8B6F] hover:from-[#C69564] hover:to-[#DA7B5F] text-white font-semibold px-8 py-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200"
+                onClick={() => window.location.href = '/donate'}
+              >
+                <Calendar className="w-5 h-5 mr-2" />
+                {t('makeFirstDonation')}
+              </Button>
             </div>
           ) : (
             <div className="space-y-8">
@@ -206,8 +204,8 @@ export default function MyDonationsPage() {
                   className={cn(
                     "min-h-[44px] justify-start sm:justify-center text-sm",
                     filter === 'all'
-                      ? 'bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600'
-                      : 'border-amber-200 text-amber-700 hover:bg-amber-50'
+                      ? 'bg-gradient-to-r from-[#D4A574] to-[#EA8B6F] hover:from-[#C69564] hover:to-[#DA7B5F]'
+                      : 'border-[#D4A574]/40 text-[#C69564] hover:bg-[#D4A574]/10'
                   )}
                 >
                   <Filter className="w-4 h-4 mr-2 flex-shrink-0" />
@@ -242,14 +240,14 @@ export default function MyDonationsPage() {
               </div>
               
               {filteredBookings.length === 0 ? (
-                <div className="text-center py-12">
-                  <div className="w-16 h-16 bg-amber-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <Calendar className="w-8 h-8 text-amber-600" />
+                <div className="bg-white rounded-2xl shadow-md p-12 text-center">
+                  <div className="w-20 h-20 bg-gradient-to-br from-[#D4A574]/20 to-[#EA8B6F]/20 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <Calendar className="w-10 h-10 text-[#D4A574]" />
                   </div>
-                  <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                  <h3 className="text-xl font-semibold text-gray-900 mb-3">
                     {filter === 'upcoming' ? t('noUpcomingDonations') : filter === 'past' ? t('noPastDonations') : t('noDonationsFilter')}
                   </h3>
-                  <p className="text-gray-600">
+                  <p className="text-gray-600 text-base">
                     {filter === 'upcoming'
                       ? t('noUpcomingScheduled')
                       : filter === 'past'
@@ -260,13 +258,13 @@ export default function MyDonationsPage() {
               ) : (
                 <div className="grid gap-6">
                   {filteredBookings.map((booking) => (
-                  <Card key={booking.id} className="hover:shadow-lg transition-all duration-300 overflow-hidden">
-                    <CardContent className="p-4 md:p-6">
+                  <Card key={booking.id} className="hover:shadow-xl transition-all duration-300 overflow-hidden border-0 shadow-md rounded-2xl bg-white">
+                    <CardContent className="p-6 md:p-8">
                       <div className="flex flex-col gap-4">
                         {/* Header with Status */}
                         <div className="flex items-start justify-between gap-2">
                           <div className="flex items-start gap-3 flex-1 min-w-0">
-                            <div className="w-12 h-12 md:w-14 md:h-14 bg-gradient-to-br from-amber-500 to-orange-500 rounded-full flex items-center justify-center flex-shrink-0">
+                            <div className="w-12 h-12 md:w-14 md:h-14 bg-gradient-to-br from-[#D4A574] to-[#EA8B6F] rounded-full flex items-center justify-center flex-shrink-0">
                               <Utensils className="w-6 h-6 md:w-7 md:h-7 text-white" />
                             </div>
                             <div className="flex-1 min-w-0">
@@ -299,7 +297,7 @@ export default function MyDonationsPage() {
                         {/* Booking Details */}
                         <div className="grid gap-3 text-sm text-gray-600 pl-0 md:pl-0">
                           <div className="flex items-start gap-2 min-h-[24px]">
-                            <Calendar className="w-4 h-4 text-amber-600 mt-0.5 flex-shrink-0" />
+                            <Calendar className="w-4 h-4 text-[#D4A574] mt-0.5 flex-shrink-0" />
                             <span className="font-medium break-words">
                               {booking.donation_slots?.date
                                 ? format(parseISO(booking.donation_slots.date), 'MMMM d, yyyy')
@@ -307,19 +305,19 @@ export default function MyDonationsPage() {
                             </span>
                           </div>
                           <div className="flex items-start gap-2 min-h-[24px]">
-                            <Clock className="w-4 h-4 text-amber-600 mt-0.5 flex-shrink-0" />
+                            <Clock className="w-4 h-4 text-[#D4A574] mt-0.5 flex-shrink-0" />
                             <span className="font-medium">
                               {booking.donation_slots?.time_slot || 'Time not available'}
                             </span>
                           </div>
                           <div className="flex items-start gap-2 min-h-[24px]">
-                            <Users className="w-4 h-4 text-amber-600 mt-0.5 flex-shrink-0" />
+                            <Users className="w-4 h-4 text-[#D4A574] mt-0.5 flex-shrink-0" />
                             <span>
                               {booking.donation_slots?.max_donors || 0} {t('donorsCapacity')}
                             </span>
                           </div>
                           <div className="flex items-start gap-2 min-h-[24px]">
-                            <MapPin className="w-4 h-4 text-amber-600 mt-0.5 flex-shrink-0" />
+                            <MapPin className="w-4 h-4 text-[#D4A574] mt-0.5 flex-shrink-0" />
                             <span className="break-words">
                               {booking.donation_slots?.monasteries?.address || 'Location not available'}
                             </span>
@@ -328,7 +326,7 @@ export default function MyDonationsPage() {
 
                         {/* Special Notes */}
                         {booking.special_notes && (
-                          <div className="p-3 bg-amber-50 rounded-lg">
+                          <div className="p-3 bg-[#D4A574]/10 rounded-lg border border-[#D4A574]/20">
                             <p className="text-sm text-gray-800 break-words">
                               <strong>{t('yourNote')}</strong> {booking.special_notes}
                             </p>
