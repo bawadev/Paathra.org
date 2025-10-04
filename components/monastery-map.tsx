@@ -82,7 +82,10 @@ export function MonasteryMap({
         try {
           map = L.map(mapRef.current, {
             zoomControl: true,
-            attributionControl: true
+            attributionControl: true,
+            fadeAnimation: false,
+            zoomAnimation: false,
+            markerZoomAnimation: false
           }).setView(center, zoom);
         } catch (error) {
           console.error('Error creating map:', error);
@@ -90,6 +93,9 @@ export function MonasteryMap({
           return;
         }
         mapInstanceRef.current = map;
+
+        // Wait for map to fully initialize before adding layers
+        await new Promise(resolve => setTimeout(resolve, 100));
 
         // Add OpenStreetMap tiles (FREE)
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {

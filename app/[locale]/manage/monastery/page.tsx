@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { useTranslations } from 'next-intl'
 import { useAuthStore } from '@/lib/stores/useAuthStore'
 import { AuthForm } from '@/components/auth-form'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -30,6 +31,7 @@ const DIETARY_REQUIREMENTS = [
 ]
 
 export default function ManageMonasteryPage() {
+  const t = useTranslations('ManageMonastery')
   const { user, profile, loading: authLoading } = useAuthStore()
   const [monastery, setMonastery] = useState<Monastery | null>(null)
   const [loading, setLoading] = useState(true)
@@ -162,7 +164,7 @@ export default function ManageMonasteryPage() {
         }
 
         monasteryId = monastery.id
-        setMessage('Monastery information updated successfully!')
+        setMessage(t('monasteryUpdatedSuccess'))
       } else {
         // Create new monastery
         const { data: newMonastery, error: monasteryError } = await supabase
@@ -200,12 +202,12 @@ export default function ManageMonasteryPage() {
           .eq('id', user.id)
 
         if (profileError) {
-          setError('Monastery created but failed to update user role. Please contact support.')
+          setError(t('monasteryCreatedRoleError'))
           setSaving(false)
           return
         }
 
-        setMessage('Monastery created successfully! You are now a monastery administrator.')
+        setMessage(t('monasteryCreatedSuccess'))
       }
 
       // Ensure storage folder structure exists
@@ -244,7 +246,7 @@ export default function ManageMonasteryPage() {
       <div className="flex items-center justify-center min-h-screen bg-[var(--bg-light)]">
         <div className="text-lg text-[var(--text-light)] flex items-center gap-3">
           <div className="lotus-icon animate-spin"></div>
-          Loading monastery information...
+          {t('loadingMonasteryInfo')}
         </div>
       </div>
     )
@@ -264,9 +266,9 @@ export default function ManageMonasteryPage() {
           <section className="pt-32 pb-20">
             <div className="dana-card max-w-2xl mx-auto p-12 text-center">
               <AlertCircle className="w-16 h-16 text-[var(--primary-color)] mx-auto mb-6" />
-              <h3 className="text-2xl font-semibold text-[var(--text-dark)] mb-4">Access Denied</h3>
+              <h3 className="text-2xl font-semibold text-[var(--text-dark)] mb-4">{t('accessDenied')}</h3>
               <p className="text-[var(--text-light)] text-lg">
-                You don't have permission to access this page.
+                {t('noPermission')}
               </p>
             </div>
           </section>
@@ -283,13 +285,13 @@ export default function ManageMonasteryPage() {
           <div className="text-center space-y-6">
             <h1 className="text-4xl lg:text-5xl font-bold">
               <span className="gradient-text">
-                {monastery ? 'Manage Monastery Information' : 'Set Up Your Monastery'}
+                {monastery ? t('manageMonasteryTitle') : t('setupMonasteryTitle')}
               </span>
             </h1>
             <p className="text-xl text-[var(--text-light)] max-w-2xl mx-auto">
               {monastery
-                ? 'Update your monastery details and preferences'
-                : 'Complete the form below to set up your monastery profile'
+                ? t('updateMonasteryDescription')
+                : t('setupMonasteryDescription')
               }
             </p>
           </div>
@@ -299,7 +301,7 @@ export default function ManageMonasteryPage() {
           <div className="flex justify-center py-20">
             <div className="flex items-center gap-3 text-[var(--text-light)]">
               <div className="lotus-icon animate-spin"></div>
-              <span className="text-lg">Loading monastery information...</span>
+              <span className="text-lg">{t('loadingMonasteryInfoShort')}</span>
             </div>
           </div>
         ) : (
@@ -310,27 +312,27 @@ export default function ManageMonasteryPage() {
               <div className="mb-6">
                 <h2 className="text-2xl font-semibold text-[var(--text-dark)] flex items-center space-x-2 mb-2">
                   <Building className="w-6 h-6 text-[var(--primary-color)]" />
-                  <span>Basic Information</span>
+                  <span>{t('basicInformation')}</span>
                 </h2>
                 <p className="text-[var(--text-light)]">
-                  Essential details about your monastery
+                  {t('basicInformationDesc')}
                 </p>
               </div>
               <div className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="name">Monastery Name *</Label>
+                    <Label htmlFor="name">{t('monasteryName')} *</Label>
                     <Input
                       id="name"
                       value={formData.name}
                       onChange={(e) => handleInputChange('name', e.target.value)}
-                      placeholder="Enter monastery name"
+                      placeholder={t('monasteryNamePlaceholder')}
                       required
                     />
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="capacity">Capacity (people) *</Label>
+                    <Label htmlFor="capacity">{t('capacity')} *</Label>
                     <Input
                       id="capacity"
                       type="number"
@@ -344,23 +346,23 @@ export default function ManageMonasteryPage() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="description">Description</Label>
+                  <Label htmlFor="description">{t('description')}</Label>
                   <Textarea
                     id="description"
                     value={formData.description}
                     onChange={(e) => handleInputChange('description', e.target.value)}
-                    placeholder="Brief description of your monastery"
+                    placeholder={t('descriptionPlaceholder')}
                     rows={3}
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="address">Address *</Label>
+                  <Label htmlFor="address">{t('address')} *</Label>
                   <Textarea
                     id="address"
                     value={formData.address}
                     onChange={(e) => handleInputChange('address', e.target.value)}
-                    placeholder="Full address of the monastery"
+                    placeholder={t('addressPlaceholder')}
                     rows={2}
                     required
                   />
@@ -395,9 +397,9 @@ export default function ManageMonasteryPage() {
             {/* Contact Information */}
             <div className="dana-card p-8">
               <div className="mb-6">
-                <h2 className="text-2xl font-semibold text-[var(--text-dark)] mb-2">Contact Information</h2>
+                <h2 className="text-2xl font-semibold text-[var(--text-dark)] mb-2">{t('contactInformation')}</h2>
                 <p className="text-[var(--text-light)]">
-                  How donors can reach your monastery
+                  {t('contactInformationDesc')}
                 </p>
               </div>
               <div className="space-y-4">
@@ -405,28 +407,28 @@ export default function ManageMonasteryPage() {
                   <div className="space-y-2">
                     <Label htmlFor="phone" className="flex items-center space-x-1">
                       <Phone className="w-4 h-4" />
-                      <span>Phone Number</span>
+                      <span>{t('phoneNumber')}</span>
                     </Label>
                     <Input
                       id="phone"
                       type="tel"
                       value={formData.phone}
                       onChange={(e) => handleInputChange('phone', e.target.value)}
-                      placeholder="+1 (555) 123-4567"
+                      placeholder={t('phonePlaceholder')}
                     />
                   </div>
 
                   <div className="space-y-2">
                     <Label htmlFor="email" className="flex items-center space-x-1">
                       <Mail className="w-4 h-4" />
-                      <span>Email Address</span>
+                      <span>{t('emailAddress')}</span>
                     </Label>
                     <Input
                       id="email"
                       type="email"
                       value={formData.email}
                       onChange={(e) => handleInputChange('email', e.target.value)}
-                      placeholder="contact@monastery.org"
+                      placeholder={t('emailPlaceholder')}
                     />
                   </div>
                 </div>
@@ -434,14 +436,14 @@ export default function ManageMonasteryPage() {
                 <div className="space-y-2">
                   <Label htmlFor="website" className="flex items-center space-x-1">
                     <Globe className="w-4 h-4" />
-                    <span>Website</span>
+                    <span>{t('website')}</span>
                   </Label>
                   <Input
                     id="website"
                     type="url"
                     value={formData.website}
                     onChange={(e) => handleInputChange('website', e.target.value)}
-                    placeholder="https://www.monastery.org"
+                    placeholder={t('websitePlaceholder')}
                   />
                 </div>
               </div>
@@ -450,15 +452,15 @@ export default function ManageMonasteryPage() {
             {/* Portfolio Information */}
             <div className="dana-card p-8">
               <div className="mb-6">
-                <h2 className="text-2xl font-semibold text-[var(--text-dark)] mb-2">Portfolio Information</h2>
+                <h2 className="text-2xl font-semibold text-[var(--text-dark)] mb-2">{t('portfolioInformation')}</h2>
                 <p className="text-[var(--text-light)]">
-                  Detailed information for your monastery portfolio page
+                  {t('portfolioInformationDesc')}
                 </p>
               </div>
               <div className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="established_year">Established Year</Label>
+                    <Label htmlFor="established_year">{t('establishedYear')}</Label>
                     <Input
                       id="established_year"
                       type="number"
@@ -471,17 +473,17 @@ export default function ManageMonasteryPage() {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="tradition">Buddhist Tradition</Label>
+                    <Label htmlFor="tradition">{t('buddhistTradition')}</Label>
                     <Input
                       id="tradition"
                       value={formData.tradition}
                       onChange={(e) => handleInputChange('tradition', e.target.value)}
-                      placeholder="Theravada, Mahayana, etc."
+                      placeholder={t('traditionPlaceholder')}
                     />
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="monk_count">Number of Monks</Label>
+                    <Label htmlFor="monk_count">{t('numberOfMonks')}</Label>
                     <Input
                       id="monk_count"
                       type="number"
@@ -495,12 +497,12 @@ export default function ManageMonasteryPage() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="portfolio_description">Detailed Description</Label>
+                  <Label htmlFor="portfolio_description">{t('detailedDescription')}</Label>
                   <Textarea
                     id="portfolio_description"
                     value={formData.portfolio_description}
                     onChange={(e) => handleInputChange('portfolio_description', e.target.value)}
-                    placeholder="Detailed description for your monastery portfolio page..."
+                    placeholder={t('detailedDescriptionPlaceholder')}
                     rows={4}
                   />
                 </div>
@@ -512,16 +514,16 @@ export default function ManageMonasteryPage() {
               <div className="mb-6">
                 <h2 className="text-2xl font-semibold text-[var(--text-dark)] mb-2 flex items-center space-x-2">
                   <ImageIcon className="w-6 h-6 text-[var(--primary-color)]" />
-                  <span>Images</span>
+                  <span>{t('images')}</span>
                 </h2>
                 <p className="text-[var(--text-light)]">
-                  Upload photos for your monastery portfolio
+                  {t('imagesDesc')}
                 </p>
               </div>
               <div className="space-y-6">
                 {/* Monastery Logo/Avatar */}
                 <div className="space-y-2">
-                  <Label>Monastery Logo/Avatar</Label>
+                  <Label>{t('monasteryLogo')}</Label>
                   <ImageUpload
                     monasteryId={monastery?.id || 'temp'}
                     imageType="logo"
@@ -536,7 +538,7 @@ export default function ManageMonasteryPage() {
 
                 {/* Background Image */}
                 <div className="space-y-2">
-                  <Label>Background Image</Label>
+                  <Label>{t('backgroundImage')}</Label>
                   <ImageUpload
                     monasteryId={monastery?.id || 'temp'}
                     imageType="background"
@@ -551,7 +553,7 @@ export default function ManageMonasteryPage() {
 
                 {/* Gallery Images */}
                 <div className="space-y-2">
-                  <Label>Gallery Images</Label>
+                  <Label>{t('galleryImages')}</Label>
                   <ImageUpload
                     monasteryId={monastery?.id || 'temp'}
                     imageType="gallery"
@@ -575,30 +577,30 @@ export default function ManageMonasteryPage() {
             {/* Contact Person */}
             <div className="dana-card p-8">
               <div className="mb-6">
-                <h2 className="text-2xl font-semibold text-[var(--text-dark)] mb-2">Contact Person</h2>
+                <h2 className="text-2xl font-semibold text-[var(--text-dark)] mb-2">{t('contactPerson')}</h2>
                 <p className="text-[var(--text-light)]">
-                  Primary contact for monastery inquiries
+                  {t('contactPersonDesc')}
                 </p>
               </div>
               <div className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="contact_person_name">Full Name</Label>
+                    <Label htmlFor="contact_person_name">{t('fullName')}</Label>
                     <Input
                       id="contact_person_name"
                       value={formData.contact_person_name}
                       onChange={(e) => handleInputChange('contact_person_name', e.target.value)}
-                      placeholder="Ven. Name"
+                      placeholder={t('fullNamePlaceholder')}
                     />
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="contact_person_role">Role/Title</Label>
+                    <Label htmlFor="contact_person_role">{t('roleTitle')}</Label>
                     <Input
                       id="contact_person_role"
                       value={formData.contact_person_role}
                       onChange={(e) => handleInputChange('contact_person_role', e.target.value)}
-                      placeholder="Abbot, Secretary, etc."
+                      placeholder={t('rolePlaceholder')}
                     />
                   </div>
                 </div>
@@ -608,21 +610,21 @@ export default function ManageMonasteryPage() {
             {/* Facilities */}
             <div className="dana-card p-8">
               <div className="mb-6">
-                <h2 className="text-2xl font-semibold text-[var(--text-dark)] mb-2">Facilities</h2>
+                <h2 className="text-2xl font-semibold text-[var(--text-dark)] mb-2">{t('facilities')}</h2>
                 <p className="text-[var(--text-light)]">
-                  Available facilities at your monastery
+                  {t('facilitiesDesc')}
                 </p>
               </div>
               <div>
                 <div className="space-y-2">
-                  <Label htmlFor="facilities">Facilities (comma-separated)</Label>
+                  <Label htmlFor="facilities">{t('facilitiesLabel')}</Label>
                   <Textarea
                     id="facilities"
                     value={formData.facilities.join(', ')}
-                    onChange={(e) => handleInputChange('facilities', 
+                    onChange={(e) => handleInputChange('facilities',
                       e.target.value.split(',').map(facility => facility.trim()).filter(facility => facility)
                     )}
-                    placeholder="Meditation hall, library, guest house, dining hall, etc."
+                    placeholder={t('facilitiesPlaceholder')}
                     rows={2}
                   />
                 </div>
@@ -632,14 +634,14 @@ export default function ManageMonasteryPage() {
             {/* Daily Schedule */}
             <div className="dana-card p-8">
               <div className="mb-6">
-                <h2 className="text-2xl font-semibold text-[var(--text-dark)] mb-2">Daily Schedule</h2>
+                <h2 className="text-2xl font-semibold text-[var(--text-dark)] mb-2">{t('dailySchedule')}</h2>
                 <p className="text-[var(--text-light)]">
-                  Typical daily routine at the monastery
+                  {t('dailyScheduleDesc')}
                 </p>
               </div>
               <div className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="morning_schedule">Morning Schedule</Label>
+                  <Label htmlFor="morning_schedule">{t('morningSchedule')}</Label>
                   <Textarea
                     id="morning_schedule"
                     value={formData.daily_schedule.morning}
@@ -647,13 +649,13 @@ export default function ManageMonasteryPage() {
                       ...formData.daily_schedule,
                       morning: e.target.value
                     })}
-                    placeholder="4:30 AM - Morning chanting, 6:00 AM - Breakfast..."
+                    placeholder={t('morningSchedulePlaceholder')}
                     rows={2}
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="afternoon_schedule">Afternoon Schedule</Label>
+                  <Label htmlFor="afternoon_schedule">{t('afternoonSchedule')}</Label>
                   <Textarea
                     id="afternoon_schedule"
                     value={formData.daily_schedule.afternoon}
@@ -661,13 +663,13 @@ export default function ManageMonasteryPage() {
                       ...formData.daily_schedule,
                       afternoon: e.target.value
                     })}
-                    placeholder="12:00 PM - Lunch, 1:00 PM - Rest period..."
+                    placeholder={t('afternoonSchedulePlaceholder')}
                     rows={2}
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="evening_schedule">Evening Schedule</Label>
+                  <Label htmlFor="evening_schedule">{t('eveningSchedule')}</Label>
                   <Textarea
                     id="evening_schedule"
                     value={formData.daily_schedule.evening}
@@ -675,7 +677,7 @@ export default function ManageMonasteryPage() {
                       ...formData.daily_schedule,
                       evening: e.target.value
                     })}
-                    placeholder="5:00 PM - Evening chanting, 6:00 PM - Dinner..."
+                    placeholder={t('eveningSchedulePlaceholder')}
                     rows={2}
                   />
                 </div>
@@ -685,19 +687,19 @@ export default function ManageMonasteryPage() {
             {/* Rules & Guidelines */}
             <div className="dana-card p-8">
               <div className="mb-6">
-                <h2 className="text-2xl font-semibold text-[var(--text-dark)] mb-2">Rules & Guidelines</h2>
+                <h2 className="text-2xl font-semibold text-[var(--text-dark)] mb-2">{t('rulesGuidelines')}</h2>
                 <p className="text-[var(--text-light)]">
-                  Important rules and guidelines for visitors and donors
+                  {t('rulesGuidelinesDesc')}
                 </p>
               </div>
               <div>
                 <div className="space-y-2">
-                  <Label htmlFor="rules_guidelines">Rules and Guidelines</Label>
+                  <Label htmlFor="rules_guidelines">{t('rulesGuidelinesLabel')}</Label>
                   <Textarea
                     id="rules_guidelines"
                     value={formData.rules_guidelines}
                     onChange={(e) => handleInputChange('rules_guidelines', e.target.value)}
-                    placeholder="Dress code, visiting hours, donation guidelines..."
+                    placeholder={t('rulesGuidelinesPlaceholder')}
                     rows={4}
                   />
                 </div>
@@ -707,14 +709,14 @@ export default function ManageMonasteryPage() {
             {/* Social Media */}
             <div className="dana-card p-8">
               <div className="mb-6">
-                <h2 className="text-2xl font-semibold text-[var(--text-dark)] mb-2">Social Media</h2>
+                <h2 className="text-2xl font-semibold text-[var(--text-dark)] mb-2">{t('socialMedia')}</h2>
                 <p className="text-[var(--text-light)]">
-                  Links to your monastery's social media profiles
+                  {t('socialMediaDesc')}
                 </p>
               </div>
               <div className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="facebook">Facebook</Label>
+                  <Label htmlFor="facebook">{t('facebook')}</Label>
                   <Input
                     id="facebook"
                     value={formData.social_media.facebook}
@@ -722,12 +724,12 @@ export default function ManageMonasteryPage() {
                       ...formData.social_media,
                       facebook: e.target.value
                     })}
-                    placeholder="https://facebook.com/monastery"
+                    placeholder={t('facebookPlaceholder')}
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="twitter">Twitter</Label>
+                  <Label htmlFor="twitter">{t('twitter')}</Label>
                   <Input
                     id="twitter"
                     value={formData.social_media.twitter}
@@ -735,12 +737,12 @@ export default function ManageMonasteryPage() {
                       ...formData.social_media,
                       twitter: e.target.value
                     })}
-                    placeholder="https://twitter.com/monastery"
+                    placeholder={t('twitterPlaceholder')}
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="instagram">Instagram</Label>
+                  <Label htmlFor="instagram">{t('instagram')}</Label>
                   <Input
                     id="instagram"
                     value={formData.social_media.instagram}
@@ -748,7 +750,7 @@ export default function ManageMonasteryPage() {
                       ...formData.social_media,
                       instagram: e.target.value
                     })}
-                    placeholder="https://instagram.com/monastery"
+                    placeholder={t('instagramPlaceholder')}
                   />
                 </div>
               </div>
@@ -757,9 +759,9 @@ export default function ManageMonasteryPage() {
             {/* Dietary Requirements */}
             <div className="dana-card p-8">
               <div className="mb-6">
-                <h2 className="text-2xl font-semibold text-[var(--text-dark)] mb-2">Dietary Requirements</h2>
+                <h2 className="text-2xl font-semibold text-[var(--text-dark)] mb-2">{t('dietaryRequirements')}</h2>
                 <p className="text-[var(--text-light)]">
-                  Select all dietary restrictions or preferences that apply to your monastery
+                  {t('dietaryRequirementsDesc')}
                 </p>
               </div>
               <div>
@@ -790,7 +792,7 @@ export default function ManageMonasteryPage() {
 
                 {formData.dietary_requirements.length > 0 && (
                   <div className="mt-4">
-                    <Label>Selected Requirements:</Label>
+                    <Label>{t('selectedRequirements')}</Label>
                     <div className="flex flex-wrap gap-2 mt-2">
                       {formData.dietary_requirements.map((req) => (
                         <Badge key={req} variant="secondary" className="px-2 py-1">
@@ -813,34 +815,34 @@ export default function ManageMonasteryPage() {
             {/* Donation Preferences */}
             <div className="dana-card p-8">
               <div className="mb-6">
-                <h2 className="text-2xl font-semibold text-[var(--text-dark)] mb-2">Donation Preferences</h2>
+                <h2 className="text-2xl font-semibold text-[var(--text-dark)] mb-2">{t('donationPreferences')}</h2>
                 <p className="text-[var(--text-light)]">
-                  Let donors know your preferred donation times and any special instructions
+                  {t('donationPreferencesDesc')}
                 </p>
               </div>
               <div className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="preferred_donation_times">Preferred Donation Times</Label>
+                  <Label htmlFor="preferred_donation_times">{t('preferredDonationTimes')}</Label>
                   <Textarea
                     id="preferred_donation_times"
                     value={formData.preferred_donation_times}
                     onChange={(e) => handleInputChange('preferred_donation_times', e.target.value)}
-                    placeholder="e.g., Mornings 7-9 AM, Lunch 11 AM - 1 PM, Evenings 5-7 PM"
+                    placeholder={t('preferredDonationTimesPlaceholder')}
                     rows={3}
                   />
                 </div>
-                
+
                 <div className="space-y-2">
-                  <Label htmlFor="special_requirements">Special Requirements for Donations</Label>
+                  <Label htmlFor="special_requirements">{t('specialRequirementsForDonations')}</Label>
                   <Textarea
                     id="special_requirements"
                     value={formData.special_requirements}
                     onChange={(e) => handleInputChange('special_requirements', e.target.value)}
-                    placeholder="e.g., Breakfast donations - simple meals preferred; Dinner donations - light meals preferred; Lunch donations - main meals welcome"
+                    placeholder={t('specialRequirementsPlaceholder')}
                     rows={4}
                   />
                   <p className="text-sm text-muted-foreground">
-                    These special requirements will be shown to donors when they book any donation slot at your monastery
+                    {t('specialRequirementsNote')}
                   </p>
                 </div>
               </div>
@@ -868,10 +870,10 @@ export default function ManageMonasteryPage() {
                 onClick={() => window.history.back()}
                 className="dana-button dana-button-outline"
               >
-                Cancel
+                {t('cancel')}
               </Button>
               <Button type="submit" disabled={saving} className="dana-button dana-button-primary">
-                {saving ? 'Saving...' : (monastery ? 'Update Monastery' : 'Create Monastery')}
+                {saving ? t('saving') : (monastery ? t('updateMonastery') : t('createMonastery'))}
               </Button>
             </div>
           </form>

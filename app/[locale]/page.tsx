@@ -35,8 +35,8 @@ export default function HomePage() {
       <Navigation />
 
       {/* Hero Section */}
-      <section className="pt-32 pb-20 px-5">
-        <div className="max-w-7xl mx-auto">
+      <section className="min-h-screen flex items-center px-5">
+        <div className="max-w-7xl mx-auto w-full">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             {/* Hero Content */}
             <div className="space-y-8">
@@ -54,7 +54,7 @@ export default function HomePage() {
                     <ArrowRight className="w-5 h-5" />
                   </Button>
                 </Link>
-                <Button variant="outline" className="border-amber-200 text-amber-700 hover:bg-amber-50 px-6 py-3 rounded-xl">
+                <Button variant="outline" className="border-[#D4A574]/40 text-[#C69564] hover:bg-[#D4A574]/10 px-6 py-3 rounded-xl">
                   {t('learnMore')}
                 </Button>
               </div>
@@ -80,7 +80,7 @@ export default function HomePage() {
         <Card className="bg-white rounded-2xl shadow-xl">
           <CardHeader>
             <CardTitle className="text-2xl flex items-center gap-3 text-gray-900">
-              <div className="w-12 h-12 bg-gradient-to-br from-amber-500 to-orange-500 rounded-full flex items-center justify-center">
+              <div className="w-12 h-12 bg-gradient-to-br from-[#D4A574] to-[#EA8B6F] rounded-full flex items-center justify-center">
                 <Heart className="w-6 h-6 text-white" />
               </div>
               {t('welcomeTitle', { name: profile?.full_name || 'Friend' })}

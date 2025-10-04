@@ -37,19 +37,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         const { data: { session }, error } = await supabase.auth.getSession()
         
         if (error) {
-          console.error('Error getting session:', error)
-          
-          // Handle specific refresh token errors
-          if (error.message.toLowerCase().includes('invalid refresh token') || 
+          // Handle specific refresh token errors silently (these are expected)
+          if (error.message.toLowerCase().includes('invalid refresh token') ||
               error.message.toLowerCase().includes('refresh token not found')) {
-            console.log('Refresh token error detected, clearing session')
+            // Silently clear invalid session - this is normal on first load with stale tokens
             await supabase.auth.signOut()
-            setError('Your session has expired. Please sign in again.')
+            // Don't set error message as this is expected behavior
           } else if (error.message.includes('refresh') || error.message.includes('token')) {
             // Clear invalid session
             await supabase.auth.signOut()
-            setError('Your session has expired. Please sign in again.')
+            // Don't set error for token issues during initialization
           } else {
+            console.error('Error getting session:', error)
             setError('Authentication error. Please try again.')
           }
           
@@ -132,18 +131,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             }
         }
       } catch (err: any) {
-        console.error('Error handling auth state change:', err)
-        
-        // Handle refresh token errors specifically
-        if (err?.message?.toLowerCase().includes('invalid refresh token') || 
+        // Handle refresh token errors specifically (these are expected)
+        if (err?.message?.toLowerCase().includes('invalid refresh token') ||
             err?.message?.toLowerCase().includes('refresh token not found')) {
-          console.log('Refresh token error in auth state change, clearing session')
+          // Silently clear session - this is normal behavior
           await supabase.auth.signOut()
-          setError('Your session has expired. Please sign in again.')
           setSession(null)
           setUser(null)
           setProfile(null)
         } else {
+          console.error('Error handling auth state change:', err)
           setError('Authentication error occurred. Please refresh the page.')
         }
         setLoading(false)

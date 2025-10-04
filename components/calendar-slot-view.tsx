@@ -74,6 +74,7 @@ export function CalendarSlotView({ monasteryId, bookings, onBookingAction, userI
   const [currentDate, setCurrentDate] = useState(new Date())
   const [selectedDate, setSelectedDate] = useState<Date | null>(null)
   const [donationSlots, setDonationSlots] = useState<DonationSlot[]>([])
+  const [monthSlots, setMonthSlots] = useState<DonationSlot[]>([]) // Track all slots for current month
   const [loadingSlots, setLoadingSlots] = useState(false)
   const [createSlotDialogOpen, setCreateSlotDialogOpen] = useState(false)
   const [editSlotDialogOpen, setEditSlotDialogOpen] = useState(false)
@@ -148,10 +149,24 @@ export function CalendarSlotView({ monasteryId, bookings, onBookingAction, userI
     fetchMonastery()
   }, [monasteryId])
 
+  const fetchSlotsForMonth = useCallback(async (date: Date) => {
+    const monthStart = format(startOfMonth(date), 'yyyy-MM-dd')
+    const monthEnd = format(endOfMonth(date), 'yyyy-MM-dd')
+
+    const { data: slots } = await supabase
+      .from('donation_slots')
+      .select('id, date, meal_type, monastery_id')
+      .eq('monastery_id', monasteryId)
+      .gte('date', monthStart)
+      .lte('date', monthEnd)
+
+    setMonthSlots(slots || [])
+  }, [monasteryId])
+
   const fetchSlotsForDate = useCallback(async (date: Date) => {
     setLoadingSlots(true)
     const dateStr = format(date, 'yyyy-MM-dd')
-    
+
     const { data: slots } = await supabase
       .from('donation_slots')
       .select(`
@@ -170,12 +185,12 @@ export function CalendarSlotView({ monasteryId, bookings, onBookingAction, userI
       const activeBookings = slot.donation_bookings?.filter(
         booking => booking.status !== 'cancelled'
       ) || []
-      
+
       const totalServings = activeBookings.reduce(
-        (sum, booking) => sum + (booking.estimated_servings || 0), 
+        (sum, booking) => sum + (booking.estimated_servings || 0),
         0
       )
-      
+
       return {
         ...slot,
         monks_fed: totalServings,
@@ -188,6 +203,11 @@ export function CalendarSlotView({ monasteryId, bookings, onBookingAction, userI
     setDonationSlots(slotsWithCalculatedData)
     setLoadingSlots(false)
   }, [monasteryId])
+
+  // Fetch month slots when currentDate changes
+  useEffect(() => {
+    fetchSlotsForMonth(currentDate)
+  }, [currentDate, fetchSlotsForMonth])
 
   // Fetch slots for selected date
   useEffect(() => {
@@ -283,12 +303,13 @@ export function CalendarSlotView({ monasteryId, bookings, onBookingAction, userI
       } else {
         setCreateSlotDialogOpen(false)
         fetchSlotsForDate(selectedDate)
-        
+        fetchSlotsForMonth(currentDate) // Refresh month slots to update calendar indicators
+
         // Notify parent component to refresh data
         if (onBookingCreated) {
           onBookingCreated()
         }
-        
+
         // Update monastery default time if changed
         if (formData.time_slot !== getDefaultTime(formData.meal_type)) {
           const updateField = `${formData.meal_type}_time`
@@ -320,6 +341,7 @@ export function CalendarSlotView({ monasteryId, bookings, onBookingAction, userI
     if (!error) {
       setEditSlotDialogOpen(false)
       fetchSlotsForDate(selectedDate!)
+      fetchSlotsForMonth(currentDate) // Refresh month slots to update calendar indicators
     }
   }
 
@@ -331,6 +353,7 @@ export function CalendarSlotView({ monasteryId, bookings, onBookingAction, userI
 
     if (!error) {
       fetchSlotsForDate(selectedDate!)
+      fetchSlotsForMonth(currentDate) // Refresh month slots to update calendar indicators
     }
   }
 
@@ -342,6 +365,7 @@ export function CalendarSlotView({ monasteryId, bookings, onBookingAction, userI
 
     if (!error) {
       fetchSlotsForDate(selectedDate!)
+      fetchSlotsForMonth(currentDate) // Refresh month slots to update calendar indicators
     }
   }
 
@@ -389,6 +413,7 @@ export function CalendarSlotView({ monasteryId, bookings, onBookingAction, userI
 
     if (!error) {
       fetchSlotsForDate(selectedDate)
+      fetchSlotsForMonth(currentDate) // Refresh month slots to update calendar indicators
       setBulkSlotDialogOpen(false)
     }
   }
@@ -812,11 +837,11 @@ const createBooking = async () => {
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
       {/* Calendar Section */}
       <div className="lg:col-span-2">
-        <Card className="shadow-elegant hover:shadow-elegant-lg transition-all duration-300 bg-gradient-to-br from-white to-amber-50/20 rounded-2xl border border-amber-100/50 overflow-hidden">
+        <Card className="shadow-elegant hover:shadow-elegant-lg transition-all duration-300 bg-gradient-to-br from-white to-[#D4A574]/10 rounded-2xl border border-[#D4A574]/30 overflow-hidden">
           <CardHeader className="pb-4">
             <div className="flex items-center justify-between">
               <CardTitle className="text-xl flex items-center gap-2">
-                <Calendar className="w-5 h-5 text-amber-600" />
+                <Calendar className="w-5 h-5 text-[#D4A574]" />
                 {tCalendar('calendarView')}
               </CardTitle>
               <div className="flex items-center gap-2">
@@ -824,7 +849,7 @@ const createBooking = async () => {
                   variant="outline"
                   size="sm"
                   onClick={() => navigateMonth('prev')}
-                  className="hover:bg-gradient-to-r hover:from-amber-50 hover:to-orange-50 hover:text-amber-700 border-amber-200 transition-all duration-200 hover:scale-105 hover:shadow-md"
+                  className="hover:bg-gradient-to-r hover:from-[#D4A574]/20 hover:to-[#EA8B6F]/20 hover:text-[#C69564] border-[#D4A574]/30 transition-all duration-200 hover:scale-105 hover:shadow-md"
                 >
                   <ChevronLeft className="w-4 h-4" />
                 </Button>
@@ -835,7 +860,7 @@ const createBooking = async () => {
                   variant="outline"
                   size="sm"
                   onClick={() => navigateMonth('next')}
-                  className="hover:bg-gradient-to-r hover:from-amber-50 hover:to-orange-50 hover:text-amber-700 border-amber-200 transition-all duration-200 hover:scale-105 hover:shadow-md"
+                  className="hover:bg-gradient-to-r hover:from-[#D4A574]/20 hover:to-[#EA8B6F]/20 hover:text-[#C69564] border-[#D4A574]/30 transition-all duration-200 hover:scale-105 hover:shadow-md"
                 >
                   <ChevronRight className="w-4 h-4" />
                 </Button>
@@ -855,9 +880,9 @@ const createBooking = async () => {
                 const dateKey = format(day, 'yyyy-MM-dd')
                 const dayBookings = bookingsByDate[dateKey] || []
                 const totalBookings = dayBookings.length
-                
-                // Check if we have slots for this date
-                const dateSlots = donationSlots.filter(slot => slot.date === dateKey)
+
+                // Check if we have slots for this date using monthSlots
+                const dateSlots = monthSlots.filter(slot => slot.date === dateKey)
                 const hasSlots = dateSlots.length > 0
                 const isSelected = selectedDate && isSameDay(day, selectedDate)
                 const isToday = isSameDay(day, new Date())
@@ -869,18 +894,18 @@ const createBooking = async () => {
                     onClick={() => handleDateClick(day)}
                     className={cn(
                       'relative p-2 text-center rounded-xl transition-all duration-300 flex flex-col min-h-[70px] border',
-                      'hover:shadow-elegant focus:outline-none focus:ring-2 focus:ring-amber-500 hover:scale-105',
+                      'hover:shadow-elegant focus:outline-none focus:ring-2 focus:ring-[#D4A574] hover:scale-105',
                       !isCurrentMonth && 'text-gray-400 bg-gray-50/50',
-                      isSelected && 'bg-gradient-to-br from-amber-500 to-orange-500 text-white shadow-elegant scale-105',
-                      isToday && !isSelected && 'ring-2 ring-amber-500 ring-offset-2',
+                      isSelected && 'bg-gradient-to-br from-[#D4A574] to-[#EA8B6F] text-white shadow-elegant scale-105',
+                      isToday && !isSelected && 'ring-2 ring-[#D4A574] ring-offset-2',
                       !isSelected && !isToday && isCurrentMonth && hasSlots && 'bg-gradient-to-br from-green-50 to-emerald-50 border-green-300 hover:from-green-100 hover:to-emerald-100 hover:border-green-400',
                       !isSelected && !isToday && isCurrentMonth && !hasSlots && 'bg-gradient-to-br from-gray-50 to-slate-50 border-gray-200 hover:from-gray-100 hover:to-slate-100',
-                      totalBookings > 0 && !isSelected && 'bg-gradient-to-br from-amber-50 to-orange-50 border-amber-300 hover:from-amber-100 hover:to-orange-100 hover:border-amber-400'
+                      totalBookings > 0 && !isSelected && 'bg-gradient-to-br from-[#D4A574]/20 to-[#EA8B6F]/20 border-[#D4A574]/50 hover:from-[#D4A574]/30 hover:to-[#EA8B6F]/30 hover:border-[#D4A574]/70'
                     )}
                   >
                     <div className={cn(
                       "text-lg font-semibold mb-1",
-                      isToday && !isSelected && "text-amber-600"
+                      isToday && !isSelected && "text-[#D4A574]"
                     )}>{format(day, 'd')}</div>
 
                     {totalBookings > 0 && (
@@ -904,7 +929,7 @@ const createBooking = async () => {
                     )}
 
                     {isToday && !isSelected && (
-                      <span className="absolute -top-1 -right-1 text-xs bg-amber-500 text-white px-1.5 py-0.5 rounded-full">
+                      <span className="absolute -top-1 -right-1 text-xs bg-gradient-to-r from-[#D4A574] to-[#EA8B6F] text-white px-1.5 py-0.5 rounded-full">
                         {tCalendar('today')}
                       </span>
                     )}
@@ -1054,9 +1079,9 @@ const createBooking = async () => {
       {/* Slots Section */}
       <div className="lg:col-span-1">
         {selectedDate && (
-          <Card className="shadow-elegant hover:shadow-elegant-lg transition-all duration-300 bg-gradient-to-br from-amber-50 to-orange-50/30 rounded-2xl border border-amber-100/50">
+          <Card className="shadow-elegant hover:shadow-elegant-lg transition-all duration-300 bg-gradient-to-br from-[#D4A574]/10 to-[#EA8B6F]/10 rounded-2xl border border-[#D4A574]/30">
             <CardHeader>
-              <CardTitle className="text-xl text-amber-900">
+              <CardTitle className="text-xl text-[#C69564]">
                 {tCalendar('slotsFor', { date: format(selectedDate, 'MMM d') })}
               </CardTitle>
               <CardDescription className="text-gray-700">
@@ -1069,7 +1094,7 @@ const createBooking = async () => {
                 <div className="space-y-2">
                   <Button
                     onClick={() => setBulkSlotDialogOpen(true)}
-                    className="w-full bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white rounded-lg shadow-elegant hover:shadow-elegant-lg hover:scale-105 transition-all duration-300"
+                    className="w-full bg-gradient-to-r from-[#D4A574] to-[#EA8B6F] hover:from-[#C69564] hover:to-[#DA7B5F] text-white rounded-lg shadow-elegant hover:shadow-elegant-lg hover:scale-105 transition-all duration-300"
                     size="sm"
                   >
                     <Plus className="w-4 h-4 mr-2" />
@@ -1093,7 +1118,7 @@ const createBooking = async () => {
                     }}
                     size="sm"
                     variant="outline"
-                    className="border-amber-200 text-amber-700 hover:bg-gradient-to-r hover:from-amber-50 hover:to-orange-50 hover:border-amber-300 rounded-lg transition-all duration-300 hover:scale-105 hover:shadow-md"
+                    className="border-[#D4A574]/40 text-[#C69564] hover:bg-gradient-to-r hover:from-[#D4A574]/20 hover:to-[#EA8B6F]/20 hover:border-[#D4A574]/60 rounded-lg transition-all duration-300 hover:scale-105 hover:shadow-md"
                   >
                     {tCalendar('breakfast', { time: '7:00 AM' })}
                   </Button>
@@ -1112,7 +1137,7 @@ const createBooking = async () => {
                     }}
                     size="sm"
                     variant="outline"
-                    className="border-amber-200 text-amber-700 hover:bg-gradient-to-r hover:from-amber-50 hover:to-orange-50 hover:border-amber-300 rounded-lg transition-all duration-300 hover:scale-105 hover:shadow-md"
+                    className="border-[#D4A574]/40 text-[#C69564] hover:bg-gradient-to-r hover:from-[#D4A574]/20 hover:to-[#EA8B6F]/20 hover:border-[#D4A574]/60 rounded-lg transition-all duration-300 hover:scale-105 hover:shadow-md"
                   >
                     {tCalendar('lunch', { time: '11:30 AM' })}
                   </Button>
@@ -1131,15 +1156,15 @@ const createBooking = async () => {
                     }}
                     size="sm"
                     variant="outline"
-                    className="border-amber-200 text-amber-700 hover:bg-amber-50 hover:border-amber-300 rounded-lg"
+                    className="border-[#D4A574]/40 text-[#C69564] hover:bg-gradient-to-r hover:from-[#D4A574]/20 hover:to-[#EA8B6F]/20 hover:border-[#D4A574]/60 rounded-lg transition-all duration-300 hover:scale-105 hover:shadow-md"
                   >
                     {tCalendar('dinner', { time: '5:00 PM' })}
                   </Button>
                 </div>
 
                 {/* Instructions for slot booking */}
-                <div className="text-center py-2 px-4 bg-amber-50 rounded-lg border border-amber-200">
-                  <p className="text-sm text-amber-800 font-medium">
+                <div className="text-center py-2 px-4 bg-[#D4A574]/10 rounded-lg border border-[#D4A574]/30">
+                  <p className="text-sm text-[#C69564] font-medium">
                     {tCalendar('clickSlotInstructions')}
                   </p>
                 </div>
@@ -1375,10 +1400,10 @@ const createBooking = async () => {
           </div>
 
           <DialogFooter>
-            <Button variant="outline" onClick={() => setCreateSlotDialogOpen(false)} className="border-amber-200 text-amber-700 hover:bg-amber-50 rounded-lg">
+            <Button variant="outline" onClick={() => setCreateSlotDialogOpen(false)} className="border-[#D4A574]/40 text-[#C69564] hover:bg-[#D4A574]/10 rounded-lg">
               Cancel
             </Button>
-            <Button onClick={createSlot} className="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white rounded-lg shadow-md">
+            <Button onClick={createSlot} className="bg-gradient-to-r from-[#D4A574] to-[#EA8B6F] hover:from-[#C69564] hover:to-[#DA7B5F] text-white rounded-lg shadow-md">
               Create Slot
             </Button>
           </DialogFooter>
@@ -1437,10 +1462,10 @@ const createBooking = async () => {
           </div>
 
           <DialogFooter>
-            <Button variant="outline" onClick={() => setEditSlotDialogOpen(false)} className="border-amber-200 text-amber-700 hover:bg-amber-50 rounded-lg">
+            <Button variant="outline" onClick={() => setEditSlotDialogOpen(false)} className="border-[#D4A574]/40 text-[#C69564] hover:bg-[#D4A574]/10 rounded-lg">
               Cancel
             </Button>
-            <Button onClick={updateSlot} className="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white rounded-lg shadow-md">
+            <Button onClick={updateSlot} className="bg-gradient-to-r from-[#D4A574] to-[#EA8B6F] hover:from-[#C69564] hover:to-[#DA7B5F] text-white rounded-lg shadow-md">
               Update Slot
             </Button>
           </DialogFooter>
@@ -1483,10 +1508,10 @@ const createBooking = async () => {
           </div>
 
           <DialogFooter>
-            <Button variant="outline" onClick={() => setBulkSlotDialogOpen(false)} className="border-amber-200 text-amber-700 hover:bg-amber-50 rounded-lg">
+            <Button variant="outline" onClick={() => setBulkSlotDialogOpen(false)} className="border-[#D4A574]/40 text-[#C69564] hover:bg-[#D4A574]/10 rounded-lg">
               Cancel
             </Button>
-            <Button onClick={createBulkSlots} className="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white rounded-lg shadow-md">
+            <Button onClick={createBulkSlots} className="bg-gradient-to-r from-[#D4A574] to-[#EA8B6F] hover:from-[#C69564] hover:to-[#DA7B5F] text-white rounded-lg shadow-md">
               Create {30 * 3} Slots
             </Button>
           </DialogFooter>
@@ -1645,7 +1670,7 @@ const createBooking = async () => {
               variant="outline"
               onClick={() => setBookingDialogOpen(false)}
               disabled={creatingBooking}
-              className="border-amber-200 text-amber-700 hover:bg-amber-50 rounded-lg"
+              className="border-[#D4A574]/40 text-[#C69564] hover:bg-[#D4A574]/10 rounded-lg"
             >
               Cancel
             </Button>
