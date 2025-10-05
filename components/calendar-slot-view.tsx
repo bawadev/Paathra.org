@@ -834,48 +834,298 @@ const createBooking = async () => {
   const availableSlotsForBooking = getAvailableSlotsForBooking()
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-      {/* Calendar Section */}
-      <div className="lg:col-span-2">
-        <Card className="shadow-elegant hover:shadow-elegant-lg transition-all duration-300 bg-gradient-to-br from-white to-[#D4A574]/10 rounded-2xl border border-[#D4A574]/30 overflow-hidden">
-          <CardHeader className="pb-4">
-            <div className="flex items-center justify-between">
-              <CardTitle className="text-xl flex items-center gap-2">
-                <Calendar className="w-5 h-5 text-[#D4A574]" />
-                {tCalendar('calendarView')}
+    <div className="space-y-6 lg:grid lg:grid-cols-3 lg:gap-6 lg:space-y-0">
+      {/* Slots Section - Show first on mobile, last on desktop */}
+      <div className="lg:col-span-1 lg:order-2">
+        {selectedDate ? (
+          <Card className="shadow-elegant hover:shadow-elegant-lg transition-all duration-300 bg-gradient-to-br from-[#D4A574]/10 to-[#EA8B6F]/10 rounded-2xl border border-[#D4A574]/30">
+            <CardHeader>
+              <CardTitle className="text-xl text-[#C69564]">
+                {tCalendar('slotsFor', { date: format(selectedDate, 'MMM d') })}
               </CardTitle>
+              <CardDescription className="text-gray-700">
+                {tCalendar('manageSlots')}
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {/* Bulk Slot Creation */}
+                <div className="space-y-2">
+                  <Button
+                    onClick={() => setBulkSlotDialogOpen(true)}
+                    className="w-full bg-gradient-to-r from-[#D4A574] to-[#EA8B6F] hover:from-[#C69564] hover:to-[#DA7B5F] text-white rounded-lg shadow-elegant hover:shadow-elegant-lg hover:scale-105 transition-all duration-300"
+                    size="sm"
+                  >
+                    <Plus className="w-4 h-4 mr-2" />
+                    {tCalendar('createBulk')}
+                  </Button>
+                </div>
+
+                {/* Meal Type Quick Buttons */}
+                <div className="grid grid-cols-1 gap-2">
+                  <Button
+                    onClick={() => {
+                      setFormData({
+                        date: format(selectedDate, 'yyyy-MM-dd'),
+                        meal_type: 'breakfast',
+                        time_slot: '07:00',
+                        monks_capacity: monastery?.capacity || 10,
+                        max_donors: 5,
+                        booking_notes: ''
+                      })
+                      setCreateSlotDialogOpen(true)
+                    }}
+                    size="sm"
+                    variant="outline"
+                    className="border-[#D4A574]/40 text-[#C69564] hover:bg-gradient-to-r hover:from-[#D4A574]/20 hover:to-[#EA8B6F]/20 hover:border-[#D4A574]/60 rounded-lg transition-all duration-300 hover:scale-105 hover:shadow-md"
+                  >
+                    {tCalendar('breakfast', { time: '7:00 AM' })}
+                  </Button>
+
+                  <Button
+                    onClick={() => {
+                      setFormData({
+                        date: format(selectedDate, 'yyyy-MM-dd'),
+                        meal_type: 'lunch',
+                        time_slot: '11:30',
+                        monks_capacity: monastery?.capacity || 10,
+                        max_donors: 5,
+                        booking_notes: ''
+                      })
+                      setCreateSlotDialogOpen(true)
+                    }}
+                    size="sm"
+                    variant="outline"
+                    className="border-[#D4A574]/40 text-[#C69564] hover:bg-gradient-to-r hover:from-[#D4A574]/20 hover:to-[#EA8B6F]/20 hover:border-[#D4A574]/60 rounded-lg transition-all duration-300 hover:scale-105 hover:shadow-md"
+                  >
+                    {tCalendar('lunch', { time: '11:30 AM' })}
+                  </Button>
+
+                  <Button
+                    onClick={() => {
+                      setFormData({
+                        date: format(selectedDate, 'yyyy-MM-dd'),
+                        meal_type: 'dinner',
+                        time_slot: '17:00',
+                        monks_capacity: monastery?.capacity || 10,
+                        max_donors: 5,
+                        booking_notes: ''
+                      })
+                      setCreateSlotDialogOpen(true)
+                    }}
+                    size="sm"
+                    variant="outline"
+                    className="border-[#D4A574]/40 text-[#C69564] hover:bg-gradient-to-r hover:from-[#D4A574]/20 hover:to-[#EA8B6F]/20 hover:border-[#D4A574]/60 rounded-lg transition-all duration-300 hover:scale-105 hover:shadow-md"
+                  >
+                    {tCalendar('dinner', { time: '5:00 PM' })}
+                  </Button>
+                </div>
+
+                {/* Instructions for slot booking */}
+                <div className="text-center py-2 px-4 bg-[#D4A574]/10 rounded-lg border border-[#D4A574]/30">
+                  <p className="text-sm text-[#C69564] font-medium">
+                    {tCalendar('clickSlotInstructions')}
+                  </p>
+                </div>
+
+                {/* Existing Slots */}
+                {loadingSlots ? (
+                  <div className="text-center py-4">{tCalendar('loadingSlots')}</div>
+                ) : donationSlots.length === 0 ? (
+                  <div className="text-center py-6 text-gray-500">
+                    <Calendar className="w-8 h-8 mx-auto mb-2 text-gray-300" />
+                    <p className="text-sm font-medium mb-2">{tCalendar('noSlotsForDate')}</p>
+                    <p className="text-xs text-gray-400">{tCalendar('createSlotsMessage')}</p>
+                  </div>
+                ) : (
+                  <div className="space-y-2">
+                    {donationSlots.map((slot) => (
+                      <div key={slot.id} className="relative group">
+                        {/* Interactive Overlay with Management Actions */}
+                        <div className="absolute inset-0 bg-gray-900/90 rounded-lg opacity-0 group-hover:opacity-100 transition-all duration-200 z-10 flex flex-col items-center justify-center">
+                          {slot.is_available ? (
+                            <>
+                              {/* Create Booking Action */}
+                              <button
+                                onClick={() => openBookingDialog(slot)}
+                                className="text-white hover:bg-white/10 rounded-lg p-3 transition-colors w-full"
+                              >
+                                <UserPlus className="w-6 h-6 mx-auto mb-1" />
+                                <p className="font-medium text-sm">{tCalendar('createBooking')}</p>
+                              </button>
+
+                              {/* Management Actions Row */}
+                              <div className="flex items-center gap-3 mt-3 pt-3 border-t border-gray-700">
+                                <button
+                                  onClick={() => startEditingSlot(slot)}
+                                  className="text-gray-300 hover:text-white p-2 hover:bg-white/10 rounded transition-all"
+                                  title={tCalendar('editSlot')}
+                                >
+                                  <Edit3 className="w-4 h-4" />
+                                </button>
+
+                                <button
+                                  onClick={() => toggleSlotAvailability(slot.id, slot.is_available)}
+                                  className="text-gray-300 hover:text-yellow-400 p-2 hover:bg-white/10 rounded transition-all"
+                                  title={tCalendar('disableSlot')}
+                                >
+                                  <AlertCircle className="w-4 h-4" />
+                                </button>
+
+                                {slot.current_bookings === 0 && (
+                                  <button
+                                    onClick={() => deleteSlot(slot.id)}
+                                    className="text-gray-300 hover:text-red-400 p-2 hover:bg-white/10 rounded transition-all"
+                                    title="Delete Slot"
+                                  >
+                                    <Trash2 className="w-4 h-4" />
+                                  </button>
+                                )}
+                              </div>
+                            </>
+                          ) : (
+                            <div className="text-white text-center">
+                              <AlertCircle className="w-6 h-6 mx-auto mb-2 text-yellow-400" />
+                              <p className="font-medium">{tCalendar('slotDisabled')}</p>
+                              <button
+                                onClick={() => toggleSlotAvailability(slot.id, slot.is_available)}
+                                className="mt-3 text-sm px-3 py-1 bg-green-600 hover:bg-green-700 rounded transition-colors"
+                              >
+                                {tCalendar('enableSlot')}
+                              </button>
+                            </div>
+                          )}
+                        </div>
+
+                        <div className={cn(
+                          "border rounded-xl p-3 transition-all duration-200 bg-white",
+                          slot.is_available
+                            ? "border-gray-200 group-hover:border-amber-300 group-hover:shadow-lg cursor-pointer"
+                            : "opacity-60 border-gray-200"
+                        )}>
+                        <div className="flex items-center justify-between mb-1">
+                          <div className="font-semibold text-sm capitalize text-gray-900">
+                            {slot.meal_type} - {slot.time_slot}
+                          </div>
+                          <Badge
+                            className={cn(
+                              'font-medium',
+                              slot.is_available ? 'bg-green-100 text-green-800 border-green-200' : 'bg-red-100 text-red-800 border-red-200'
+                            )}
+                          >
+                            {slot.is_available ? tCalendar('active') : tCalendar('disabled')}
+                          </Badge>
+                        </div>
+
+                        <div className="text-xs mb-2">
+                          <div className={cn(
+                            "font-medium",
+                            slot.monks_fed > slot.monks_capacity
+                              ? "text-red-600"
+                              : slot.monks_fed === slot.monks_capacity
+                              ? "text-yellow-600"
+                              : "text-gray-600"
+                          )}>
+                            <span className="font-semibold">{slot.monks_fed}</span>/{slot.monks_capacity} {tCalendar('servings')}
+                            {slot.monks_fed > slot.monks_capacity && (
+                              <span className="ml-2 text-xs bg-red-100 text-red-800 px-1.5 py-0.5 rounded">
+                                {tCalendar('overCapacity')}
+                              </span>
+                            )}
+                            {slot.monks_fed === slot.monks_capacity && (
+                              <span className="ml-2 text-xs bg-yellow-100 text-yellow-800 px-1.5 py-0.5 rounded">
+                                {tCalendar('full')}
+                              </span>
+                            )}
+                          </div>
+                          <div className="text-gray-500 mt-1">
+                            {slot.current_bookings} {slot.current_bookings === 1 ? tCalendar('booking') : tCalendar('bookings')}
+                          </div>
+
+                          {/* Capacity Progress Bar */}
+                          <div className="mt-2">
+                            <div className="w-full bg-gray-200 rounded-full h-1.5">
+                              <div
+                                className={cn(
+                                  "h-1.5 rounded-full transition-all duration-300",
+                                  slot.monks_fed > slot.monks_capacity
+                                    ? "bg-red-500"
+                                    : slot.monks_fed === slot.monks_capacity
+                                    ? "bg-yellow-500"
+                                    : "bg-green-500"
+                                )}
+                                style={{
+                                  width: `${Math.min((slot.monks_fed / slot.monks_capacity) * 100, 100)}%`
+                                }}
+                              />
+                            </div>
+                          </div>
+                        </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+        ) : (
+          <Card className="shadow-xl bg-white rounded-2xl">
+            <CardHeader>
+              <CardTitle className="text-xl">{tCalendar('selectDate')}</CardTitle>
+              <CardDescription className="text-gray-600">
+                {tCalendar('chooseDateMessage')}
+              </CardDescription>
+            </CardHeader>
+          </Card>
+        )}
+      </div>
+
+      {/* Calendar Section */}
+      <div className="lg:col-span-2 lg:order-1">
+        <Card className="shadow-elegant hover:shadow-elegant-lg transition-all duration-300 bg-gradient-to-br from-white to-[#D4A574]/10 rounded-2xl border border-[#D4A574]/30 overflow-hidden">
+          <CardHeader className="pb-6 bg-gradient-to-br from-[#D4A574]/20 to-[#EA8B6F]/10 border-b border-gray-200/50">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+              <div className="flex-1">
+                <CardTitle className="text-2xl font-bold flex items-center gap-3 mb-2">
+                  <div className="p-2 bg-gradient-to-br from-[#D4A574] to-[#EA8B6F] rounded-xl shadow-md">
+                    <Calendar className="w-6 h-6 text-white" />
+                  </div>
+                  {format(currentDate, 'MMMM yyyy')}
+                </CardTitle>
+                <CardDescription className="text-base">
+                  {tCalendar('calendarView')}
+                </CardDescription>
+              </div>
               <div className="flex items-center gap-2">
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={() => navigateMonth('prev')}
-                  className="hover:bg-gradient-to-r hover:from-[#D4A574]/20 hover:to-[#EA8B6F]/20 hover:text-[#C69564] border-[#D4A574]/30 transition-all duration-200 hover:scale-105 hover:shadow-md"
+                  className="hover:bg-[#D4A574]/10 hover:text-[#C69564] border-[#D4A574]/30 hover:border-[#D4A574]/60 transition-all duration-300 rounded-xl shadow-sm hover:shadow-md px-4 py-2"
                 >
                   <ChevronLeft className="w-4 h-4" />
                 </Button>
-                <span className="text-sm font-medium px-2">
-                  {format(currentDate, 'MMMM yyyy')}
-                </span>
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={() => navigateMonth('next')}
-                  className="hover:bg-gradient-to-r hover:from-[#D4A574]/20 hover:to-[#EA8B6F]/20 hover:text-[#C69564] border-[#D4A574]/30 transition-all duration-200 hover:scale-105 hover:shadow-md"
+                  className="hover:bg-[#D4A574]/10 hover:text-[#C69564] border-[#D4A574]/30 hover:border-[#D4A574]/60 transition-all duration-300 rounded-xl shadow-sm hover:shadow-md px-4 py-2"
                 >
                   <ChevronRight className="w-4 h-4" />
                 </Button>
               </div>
             </div>
           </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-7 gap-1 mb-4">
+          <CardContent className="p-1 sm:p-4 md:p-6">
+            {/* Calendar Grid */}
+            <div className="grid grid-cols-7 gap-0 sm:gap-2 md:gap-3">
               {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
-                <div key={day} className="text-center text-sm font-semibold text-gray-700 py-3 bg-gray-50 rounded-t-lg">
+                <div key={day} className="text-center text-[9px] sm:text-xs md:text-sm font-semibold text-gray-600 pb-1 sm:pb-2 md:pb-3 leading-none">
                   {day}
                 </div>
               ))}
-            </div>
-            <div className="grid grid-cols-7 gap-1">
+
               {calendarDays.map((day, index) => {
                 const dateKey = format(day, 'yyyy-MM-dd')
                 const dayBookings = bookingsByDate[dateKey] || []
@@ -889,51 +1139,41 @@ const createBooking = async () => {
                 const isCurrentMonth = isSameMonth(day, currentDate)
 
                 return (
-                  <button
-                    key={index}
-                    onClick={() => handleDateClick(day)}
-                    className={cn(
-                      'relative p-2 text-center rounded-xl transition-all duration-300 flex flex-col min-h-[70px] border',
-                      'hover:shadow-elegant focus:outline-none focus:ring-2 focus:ring-[#D4A574] hover:scale-105',
-                      !isCurrentMonth && 'text-gray-400 bg-gray-50/50',
-                      isSelected && 'bg-gradient-to-br from-[#D4A574] to-[#EA8B6F] text-white shadow-elegant scale-105',
-                      isToday && !isSelected && 'ring-2 ring-[#D4A574] ring-offset-2',
-                      !isSelected && !isToday && isCurrentMonth && hasSlots && 'bg-gradient-to-br from-green-50 to-emerald-50 border-green-300 hover:from-green-100 hover:to-emerald-100 hover:border-green-400',
-                      !isSelected && !isToday && isCurrentMonth && !hasSlots && 'bg-gradient-to-br from-gray-50 to-slate-50 border-gray-200 hover:from-gray-100 hover:to-slate-100',
-                      totalBookings > 0 && !isSelected && 'bg-gradient-to-br from-[#D4A574]/20 to-[#EA8B6F]/20 border-[#D4A574]/50 hover:from-[#D4A574]/30 hover:to-[#EA8B6F]/30 hover:border-[#D4A574]/70'
-                    )}
-                  >
-                    <div className={cn(
-                      "text-lg font-semibold mb-1",
-                      isToday && !isSelected && "text-[#D4A574]"
-                    )}>{format(day, 'd')}</div>
-
-                    {totalBookings > 0 && (
-                      <div className="w-full px-1 mt-auto">
-                        <div className={cn(
-                          "text-xs font-medium",
-                          isSelected ? "text-white" : "text-gray-700"
-                        )}>
-                          {totalBookings} {totalBookings === 1 ? tCalendar('booking') : tCalendar('bookings')}
-                        </div>
+                  <div key={index} className="flex items-center justify-center">
+                    <button
+                      onClick={() => handleDateClick(day)}
+                      disabled={!isCurrentMonth}
+                      className={cn(
+                        'relative w-full aspect-square rounded-full transition-all duration-300',
+                        'hover:shadow-lg focus:outline-none focus:ring-1 focus:ring-[#D4A574] focus:ring-offset-0',
+                        {
+                          'text-gray-400 bg-transparent': !isCurrentMonth,
+                          'bg-gradient-to-br from-[#D4A574] to-[#EA8B6F] text-white shadow-xl scale-105': isSelected,
+                          'ring-1 ring-[#D4A574]': isToday && !isSelected,
+                          'bg-gradient-to-br from-compassion-400 to-compassion-500 text-compassion-900 hover:from-compassion-500 hover:to-compassion-600 hover:text-white hover:scale-105': hasSlots && !isSelected && isCurrentMonth,
+                          'bg-gradient-to-br from-[#D4A574]/20 to-[#EA8B6F]/20 text-gray-800 hover:from-[#D4A574]/30 hover:to-[#EA8B6F]/30 hover:scale-105': totalBookings > 0 && !isSelected && !hasSlots && isCurrentMonth,
+                          'bg-gray-200 text-gray-400 cursor-not-allowed opacity-50': !hasSlots && !totalBookings && isCurrentMonth && !isSelected
+                        }
+                      )}
+                    >
+                      <div className="flex flex-col items-center justify-center h-full relative">
+                        <span className="text-xs sm:text-sm md:text-base font-bold">{format(day, 'd')}</span>
+                        {totalBookings > 0 && (
+                          <span className={cn(
+                            "text-[8px] sm:text-[10px] font-medium mt-0.5",
+                            isSelected ? "text-white/90" : "text-gray-600"
+                          )}>
+                            {totalBookings}
+                          </span>
+                        )}
+                        {isToday && !isSelected && (
+                          <span className="absolute -top-1 -right-1 text-[10px] font-bold bg-gradient-to-br from-[#D4A574] to-[#EA8B6F] text-white px-1.5 py-0.5 rounded-full shadow-md">
+                            {tCalendar('today')}
+                          </span>
+                        )}
                       </div>
-                    )}
-
-                    {hasSlots && (
-                      <div className="mt-1">
-                        <div className={cn(
-                          "w-2 h-2 rounded-full mx-auto",
-                          isSelected ? "bg-white" : "bg-green-500"
-                        )}></div>
-                      </div>
-                    )}
-
-                    {isToday && !isSelected && (
-                      <span className="absolute -top-1 -right-1 text-xs bg-gradient-to-r from-[#D4A574] to-[#EA8B6F] text-white px-1.5 py-0.5 rounded-full">
-                        {tCalendar('today')}
-                      </span>
-                    )}
-                  </button>
+                    </button>
+                  </div>
                 )
               })}
             </div>
@@ -1072,254 +1312,6 @@ const createBooking = async () => {
                 </div>
               )}
             </CardContent>
-          </Card>
-        )}
-      </div>
-
-      {/* Slots Section */}
-      <div className="lg:col-span-1">
-        {selectedDate && (
-          <Card className="shadow-elegant hover:shadow-elegant-lg transition-all duration-300 bg-gradient-to-br from-[#D4A574]/10 to-[#EA8B6F]/10 rounded-2xl border border-[#D4A574]/30">
-            <CardHeader>
-              <CardTitle className="text-xl text-[#C69564]">
-                {tCalendar('slotsFor', { date: format(selectedDate, 'MMM d') })}
-              </CardTitle>
-              <CardDescription className="text-gray-700">
-                {tCalendar('manageSlots')}
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {/* Bulk Slot Creation */}
-                <div className="space-y-2">
-                  <Button
-                    onClick={() => setBulkSlotDialogOpen(true)}
-                    className="w-full bg-gradient-to-r from-[#D4A574] to-[#EA8B6F] hover:from-[#C69564] hover:to-[#DA7B5F] text-white rounded-lg shadow-elegant hover:shadow-elegant-lg hover:scale-105 transition-all duration-300"
-                    size="sm"
-                  >
-                    <Plus className="w-4 h-4 mr-2" />
-                    {tCalendar('createBulk')}
-                  </Button>
-                </div>
-
-                {/* Meal Type Quick Buttons */}
-                <div className="grid grid-cols-1 gap-2">
-                  <Button
-                    onClick={() => {
-                      setFormData({
-                        date: format(selectedDate, 'yyyy-MM-dd'),
-                        meal_type: 'breakfast',
-                        time_slot: '07:00',
-                        monks_capacity: monastery?.capacity || 10,
-                        max_donors: 5,
-                        booking_notes: ''
-                      })
-                      setCreateSlotDialogOpen(true)
-                    }}
-                    size="sm"
-                    variant="outline"
-                    className="border-[#D4A574]/40 text-[#C69564] hover:bg-gradient-to-r hover:from-[#D4A574]/20 hover:to-[#EA8B6F]/20 hover:border-[#D4A574]/60 rounded-lg transition-all duration-300 hover:scale-105 hover:shadow-md"
-                  >
-                    {tCalendar('breakfast', { time: '7:00 AM' })}
-                  </Button>
-
-                  <Button
-                    onClick={() => {
-                      setFormData({
-                        date: format(selectedDate, 'yyyy-MM-dd'),
-                        meal_type: 'lunch',
-                        time_slot: '11:30',
-                        monks_capacity: monastery?.capacity || 10,
-                        max_donors: 5,
-                        booking_notes: ''
-                      })
-                      setCreateSlotDialogOpen(true)
-                    }}
-                    size="sm"
-                    variant="outline"
-                    className="border-[#D4A574]/40 text-[#C69564] hover:bg-gradient-to-r hover:from-[#D4A574]/20 hover:to-[#EA8B6F]/20 hover:border-[#D4A574]/60 rounded-lg transition-all duration-300 hover:scale-105 hover:shadow-md"
-                  >
-                    {tCalendar('lunch', { time: '11:30 AM' })}
-                  </Button>
-
-                  <Button
-                    onClick={() => {
-                      setFormData({
-                        date: format(selectedDate, 'yyyy-MM-dd'),
-                        meal_type: 'dinner',
-                        time_slot: '17:00',
-                        monks_capacity: monastery?.capacity || 10,
-                        max_donors: 5,
-                        booking_notes: ''
-                      })
-                      setCreateSlotDialogOpen(true)
-                    }}
-                    size="sm"
-                    variant="outline"
-                    className="border-[#D4A574]/40 text-[#C69564] hover:bg-gradient-to-r hover:from-[#D4A574]/20 hover:to-[#EA8B6F]/20 hover:border-[#D4A574]/60 rounded-lg transition-all duration-300 hover:scale-105 hover:shadow-md"
-                  >
-                    {tCalendar('dinner', { time: '5:00 PM' })}
-                  </Button>
-                </div>
-
-                {/* Instructions for slot booking */}
-                <div className="text-center py-2 px-4 bg-[#D4A574]/10 rounded-lg border border-[#D4A574]/30">
-                  <p className="text-sm text-[#C69564] font-medium">
-                    {tCalendar('clickSlotInstructions')}
-                  </p>
-                </div>
-
-                {/* Existing Slots */}
-                {loadingSlots ? (
-                  <div className="text-center py-4">{tCalendar('loadingSlots')}</div>
-                ) : donationSlots.length === 0 ? (
-                  <div className="text-center py-6 text-gray-500">
-                    <Calendar className="w-8 h-8 mx-auto mb-2 text-gray-300" />
-                    <p className="text-sm font-medium mb-2">{tCalendar('noSlotsForDate')}</p>
-                    <p className="text-xs text-gray-400">{tCalendar('createSlotsMessage')}</p>
-                  </div>
-                ) : (
-                  <div className="space-y-2">
-                    {donationSlots.map((slot) => (
-                      <div key={slot.id} className="relative group">
-                        {/* Interactive Overlay with Management Actions */}
-                        <div className="absolute inset-0 bg-gray-900/90 rounded-lg opacity-0 group-hover:opacity-100 transition-all duration-200 z-10 flex flex-col items-center justify-center">
-                          {slot.is_available ? (
-                            <>
-                              {/* Create Booking Action */}
-                              <button
-                                onClick={() => openBookingDialog(slot)}
-                                className="text-white hover:bg-white/10 rounded-lg p-3 transition-colors w-full"
-                              >
-                                <UserPlus className="w-6 h-6 mx-auto mb-1" />
-                                <p className="font-medium text-sm">{tCalendar('createBooking')}</p>
-                              </button>
-                              
-                              {/* Management Actions Row */}
-                              <div className="flex items-center gap-3 mt-3 pt-3 border-t border-gray-700">
-                                <button
-                                  onClick={() => startEditingSlot(slot)}
-                                  className="text-gray-300 hover:text-white p-2 hover:bg-white/10 rounded transition-all"
-                                  title={tCalendar('editSlot')}
-                                >
-                                  <Edit3 className="w-4 h-4" />
-                                </button>
-                                
-                                <button
-                                  onClick={() => toggleSlotAvailability(slot.id, slot.is_available)}
-                                  className="text-gray-300 hover:text-yellow-400 p-2 hover:bg-white/10 rounded transition-all"
-                                  title={tCalendar('disableSlot')}
-                                >
-                                  <AlertCircle className="w-4 h-4" />
-                                </button>
-                                
-                                {slot.current_bookings === 0 && (
-                                  <button
-                                    onClick={() => deleteSlot(slot.id)}
-                                    className="text-gray-300 hover:text-red-400 p-2 hover:bg-white/10 rounded transition-all"
-                                    title="Delete Slot"
-                                  >
-                                    <Trash2 className="w-4 h-4" />
-                                  </button>
-                                )}
-                              </div>
-                            </>
-                          ) : (
-                            <div className="text-white text-center">
-                              <AlertCircle className="w-6 h-6 mx-auto mb-2 text-yellow-400" />
-                              <p className="font-medium">{tCalendar('slotDisabled')}</p>
-                              <button
-                                onClick={() => toggleSlotAvailability(slot.id, slot.is_available)}
-                                className="mt-3 text-sm px-3 py-1 bg-green-600 hover:bg-green-700 rounded transition-colors"
-                              >
-                                {tCalendar('enableSlot')}
-                              </button>
-                            </div>
-                          )}
-                        </div>
-
-                        <div className={cn(
-                          "border rounded-xl p-3 transition-all duration-200 bg-white",
-                          slot.is_available
-                            ? "border-gray-200 group-hover:border-amber-300 group-hover:shadow-lg cursor-pointer"
-                            : "opacity-60 border-gray-200"
-                        )}>
-                        <div className="flex items-center justify-between mb-1">
-                          <div className="font-semibold text-sm capitalize text-gray-900">
-                            {slot.meal_type} - {slot.time_slot}
-                          </div>
-                          <Badge
-                            className={cn(
-                              'font-medium',
-                              slot.is_available ? 'bg-green-100 text-green-800 border-green-200' : 'bg-red-100 text-red-800 border-red-200'
-                            )}
-                          >
-                            {slot.is_available ? tCalendar('active') : tCalendar('disabled')}
-                          </Badge>
-                        </div>
-                        
-                        <div className="text-xs mb-2">
-                          <div className={cn(
-                            "font-medium",
-                            slot.monks_fed > slot.monks_capacity 
-                              ? "text-red-600" 
-                              : slot.monks_fed === slot.monks_capacity 
-                              ? "text-yellow-600" 
-                              : "text-gray-600"
-                          )}>
-                            <span className="font-semibold">{slot.monks_fed}</span>/{slot.monks_capacity} {tCalendar('servings')}
-                            {slot.monks_fed > slot.monks_capacity && (
-                              <span className="ml-2 text-xs bg-red-100 text-red-800 px-1.5 py-0.5 rounded">
-                                {tCalendar('overCapacity')}
-                              </span>
-                            )}
-                            {slot.monks_fed === slot.monks_capacity && (
-                              <span className="ml-2 text-xs bg-yellow-100 text-yellow-800 px-1.5 py-0.5 rounded">
-                                {tCalendar('full')}
-                              </span>
-                            )}
-                          </div>
-                          <div className="text-gray-500 mt-1">
-                            {slot.current_bookings} {slot.current_bookings === 1 ? tCalendar('booking') : tCalendar('bookings')}
-                          </div>
-                          
-                          {/* Capacity Progress Bar */}
-                          <div className="mt-2">
-                            <div className="w-full bg-gray-200 rounded-full h-1.5">
-                              <div 
-                                className={cn(
-                                  "h-1.5 rounded-full transition-all duration-300",
-                                  slot.monks_fed > slot.monks_capacity 
-                                    ? "bg-red-500" 
-                                    : slot.monks_fed === slot.monks_capacity 
-                                    ? "bg-yellow-500" 
-                                    : "bg-green-500"
-                                )}
-                                style={{ 
-                                  width: `${Math.min((slot.monks_fed / slot.monks_capacity) * 100, 100)}%` 
-                                }}
-                              />
-                            </div>
-                          </div>
-                        </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            </CardContent>
-          </Card>
-        )}
-
-        {!selectedDate && (
-          <Card className="shadow-xl bg-white rounded-2xl">
-            <CardHeader>
-              <CardTitle className="text-xl">{tCalendar('selectDate')}</CardTitle>
-              <CardDescription className="text-gray-600">
-                {tCalendar('chooseDateMessage')}
-              </CardDescription>
-            </CardHeader>
           </Card>
         )}
       </div>
