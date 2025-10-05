@@ -95,27 +95,27 @@ export default function DonatePage() {
         {/* Impact Stats */}
         {!selectedSlot && (
           <div className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 max-w-5xl mx-auto">
-            <div className="group relative bg-gradient-to-br from-green-50 to-emerald-50 rounded-2xl p-8 text-center shadow-elegant border border-green-100/50 hover:shadow-elegant-lg transition-all duration-300 hover:-translate-y-1">
-              <div className="absolute top-0 right-0 w-24 h-24 bg-green-200/20 rounded-full blur-2xl -z-10 group-hover:bg-green-300/30 transition-colors duration-300"></div>
-              <div className="w-14 h-14 bg-gradient-to-br from-green-500 to-emerald-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg group-hover:scale-110 transition-transform duration-300">
+            <div className="group relative bg-gradient-to-br from-compassion-50 to-compassion-50 rounded-2xl p-8 text-center shadow-elegant border border-compassion-100/50 hover:shadow-elegant-lg transition-all duration-300 hover:-translate-y-1">
+              <div className="absolute top-0 right-0 w-24 h-24 bg-compassion-200/20 rounded-full blur-2xl -z-10 group-hover:bg-compassion-300/30 transition-colors duration-300"></div>
+              <div className="w-14 h-14 bg-gradient-to-br from-compassion-500 to-compassion-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg group-hover:scale-110 transition-transform duration-300">
                 <Heart className="w-7 h-7 text-white" />
               </div>
               <h3 className="text-2xl font-bold text-gray-900 mb-2">1,250+ Meals</h3>
               <p className="text-sm font-medium text-gray-600">Provided this month</p>
             </div>
 
-            <div className="group relative bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl p-8 text-center shadow-elegant border border-blue-100/50 hover:shadow-elegant-lg transition-all duration-300 hover:-translate-y-1">
-              <div className="absolute top-0 right-0 w-24 h-24 bg-blue-200/20 rounded-full blur-2xl -z-10 group-hover:bg-blue-300/30 transition-colors duration-300"></div>
-              <div className="w-14 h-14 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg group-hover:scale-110 transition-transform duration-300">
+            <div className="group relative bg-gradient-to-br from-trust-50 to-trust-50 rounded-2xl p-8 text-center shadow-elegant border border-trust-100/50 hover:shadow-elegant-lg transition-all duration-300 hover:-translate-y-1">
+              <div className="absolute top-0 right-0 w-24 h-24 bg-trust-200/20 rounded-full blur-2xl -z-10 group-hover:bg-trust-300/30 transition-colors duration-300"></div>
+              <div className="w-14 h-14 bg-gradient-to-br from-trust-500 to-trust-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg group-hover:scale-110 transition-transform duration-300">
                 <Users className="w-7 h-7 text-white" />
               </div>
               <h3 className="text-2xl font-bold text-gray-900 mb-2">85+ Donors</h3>
               <p className="text-sm font-medium text-gray-600">Active this week</p>
             </div>
 
-            <div className="group relative bg-gradient-to-br from-purple-50 to-pink-50 rounded-2xl p-8 text-center shadow-elegant border border-purple-100/50 hover:shadow-elegant-lg transition-all duration-300 hover:-translate-y-1">
-              <div className="absolute top-0 right-0 w-24 h-24 bg-purple-200/20 rounded-full blur-2xl -z-10 group-hover:bg-purple-300/30 transition-colors duration-300"></div>
-              <div className="w-14 h-14 bg-gradient-to-br from-purple-500 to-pink-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg group-hover:scale-110 transition-transform duration-300">
+            <div className="group relative bg-gradient-to-br from-spiritual-50 to-spiritual-50 rounded-2xl p-8 text-center shadow-elegant border border-spiritual-100/50 hover:shadow-elegant-lg transition-all duration-300 hover:-translate-y-1">
+              <div className="absolute top-0 right-0 w-24 h-24 bg-spiritual-200/20 rounded-full blur-2xl -z-10 group-hover:bg-spiritual-300/30 transition-colors duration-300"></div>
+              <div className="w-14 h-14 bg-gradient-to-br from-spiritual-500 to-spiritual-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg group-hover:scale-110 transition-transform duration-300">
                 <Gift className="w-7 h-7 text-white" />
               </div>
               <h3 className="text-2xl font-bold text-gray-900 mb-2">12 Monasteries</h3>

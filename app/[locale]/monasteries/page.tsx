@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import { useAuthStore } from '@/lib/stores/useAuthStore'
 import { AuthForm } from '@/components/auth-form'
+import { Footer } from '@/components/organisms/Footer/Footer'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -144,21 +145,21 @@ export default function MonasteriesPage() {
 
   if (authLoading) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-red-50">
+      <div className="flex items-center justify-center min-h-screen bg-background">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-amber-500 mx-auto mb-4"></div>
-          <div className="text-lg text-gray-600">{tCommon('loading')}</div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+          <div className="text-lg text-muted-foreground">{tCommon('loading')}</div>
         </div>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-red-50">
+    <div className="min-h-screen bg-background">
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-6 md:mb-8">
-          <h1 className="text-2xl md:text-4xl font-bold text-gray-900 mb-2">{t('title')}</h1>
-          <p className="text-base md:text-lg text-gray-600">
+          <h1 className="text-2xl md:text-4xl font-bold text-foreground mb-2">{t('title')}</h1>
+          <p className="text-base md:text-lg text-muted-foreground">
             {t('description')}
           </p>
         </div>
@@ -166,18 +167,18 @@ export default function MonasteriesPage() {
         {/* Location and Controls */}
         <div className="grid gap-4 md:gap-6 lg:grid-cols-4 mb-4 md:mb-6">
           <div className="lg:col-span-3">
-            <Card className="bg-white rounded-xl md:rounded-2xl shadow-xl">
+            <Card className="rounded-xl md:rounded-2xl shadow-elegant-lg">
               <CardHeader className="pb-3 md:pb-6">
                 <CardTitle className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
                   <div className="flex items-center space-x-2">
-                    <MapPin className="w-5 h-5 text-amber-600" />
-                    <span className="text-gray-900 text-base md:text-lg">{t('locationAndFilters')}</span>
+                    <MapPin className="w-5 h-5 text-primary" />
+                    <span className="text-foreground text-base md:text-lg">{t('locationAndFilters')}</span>
                   </div>
                   <Button
                     variant="outline"
                     size="sm"
                     onClick={() => setShowLocationSettings(!showLocationSettings)}
-                    className="border-amber-200 text-amber-700 hover:bg-amber-50 min-h-[44px] w-full sm:w-auto"
+                    className="min-h-[44px] w-full sm:w-auto"
                   >
                     <NavigationIcon className="w-4 h-4 mr-1" />
                     <span className="text-sm">{t('setLocation')}</span>
@@ -188,20 +189,20 @@ export default function MonasteriesPage() {
                 <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                   {/* Search */}
                   <div className="space-y-1 sm:col-span-2 lg:col-span-1">
-                    <label className="text-sm font-medium text-gray-700">{t('search')}</label>
+                    <label className="text-sm font-medium text-foreground">{t('search')}</label>
                     <Input
                       placeholder={t('searchPlaceholder')}
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
-                      className="border-gray-200 focus:border-amber-500 focus:ring-amber-500 min-h-[44px]"
+                      className="min-h-[44px]"
                     />
                   </div>
 
                   {/* Sort By */}
                   <div className="space-y-1">
-                    <label className="text-sm font-medium text-gray-700">{t('sortBy')}</label>
+                    <label className="text-sm font-medium text-foreground">{t('sortBy')}</label>
                     <Select value={sortBy} onValueChange={(value: any) => setSortBy(value)}>
-                      <SelectTrigger className="border-gray-200 focus:border-amber-500 focus:ring-amber-500 min-h-[44px]">
+                      <SelectTrigger className="min-h-[44px]">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
@@ -214,9 +215,9 @@ export default function MonasteriesPage() {
 
                   {/* Max Distance */}
                   <div className="space-y-1">
-                    <label className="text-sm font-medium text-gray-700">{t('maxDistance')}</label>
+                    <label className="text-sm font-medium text-foreground">{t('maxDistance')}</label>
                     <Select value={maxDistance.toString()} onValueChange={(value) => setMaxDistance(parseInt(value))}>
-                      <SelectTrigger className="border-gray-200 focus:border-amber-500 focus:ring-amber-500 min-h-[44px]">
+                      <SelectTrigger className="min-h-[44px]">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
@@ -234,11 +235,11 @@ export default function MonasteriesPage() {
 
                 {/* Current Location Display */}
                 {userLocation && (
-                  <div className="mt-4 p-3 bg-amber-50 border border-amber-200 rounded-lg">
+                  <div className="mt-4 p-3 bg-primary/5 border border-primary/20 rounded-lg">
                     <div className="flex items-center space-x-2">
-                      <MapPin className="w-4 h-4 text-amber-600" />
-                      <span className="text-sm font-medium text-amber-800">{t('yourLocation')}</span>
-                      <span className="text-sm text-amber-700">
+                      <MapPin className="w-4 h-4 text-primary" />
+                      <span className="text-sm font-medium text-primary">{t('yourLocation')}</span>
+                      <span className="text-sm text-muted-foreground">
                         {userLocation.address || `${userLocation.latitude.toFixed(4)}, ${userLocation.longitude.toFixed(4)}`}
                       </span>
                     </div>
@@ -249,22 +250,22 @@ export default function MonasteriesPage() {
           </div>
 
           <div className="lg:block">
-            <Card className="bg-white rounded-xl md:rounded-2xl shadow-xl">
+            <Card className="rounded-xl md:rounded-2xl shadow-elegant-lg">
               <CardHeader>
-                <CardTitle className="text-base md:text-lg text-gray-900">{t('quickStats')}</CardTitle>
+                <CardTitle className="text-base md:text-lg text-foreground">{t('quickStats')}</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="flex lg:flex-col gap-4 lg:gap-3 lg:space-y-0">
                   <div className="flex-1 lg:flex-none">
-                    <div className="text-2xl font-bold text-amber-600">{filteredMonasteries.length}</div>
-                    <div className="text-xs md:text-sm text-gray-600">Monasteries Found</div>
+                    <div className="text-2xl font-bold text-primary">{filteredMonasteries.length}</div>
+                    <div className="text-xs md:text-sm text-muted-foreground">Monasteries Found</div>
                   </div>
                   {userLocation && (
                     <div className="flex-1 lg:flex-none">
-                      <div className="text-2xl font-bold text-green-600">
+                      <div className="text-2xl font-bold text-compassion-600">
                         {filteredMonasteries.filter(m => m.distance && m.distance <= 25).length}
                       </div>
-                      <div className="text-xs md:text-sm text-gray-600">Within 25km</div>
+                      <div className="text-xs md:text-sm text-muted-foreground">Within 25km</div>
                     </div>
                   )}
                 </div>
@@ -285,10 +286,10 @@ export default function MonasteriesPage() {
         )}
 
         {/* Map View - Always Visible */}
-        <Card className="mb-4 md:mb-6 bg-white rounded-xl md:rounded-2xl shadow-xl overflow-hidden">
+        <Card className="mb-4 md:mb-6 rounded-xl md:rounded-2xl shadow-elegant-lg overflow-hidden">
           <CardHeader className="pb-3">
-            <CardTitle className="flex items-center space-x-2 text-gray-900 text-base md:text-lg">
-              <Map className="w-5 h-5 text-amber-600" />
+            <CardTitle className="flex items-center space-x-2 text-foreground text-base md:text-lg">
+              <Map className="w-5 h-5 text-primary" />
               <span>Monasteries Map</span>
             </CardTitle>
           </CardHeader>
@@ -307,36 +308,36 @@ export default function MonasteriesPage() {
         {/* Loading State */}
         {loading ? (
           <div className="text-center py-8">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-amber-500 mx-auto mb-4"></div>
-            <p className="text-lg text-gray-600">Loading monasteries...</p>
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+            <p className="text-lg text-muted-foreground">Loading monasteries...</p>
           </div>
         ) : (
           /* Monasteries Grid */
           <div className="grid gap-4 md:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
             {filteredMonasteries.length === 0 ? (
               <div className="col-span-full text-center py-8">
-                <div className="w-16 h-16 md:w-20 md:h-20 bg-amber-100 rounded-full flex items-center justify-center mx-auto mb-4 md:mb-6">
-                  <MapPin className="w-8 h-8 md:w-10 md:h-10 text-amber-600" />
+                <div className="w-16 h-16 md:w-20 md:h-20 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4 md:mb-6">
+                  <MapPin className="w-8 h-8 md:w-10 md:h-10 text-primary" />
                 </div>
-                <h3 className="text-xl md:text-2xl font-semibold text-gray-900 mb-2">No monasteries found</h3>
-                <p className="text-gray-600 text-sm md:text-lg px-4">
+                <h3 className="text-xl md:text-2xl font-semibold text-foreground mb-2">No monasteries found</h3>
+                <p className="text-muted-foreground text-sm md:text-lg px-4">
                   {searchQuery ? 'Try adjusting your search or filters' : 'Try setting your location or increasing the distance range'}
                 </p>
               </div>
             ) : (
               filteredMonasteries.map((monastery) => (
-                <Card key={monastery.id} className="bg-white rounded-xl md:rounded-2xl shadow-lg hover:shadow-xl transition-all duration-200">
+                <Card key={monastery.id} className="rounded-xl md:rounded-2xl shadow-elegant hover:shadow-elegant-lg transition-all duration-200">
                   <CardHeader className="pb-3">
                     <div className="flex flex-col sm:flex-row items-start justify-between gap-2">
                       <div className="flex-1 min-w-0">
-                        <CardTitle className="text-base md:text-lg text-gray-900 break-words">{monastery.name}</CardTitle>
-                        <CardDescription className="flex items-start mt-1.5 text-gray-600 text-sm">
-                          <MapPin className="w-4 h-4 mr-1 mt-0.5 flex-shrink-0 text-amber-600" />
+                        <CardTitle className="text-base md:text-lg text-foreground break-words">{monastery.name}</CardTitle>
+                        <CardDescription className="flex items-start mt-1.5 text-sm">
+                          <MapPin className="w-4 h-4 mr-1 mt-0.5 flex-shrink-0 text-primary" />
                           <span className="break-words">{monastery.address}</span>
                         </CardDescription>
                       </div>
                       {monastery.distance && (
-                        <Badge variant="outline" className="border-amber-200 text-amber-700 flex-shrink-0 text-xs">
+                        <Badge variant="outline" className="flex-shrink-0 text-xs">
                           {formatDistance(monastery.distance)}
                         </Badge>
                       )}
@@ -344,36 +345,36 @@ export default function MonasteriesPage() {
                   </CardHeader>
                   <CardContent className="space-y-3 md:space-y-4">
                     {monastery.description && (
-                      <p className="text-sm text-gray-600">{monastery.description}</p>
+                      <p className="text-sm text-muted-foreground">{monastery.description}</p>
                     )}
 
                     <div className="grid grid-cols-2 gap-4 text-sm">
                       {monastery.capacity && (
-                        <div className="flex items-center text-gray-700">
-                          <Users className="w-4 h-4 mr-2 text-amber-600" />
+                        <div className="flex items-center text-foreground">
+                          <Users className="w-4 h-4 mr-2 text-primary" />
                           <span>{monastery.capacity} monks</span>
                         </div>
                       )}
 
                       {monastery.phone && (
-                        <div className="flex items-center text-gray-700">
-                          <Phone className="w-4 h-4 mr-2 text-amber-600" />
+                        <div className="flex items-center text-foreground">
+                          <Phone className="w-4 h-4 mr-2 text-primary" />
                           <span className="truncate">{monastery.phone}</span>
                         </div>
                       )}
 
                       {monastery.email && (
-                        <div className="flex items-center text-gray-700">
-                          <Mail className="w-4 h-4 mr-2 text-amber-600" />
+                        <div className="flex items-center text-foreground">
+                          <Mail className="w-4 h-4 mr-2 text-primary" />
                           <span className="truncate">{monastery.email}</span>
                         </div>
                       )}
 
                       {monastery.website && (
-                        <div className="flex items-center text-gray-700">
-                          <Globe className="w-4 h-4 mr-2 text-amber-600" />
+                        <div className="flex items-center text-foreground">
+                          <Globe className="w-4 h-4 mr-2 text-primary" />
                           <a href={monastery.website} target="_blank" rel="noopener noreferrer"
-                             className="text-amber-700 hover:text-amber-800 hover:underline truncate">
+                             className="text-primary hover:underline truncate">
                             Website
                           </a>
                         </div>
@@ -388,7 +389,7 @@ export default function MonasteriesPage() {
                         }}
                         className="flex-1"
                       >
-                        <Button className="w-full min-h-[44px] bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-semibold rounded-xl shadow-md hover:shadow-lg transition-all duration-200 text-sm">
+                        <Button className="w-full min-h-[44px] bg-gradient-primary text-white font-semibold rounded-xl shadow-md hover:shadow-lg transition-all duration-200 text-sm">
                           {t('makeDonation')}
                         </Button>
                       </Link>
@@ -396,7 +397,7 @@ export default function MonasteriesPage() {
                         href={`/monasteries/${monastery.id}`}
                         className="flex-1"
                       >
-                        <Button variant="outline" className="w-full min-h-[44px] border-amber-200 text-amber-700 hover:bg-amber-50 rounded-xl text-sm">
+                        <Button variant="outline" className="w-full min-h-[44px] rounded-xl text-sm">
                           {t('viewPortfolio')}
                         </Button>
                       </Link>
@@ -408,6 +409,7 @@ export default function MonasteriesPage() {
           </div>
         )}
       </main>
+      <Footer />
     </div>
   )
 }

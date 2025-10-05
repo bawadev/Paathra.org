@@ -7,13 +7,14 @@ import { AuthForm } from '@/components/auth-form'
 import { useTranslations } from 'next-intl'
 
 import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
+import { StatusBadge } from '@/components/ui/status-badge'
 import { Card, CardContent } from '@/components/ui/card'
 import { cn } from '@/lib/utils'
 import { supabase } from '@/lib/supabase'
 import { executeBookingTransition } from '@/lib/services/booking-workflow'
 import { format, parseISO, isFuture, isToday } from 'date-fns'
 import { Calendar, Clock, MapPin, Phone, Utensils, Users, Gift, Filter } from 'lucide-react'
+import type { BookingStatus } from '@/lib/design-system/tokens/colors'
 
 export default function MyDonationsPage() {
   const t = useTranslations('MyDonations')
@@ -67,25 +68,6 @@ export default function MyDonationsPage() {
     } else {
       console.error('Failed to update booking:', result.error)
       // You might want to show a toast error here
-    }
-  }
-
-  const getStatusText = (status: string) => {
-    switch (status) {
-      case 'monastery_approved':
-        return t('statusMonasteryApproved')
-      case 'confirmed':
-        return t('statusConfirmed')
-      case 'pending':
-        return t('statusPending')
-      case 'cancelled':
-        return t('statusCancelled')
-      case 'delivered':
-        return t('statusDelivered')
-      case 'not_delivered':
-        return t('statusNotDelivered')
-      default:
-        return status.charAt(0).toUpperCase() + status.slice(1)
     }
   }
 
@@ -217,8 +199,8 @@ export default function MyDonationsPage() {
                   className={cn(
                     "min-h-[44px] justify-start sm:justify-center text-sm",
                     filter === 'upcoming'
-                      ? 'bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600'
-                      : 'border-green-200 text-green-700 hover:bg-green-50'
+                      ? 'bg-gradient-to-r from-compassion-500 to-compassion-600 hover:from-compassion-600 hover:to-compassion-700'
+                      : 'border-compassion-200 text-compassion-700 hover:bg-compassion-50'
                   )}
                 >
                   <Calendar className="w-4 h-4 mr-2 flex-shrink-0" />
@@ -273,25 +255,11 @@ export default function MyDonationsPage() {
                               </h3>
                             </div>
                           </div>
-                          <Badge
-                            variant={
-                              booking.status === 'confirmed' ? 'default' :
-                              booking.status === 'monastery_approved' ? 'secondary' :
-                              booking.status === 'delivered' ? 'default' :
-                              booking.status === 'pending' ? 'secondary' :
-                              booking.status === 'cancelled' ? 'destructive' : 'outline'
-                            }
-                            className={cn(
-                              "text-xs px-2.5 py-1 min-h-[32px] flex-shrink-0",
-                              booking.status === 'delivered' && "bg-green-100 text-green-800",
-                              booking.status === 'confirmed' && "bg-blue-100 text-blue-800",
-                              booking.status === 'monastery_approved' && "bg-amber-100 text-amber-800",
-                              booking.status === 'pending' && "bg-gray-100 text-gray-800",
-                              booking.status === 'cancelled' && "bg-red-100 text-red-800"
-                            )}
-                          >
-                            {getStatusText(booking.status)}
-                          </Badge>
+                          <StatusBadge
+                            type="booking"
+                            status={booking.status as BookingStatus}
+                            className="min-h-[32px] flex-shrink-0"
+                          />
                         </div>
 
                         {/* Booking Details */}
@@ -339,14 +307,14 @@ export default function MyDonationsPage() {
                             <>
                               <Button
                                 onClick={() => updateBookingStatus(booking.id, 'confirm')}
-                                className="flex-1 sm:flex-none min-h-[44px] bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white text-sm font-medium"
+                                className="flex-1 sm:flex-none min-h-[44px] bg-gradient-to-r from-compassion-500 to-compassion-600 hover:from-compassion-600 hover:to-compassion-700 text-white text-sm font-medium"
                               >
                                 {t('confirmButton')}
                               </Button>
                               <Button
                                 variant="outline"
                                 onClick={() => updateBookingStatus(booking.id, 'cancel')}
-                                className="flex-1 sm:flex-none min-h-[44px] text-sm border-red-300 text-red-600 hover:bg-red-50"
+                                className="flex-1 sm:flex-none min-h-[44px] text-sm border-accent-300 text-accent-600 hover:bg-accent-50"
                               >
                                 {t('cancelButton')}
                               </Button>
@@ -357,7 +325,7 @@ export default function MyDonationsPage() {
                             <Button
                               variant="outline"
                               onClick={() => updateBookingStatus(booking.id, 'cancel')}
-                              className="w-full sm:w-auto min-h-[44px] text-sm border-red-300 text-red-600 hover:bg-red-50"
+                              className="w-full sm:w-auto min-h-[44px] text-sm border-accent-300 text-accent-600 hover:bg-accent-50"
                             >
                               {t('cancelRequestButton')}
                             </Button>
@@ -366,17 +334,17 @@ export default function MyDonationsPage() {
                           {(booking.status === 'confirmed' || booking.status === 'delivered' || booking.status === 'not_delivered') && (
                             <div className="flex justify-center sm:justify-start w-full">
                               {booking.status === 'confirmed' && (
-                                <div className="text-green-700 bg-green-50 px-4 py-2.5 rounded-full font-medium text-xs sm:text-sm">
+                                <div className="text-trust-700 bg-trust-50 px-4 py-2.5 rounded-full font-medium text-xs sm:text-sm">
                                   {t('readyForDonationDay')}
                                 </div>
                               )}
                               {booking.status === 'delivered' && (
-                                <div className="text-emerald-700 bg-emerald-50 px-4 py-2.5 rounded-full font-medium text-xs sm:text-sm">
+                                <div className="text-compassion-700 bg-compassion-50 px-4 py-2.5 rounded-full font-medium text-xs sm:text-sm">
                                   {t('successfullyDelivered')}
                                 </div>
                               )}
                               {booking.status === 'not_delivered' && (
-                                <div className="text-orange-700 bg-orange-50 px-4 py-2.5 rounded-full font-medium text-xs sm:text-sm">
+                                <div className="text-accent-700 bg-accent-50 px-4 py-2.5 rounded-full font-medium text-xs sm:text-sm">
                                   {t('notDeliveredStatus')}
                                 </div>
                               )}

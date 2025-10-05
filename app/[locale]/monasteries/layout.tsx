@@ -6,7 +6,7 @@ export default function MonasteriesLayout({
   children: React.ReactNode
 }) {
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background">
       <Navigation />
       <main className="container mx-auto px-4 pt-24">
         {children}

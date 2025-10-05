@@ -12,6 +12,7 @@ import { Eye, EyeOff, Chrome, Facebook, Twitter, Lock, User, AtSign } from 'luci
 import Image from 'next/image'
 import { useLocale } from 'next-intl'
 import { LanguageSwitcher } from '@/components/language-switcher'
+import { useRouter } from 'next/navigation'
 
 interface SocialAuthButtonsProps {
   onSuccess: () => void;
@@ -93,6 +94,7 @@ function SignInForm({ onSuccess, onError }: { onSuccess: () => void; onError: (e
   const [loading, setLoading] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
   const { signIn } = useAuthStore()
+  const router = useRouter()
 
   const form = useForm<SignInInput>({
     resolver: zodResolver(signInSchema),
@@ -110,6 +112,9 @@ function SignInForm({ onSuccess, onError }: { onSuccess: () => void; onError: (e
         onError(error.message)
       } else {
         onSuccess()
+        // Redirect to homepage after successful sign in
+        router.push('/')
+        router.refresh()
       }
     } catch (err) {
       onError('An unexpected error occurred')

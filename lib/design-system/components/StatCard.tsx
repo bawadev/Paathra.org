@@ -23,12 +23,12 @@ interface StatCardProps {
 }
 
 const variantGradients = {
-  default: 'from-gray-500 to-gray-600',
+  default: 'from-neutral-500 to-neutral-600',
   primary: 'from-primary-500 to-primary-600',
   secondary: 'from-secondary-500 to-secondary-600',
   accent: 'from-accent-500 to-accent-600',
-  trust: 'from-blue-500 to-blue-600',
-  spiritual: 'from-purple-500 to-purple-600',
+  trust: 'from-trust-500 to-trust-600',
+  spiritual: 'from-spiritual-500 to-spiritual-600',
 }
 
 export function StatCard({

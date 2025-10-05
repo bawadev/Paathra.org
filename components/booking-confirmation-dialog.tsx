@@ -62,11 +62,11 @@ export function BookingConfirmationDialog({
       <DialogContent className="max-w-md">
         <DialogHeader>
           <div className="flex items-center justify-center mb-4">
-            <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center">
-              <CheckCircle className="w-8 h-8 text-green-600" />
+            <div className="w-16 h-16 bg-compassion-100 rounded-full flex items-center justify-center">
+              <CheckCircle className="w-8 h-8 text-compassion-600" />
             </div>
           </div>
-          <DialogTitle className="text-center text-2xl font-bold text-green-600">
+          <DialogTitle className="text-center text-2xl font-bold text-compassion-700">
             Booking Confirmed!
           </DialogTitle>
           <DialogDescription className="text-center text-base">

@@ -299,14 +299,14 @@ export function MonasterySlotsDialog({
                               <span className="font-medium">{slot.time_slot}</span>
                             </div>
                             <div className="flex items-center gap-1.5">
-                              <Users className="w-4 h-4 text-green-600" />
+                              <Users className="w-4 h-4 text-compassion-600" />
                               <span>{slot.max_donors} {t('donorsMax')}</span>
                             </div>
                             <Badge
                               variant={slot.is_available ? "default" : "secondary"}
                               className={cn(
                                 "text-xs font-medium",
-                                slot.is_available && "bg-green-100 text-green-800 border-green-200",
+                                slot.is_available && "bg-compassion-100 text-compassion-800 border-compassion-200",
                                 !slot.is_available && "bg-gray-100 text-gray-800 border-gray-200"
                               )}
                             >
@@ -316,8 +316,8 @@ export function MonasterySlotsDialog({
 
                           {/* Special Requirements */}
                           {slot.special_requirements && (
-                            <div className="mt-3 text-sm text-gray-600 bg-blue-50 p-2 rounded-lg">
-                              <strong className="text-blue-900">{t('requirements')}</strong> {slot.special_requirements}
+                            <div className="mt-3 text-sm text-gray-600 bg-trust-50 p-2 rounded-lg">
+                              <strong className="text-trust-800">{t('requirements')}</strong> {slot.special_requirements}
                             </div>
                           )}
                         </div>

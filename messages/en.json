@@ -41,6 +41,87 @@
     "heroDescription": "Support Buddhist monasteries through food donations and help sustain their spiritual practice",
     "startDonating": "Start Donating",
     "learnMore": "Learn More",
+    "publicHero": {
+      "title1": "Connect with",
+      "title2": "Buddhist Monasteries",
+      "description": "Support spiritual communities through food donations. Browse monasteries, book donation slots, and make a meaningful difference.",
+      "browseMonasteries": "Browse Monasteries",
+      "signIn": "Sign In"
+    },
+    "stats": {
+      "mealsDonated": "Meals Donated",
+      "activeMonasteries": "Active Monasteries",
+      "donors": "Happy Donors"
+    },
+    "features": {
+      "title": "How Paathra Helps",
+      "description": "A simple and transparent platform connecting donors with monasteries",
+      "findMonasteries": {
+        "title": "Find Monasteries Near You",
+        "description": "Discover Buddhist monasteries in your area with our interactive map and location-based search. Filter by distance, capacity, and dietary requirements."
+      },
+      "easyBooking": {
+        "title": "Easy Donation Booking",
+        "description": "Browse available time slots, select your preferred date and time, and book your food donation in just a few clicks. Get instant confirmation."
+      },
+      "trackImpact": {
+        "title": "Track Your Impact",
+        "description": "View your donation history, see how many meals you've provided, and stay connected with the monasteries you support."
+      }
+    },
+    "howItWorks": {
+      "title": "How It Works",
+      "description": "Making a donation is simple and transparent",
+      "step1": {
+        "title": "Create Account",
+        "description": "Sign up for free and complete your profile in minutes"
+      },
+      "step2": {
+        "title": "Find Monastery",
+        "description": "Browse monasteries near you or search by location"
+      },
+      "step3": {
+        "title": "Book Slot",
+        "description": "Choose an available time slot and book your donation"
+      },
+      "step4": {
+        "title": "Make Donation",
+        "description": "Deliver your food donation and receive confirmation"
+      }
+    },
+    "browseCTA": {
+      "title": "Ready to Make a Difference?",
+      "description": "Explore monasteries in your area and start your journey of compassion today. No login required to browse.",
+      "button": "Explore Monasteries Now"
+    },
+    "whyChoose": {
+      "title": "Why Choose Paathra?",
+      "description": "We make food donations simple, transparent, and meaningful",
+      "verified": {
+        "title": "Verified Monasteries",
+        "description": "All monasteries are verified and approved by our admin team for authenticity and legitimacy."
+      },
+      "transparent": {
+        "title": "100% Transparent",
+        "description": "See exactly where your donations go with real-time updates and confirmation of delivery."
+      },
+      "flexible": {
+        "title": "Flexible Scheduling",
+        "description": "Book donation slots that work with your schedule. Choose from breakfast, lunch, or dinner times."
+      },
+      "community": {
+        "title": "Community Driven",
+        "description": "Join a growing community of donors supporting Buddhist monasteries across the region."
+      },
+      "realtime": {
+        "title": "Real-time Updates",
+        "description": "Get instant notifications about your bookings, confirmations, and monastery updates."
+      },
+      "support": {
+        "title": "Dedicated Support",
+        "description": "Our team is here to help you with any questions or assistance you need."
+      }
+    },
     "makeDonation": "Make a Donation",
     "makeDonationDesc": "Browse available time slots and book your food donation",
     "bookDonation": "Book Donation",

@@ -24,15 +24,44 @@ export function MonasteryMap({
   const [loadError, setLoadError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!mapRef.current) return;
+    // Early return if ref is not available
+    if (!mapRef.current) {
+      console.warn('Map container ref not available');
+      return;
+    }
 
     let isMounted = true;
 
     const initializeMap = async () => {
       try {
+        // Robust null check before proceeding
+        if (!mapRef.current) {
+          console.warn('Map container ref not available during initialization');
+          return;
+        }
+
+        // Check if container has dimensions before creating map
+        const rect = mapRef.current.getBoundingClientRect();
+        if (rect.width === 0 || rect.height === 0) {
+          console.warn('Map container has no dimensions, deferring initialization');
+          // Retry after a short delay to allow DOM to settle
+          setTimeout(() => {
+            if (isMounted && mapRef.current) {
+              initializeMap();
+            }
+          }, 100);
+          return;
+        }
+
+        // Verify container is properly in the DOM
+        if (!mapRef.current.isConnected) {
+          console.warn('Map container is not connected to DOM');
+          return;
+        }
+
         // Dynamically import Leaflet to avoid SSR issues
         const L = await import('leaflet');
-        
+
         // Fix for default markers not showing
         delete (L.Icon.Default.prototype as any)._getIconUrl;
         L.Icon.Default.mergeOptions({
@@ -42,6 +71,12 @@ export function MonasteryMap({
         });
 
         if (!isMounted) return;
+
+        // Final check before map creation
+        if (!mapRef.current) {
+          console.warn('Map container ref lost before map creation');
+          return;
+        }
 
         // Default center (India center)
         let center: [number, number] = [20.5937, 78.9629];
@@ -65,6 +100,7 @@ export function MonasteryMap({
 
         // Ensure map container is valid before creating map
         if (!mapRef.current || !mapRef.current.offsetParent) {
+          console.warn('Map container not visible or ready');
           return;
         }
 
@@ -75,11 +111,17 @@ export function MonasteryMap({
           } catch (e) {
             console.warn('Error removing previous map instance:', e);
           }
+          mapInstanceRef.current = null;
         }
 
-        // Create map with additional error handling
+        // Create map with comprehensive error handling
         let map;
         try {
+          // Additional container validation
+          if (!mapRef.current || typeof mapRef.current.appendChild !== 'function') {
+            throw new Error('Invalid map container - missing appendChild method');
+          }
+
           map = L.map(mapRef.current, {
             zoomControl: true,
             attributionControl: true,
@@ -89,19 +131,58 @@ export function MonasteryMap({
           }).setView(center, zoom);
         } catch (error) {
           console.error('Error creating map:', error);
-          setLoadError('Failed to initialize map');
+          setLoadError('Failed to initialize map. Please refresh the page.');
+          setIsLoading(false);
           return;
         }
+
+        if (!map) {
+          console.error('Map creation returned null or undefined');
+          setLoadError('Failed to initialize map');
+          setIsLoading(false);
+          return;
+        }
+
         mapInstanceRef.current = map;
 
-        // Wait for map to fully initialize before adding layers
-        await new Promise(resolve => setTimeout(resolve, 100));
+        // Verify map was created successfully and container is still valid
+        if (!map || !map.getContainer()) {
+          console.error('Map container became invalid after creation');
+          setLoadError('Failed to initialize map');
+          setIsLoading(false);
+          return;
+        }
 
-        // Add OpenStreetMap tiles (FREE)
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-          attribution: '© OpenStreetMap contributors',
-          maxZoom: 19,
-        }).addTo(map);
+        // Verify the map hasn't been removed
+        if (!isMounted) {
+          console.warn('Component unmounted during map initialization');
+          return;
+        }
+
+        // Add OpenStreetMap tiles with error handling
+        try {
+          // Additional validation before adding tile layer
+          if (!map.getContainer() || !mapRef.current) {
+            throw new Error('Map container no longer valid');
+          }
+
+          const tileLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors',
+            maxZoom: 19,
+          });
+
+          // Verify map is still valid before adding layer
+          if (map && map.getContainer()) {
+            tileLayer.addTo(map);
+          } else {
+            throw new Error('Map became invalid before tile layer could be added');
+          }
+        } catch (error) {
+          console.error('Error adding tile layer:', error);
+          setLoadError('Failed to load map tiles');
+          setIsLoading(false);
+          return;
+        }
 
         // Create custom icons
         const userIcon = L.divIcon({

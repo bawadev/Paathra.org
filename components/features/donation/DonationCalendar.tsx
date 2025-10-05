@@ -213,43 +213,43 @@ export function DonationCalendar({
 
       {/* Stats Cards - Mobile First (1-3) */}
       <div className="grid grid-cols-1 sm:grid-cols-3 lg:hidden gap-2 sm:gap-4 mb-4">
-            <Card className="bg-gradient-to-br from-green-50 to-emerald-50 border border-green-100/50 shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden">
+            <Card className="bg-gradient-to-br from-compassion-50 to-compassion-50 border border-compassion-100/50 shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden">
               <CardContent className="p-3 sm:p-5">
                 <div className="flex items-center gap-2 sm:gap-4">
-                  <div className="p-2 sm:p-3.5 bg-gradient-to-br from-green-500 to-emerald-600 rounded-lg sm:rounded-xl shadow-sm">
+                  <div className="p-2 sm:p-3.5 bg-gradient-to-br from-compassion-500 to-compassion-600 rounded-lg sm:rounded-xl shadow-sm">
                     <Gift className="w-4 h-4 sm:w-6 sm:h-6 text-white" />
                   </div>
                   <div className="flex-1">
-                    <p className="text-xl sm:text-3xl font-bold text-green-700 mb-0">{calendarStats.totalDonations}</p>
-                    <p className="text-xs sm:text-sm font-medium text-green-600/80">{t('thisMonth')}</p>
+                    <p className="text-xl sm:text-3xl font-bold text-compassion-700 mb-0">{calendarStats.totalDonations}</p>
+                    <p className="text-xs sm:text-sm font-medium text-compassion-600/80">{t('thisMonth')}</p>
                   </div>
                 </div>
               </CardContent>
             </Card>
 
-            <Card className="bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-100/50 shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden">
+            <Card className="bg-gradient-to-br from-trust-50 to-trust-50 border border-trust-100/50 shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden">
               <CardContent className="p-3 sm:p-5">
                 <div className="flex items-center gap-2 sm:gap-4">
-                  <div className="p-2 sm:p-3.5 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-lg sm:rounded-xl shadow-sm">
+                  <div className="p-2 sm:p-3.5 bg-gradient-to-br from-trust-500 to-trust-600 rounded-lg sm:rounded-xl shadow-sm">
                     <TrendingUp className="w-4 h-4 sm:w-6 sm:h-6 text-white" />
                   </div>
                   <div className="flex-1">
-                    <p className="text-xl sm:text-3xl font-bold text-blue-700 mb-0">{calendarStats.recurringDonations}</p>
-                    <p className="text-xs sm:text-sm font-medium text-blue-600/80">{t('recurring')}</p>
+                    <p className="text-xl sm:text-3xl font-bold text-trust-700 mb-0">{calendarStats.recurringDonations}</p>
+                    <p className="text-xs sm:text-sm font-medium text-trust-600/80">{t('recurring')}</p>
                   </div>
                 </div>
               </CardContent>
             </Card>
 
-            <Card className="bg-gradient-to-br from-purple-50 to-pink-50 border border-purple-100/50 shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden">
+            <Card className="bg-gradient-to-br from-spiritual-50 to-spiritual-50 border border-spiritual-100/50 shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden">
               <CardContent className="p-3 sm:p-5">
                 <div className="flex items-center gap-2 sm:gap-4">
-                  <div className="p-2 sm:p-3.5 bg-gradient-to-br from-purple-500 to-pink-600 rounded-lg sm:rounded-xl shadow-sm">
+                  <div className="p-2 sm:p-3.5 bg-gradient-to-br from-spiritual-500 to-spiritual-600 rounded-lg sm:rounded-xl shadow-sm">
                     <Heart className="w-4 h-4 sm:w-6 sm:h-6 text-white" />
                   </div>
                   <div className="flex-1">
-                    <p className="text-xl sm:text-3xl font-bold text-purple-700 mb-0">{calendarStats.mealsProvided}</p>
-                    <p className="text-xs sm:text-sm font-medium text-purple-600/80">{t('mealsProvided')}</p>
+                    <p className="text-xl sm:text-3xl font-bold text-spiritual-700 mb-0">{calendarStats.mealsProvided}</p>
+                    <p className="text-xs sm:text-sm font-medium text-spiritual-600/80">{t('mealsProvided')}</p>
                   </div>
                 </div>
               </CardContent>
@@ -261,43 +261,43 @@ export function DonationCalendar({
         <div className="lg:col-span-1 space-y-6">
           {/* Stats Cards - Desktop Only */}
           <div className="hidden lg:block space-y-4">
-            <Card className="bg-gradient-to-br from-green-50 to-emerald-50 border border-green-100/50 shadow-elegant hover:shadow-elegant-lg transition-all duration-300 overflow-hidden group">
+            <Card className="bg-gradient-to-br from-compassion-50 to-compassion-50 border border-compassion-100/50 shadow-elegant hover:shadow-elegant-lg transition-all duration-300 overflow-hidden group">
               <CardContent className="p-5">
                 <div className="flex items-center gap-4">
-                  <div className="p-3.5 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl shadow-md group-hover:scale-110 transition-transform duration-300">
+                  <div className="p-3.5 bg-gradient-to-br from-compassion-500 to-compassion-600 rounded-xl shadow-md group-hover:scale-110 transition-transform duration-300">
                     <Gift className="w-6 h-6 text-white" />
                   </div>
                   <div className="flex-1">
-                    <p className="text-3xl font-bold text-green-700 mb-0.5">{calendarStats.totalDonations}</p>
-                    <p className="text-sm font-medium text-green-600/80">{t('thisMonth')}</p>
+                    <p className="text-3xl font-bold text-compassion-700 mb-0.5">{calendarStats.totalDonations}</p>
+                    <p className="text-sm font-medium text-compassion-600/80">{t('thisMonth')}</p>
                   </div>
                 </div>
               </CardContent>
             </Card>
 
-            <Card className="bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-100/50 shadow-elegant hover:shadow-elegant-lg transition-all duration-300 overflow-hidden group">
+            <Card className="bg-gradient-to-br from-trust-50 to-trust-50 border border-trust-100/50 shadow-elegant hover:shadow-elegant-lg transition-all duration-300 overflow-hidden group">
               <CardContent className="p-5">
                 <div className="flex items-center gap-4">
-                  <div className="p-3.5 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl shadow-md group-hover:scale-110 transition-transform duration-300">
+                  <div className="p-3.5 bg-gradient-to-br from-trust-500 to-trust-600 rounded-xl shadow-md group-hover:scale-110 transition-transform duration-300">
                     <TrendingUp className="w-6 h-6 text-white" />
                   </div>
                   <div className="flex-1">
-                    <p className="text-3xl font-bold text-blue-700 mb-0.5">{calendarStats.recurringDonations}</p>
-                    <p className="text-sm font-medium text-blue-600/80">{t('recurring')}</p>
+                    <p className="text-3xl font-bold text-trust-700 mb-0.5">{calendarStats.recurringDonations}</p>
+                    <p className="text-sm font-medium text-trust-600/80">{t('recurring')}</p>
                   </div>
                 </div>
               </CardContent>
             </Card>
 
-            <Card className="bg-gradient-to-br from-purple-50 to-pink-50 border border-purple-100/50 shadow-elegant hover:shadow-elegant-lg transition-all duration-300 overflow-hidden group">
+            <Card className="bg-gradient-to-br from-spiritual-50 to-spiritual-50 border border-spiritual-100/50 shadow-elegant hover:shadow-elegant-lg transition-all duration-300 overflow-hidden group">
               <CardContent className="p-5">
                 <div className="flex items-center gap-4">
-                  <div className="p-3.5 bg-gradient-to-br from-purple-500 to-pink-600 rounded-xl shadow-md group-hover:scale-110 transition-transform duration-300">
+                  <div className="p-3.5 bg-gradient-to-br from-spiritual-500 to-spiritual-600 rounded-xl shadow-md group-hover:scale-110 transition-transform duration-300">
                     <Heart className="w-6 h-6 text-white" />
                   </div>
                   <div className="flex-1">
-                    <p className="text-3xl font-bold text-purple-700 mb-0.5">{calendarStats.mealsProvided}</p>
-                    <p className="text-sm font-medium text-purple-600/80">{t('mealsProvided')}</p>
+                    <p className="text-3xl font-bold text-spiritual-700 mb-0.5">{calendarStats.mealsProvided}</p>
+                    <p className="text-sm font-medium text-spiritual-600/80">{t('mealsProvided')}</p>
                   </div>
                 </div>
               </CardContent>
@@ -311,15 +311,15 @@ export function DonationCalendar({
             </CardHeader>
             <CardContent className="space-y-3.5">
               <div className="flex items-center gap-3">
-                <div className="w-4 h-4 rounded-full bg-gradient-to-br from-green-500 to-emerald-600 shadow-sm"></div>
+                <div className="w-4 h-4 rounded-full bg-gradient-to-br from-compassion-500 to-compassion-600 shadow-sm"></div>
                 <span className="text-sm font-medium text-gray-700">{t('availableSlots')}</span>
               </div>
               <div className="flex items-center gap-3">
-                <div className="w-4 h-4 rounded-full bg-gradient-to-br from-orange-500 to-red-500 shadow-sm"></div>
+                <div className="w-4 h-4 rounded-full bg-gradient-to-br from-accent-400 to-accent-500 shadow-sm"></div>
                 <span className="text-sm font-medium text-gray-700">{t('limitedAvailability')}</span>
               </div>
               <div className="flex items-center gap-3">
-                <div className="w-4 h-4 rounded-full bg-gradient-to-br from-amber-500 to-yellow-500 shadow-sm"></div>
+                <div className="w-4 h-4 rounded-full bg-gradient-to-br from-primary-500 to-primary-600 shadow-sm"></div>
                 <span className="text-sm font-medium text-gray-700">{t('specialDay')}</span>
               </div>
               <div className="flex items-center gap-3">
@@ -403,10 +403,10 @@ export function DonationCalendar({
                             'text-gray-400 bg-transparent': !isCurrentMonth,
                             'bg-gradient-to-br from-[#D4A574] to-[#EA8B6F] text-white shadow-xl scale-105': isSelected,
                             'ring-1 ring-[#D4A574]': isTodayDate && !isSelected,
-                            'bg-gradient-to-br from-green-400 to-emerald-500 text-white hover:from-green-500 hover:to-emerald-600 hover:scale-105': status === 'available' && !isSelected,
-                            'bg-gradient-to-br from-orange-400 to-red-400 text-white hover:from-orange-500 hover:to-red-500 hover:scale-105': status === 'full' && !isSelected,
+                            'bg-gradient-to-br from-compassion-400 to-compassion-500 text-compassion-900 hover:from-compassion-500 hover:to-compassion-600 hover:text-white hover:scale-105': status === 'available' && !isSelected,
+                            'bg-gradient-to-br from-accent-400 to-accent-500 text-accent-900 hover:from-accent-500 hover:to-accent-600 hover:text-white hover:scale-105': status === 'full' && !isSelected,
                             'bg-gray-200 text-gray-400 cursor-not-allowed opacity-50': status === 'unavailable',
-                            'bg-gradient-to-br from-[#D4A574]/30 to-yellow-300 text-gray-700 hover:from-[#D4A574]/40 hover:to-yellow-400 hover:scale-105': hasEvents && !isSelected && status !== 'available' && status !== 'full'
+                            'bg-gradient-to-br from-primary-400 to-primary-500 text-primary-900 hover:from-primary-500 hover:to-primary-600 hover:text-white hover:scale-105': hasEvents && !isSelected && status !== 'available' && status !== 'full'
                           }
                         )}
                       >
@@ -436,15 +436,15 @@ export function DonationCalendar({
         </CardHeader>
         <CardContent className="space-y-2 sm:space-y-3.5">
           <div className="flex items-center gap-2 sm:gap-3">
-            <div className="w-3 h-3 sm:w-4 sm:h-4 rounded-full bg-gradient-to-br from-green-500 to-emerald-600 shadow-sm"></div>
+            <div className="w-3 h-3 sm:w-4 sm:h-4 rounded-full bg-gradient-to-br from-compassion-500 to-compassion-600 shadow-sm"></div>
             <span className="text-xs sm:text-sm font-medium text-gray-700">{t('availableSlots')}</span>
           </div>
           <div className="flex items-center gap-2 sm:gap-3">
-            <div className="w-3 h-3 sm:w-4 sm:h-4 rounded-full bg-gradient-to-br from-orange-500 to-red-500 shadow-sm"></div>
+            <div className="w-3 h-3 sm:w-4 sm:h-4 rounded-full bg-gradient-to-br from-accent-400 to-accent-500 shadow-sm"></div>
             <span className="text-xs sm:text-sm font-medium text-gray-700">{t('limitedAvailability')}</span>
           </div>
           <div className="flex items-center gap-2 sm:gap-3">
-            <div className="w-3 h-3 sm:w-4 sm:h-4 rounded-full bg-gradient-to-br from-amber-500 to-yellow-500 shadow-sm"></div>
+            <div className="w-3 h-3 sm:w-4 sm:h-4 rounded-full bg-gradient-to-br from-primary-500 to-primary-600 shadow-sm"></div>
             <span className="text-xs sm:text-sm font-medium text-gray-700">{t('specialDay')}</span>
           </div>
           <div className="flex items-center gap-2 sm:gap-3">

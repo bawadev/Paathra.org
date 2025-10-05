@@ -187,3 +187,197 @@ export type ColorToken = keyof typeof colorTokens
 export type ColorScale = keyof typeof colorTokens.primary
 export type SemanticColor = keyof typeof colorTokens.semantic
 export type CulturalTheme = keyof typeof colorTokens.cultural
+
+/**
+ * Status Colors - Brand-aligned color mappings for semantic states
+ */
+export const statusColors = {
+  // Success states: approved, delivered, confirmed, available
+  success: {
+    bg: 'bg-compassion-50',
+    bgMedium: 'bg-compassion-100',
+    text: 'text-compassion-700',
+    textStrong: 'text-compassion-800',
+    border: 'border-compassion-200',
+    icon: 'text-compassion-600',
+    gradient: 'from-compassion-500 to-compassion-600',
+    badge: 'bg-compassion-50 text-compassion-900 border-compassion-300',
+  },
+
+  // Pending/Warning states: pending approval, needs attention
+  pending: {
+    bg: 'bg-primary-50',
+    bgMedium: 'bg-primary-100',
+    text: 'text-primary-700',
+    textStrong: 'text-primary-800',
+    border: 'border-primary-200',
+    icon: 'text-primary-600',
+    gradient: 'from-primary-500 to-primary-600',
+    badge: 'bg-primary-50 text-primary-900 border-primary-300',
+  },
+
+  // Info/Trust states: information, links, trust signals
+  info: {
+    bg: 'bg-trust-50',
+    bgMedium: 'bg-trust-100',
+    text: 'text-trust-700',
+    textStrong: 'text-trust-800',
+    border: 'border-trust-200',
+    icon: 'text-trust-600',
+    gradient: 'from-trust-500 to-trust-600',
+    badge: 'bg-trust-50 text-trust-900 border-trust-300',
+  },
+
+  // Error/Destructive states: cancelled, rejected, errors
+  error: {
+    bg: 'bg-accent-50',
+    bgMedium: 'bg-accent-100',
+    text: 'text-accent-700',
+    textStrong: 'text-accent-800',
+    border: 'border-accent-200',
+    icon: 'text-accent-600',
+    gradient: 'from-accent-500 to-accent-600',
+    badge: 'bg-accent-50 text-accent-900 border-accent-300',
+  },
+
+  // Limited/Warning states: limited availability, caution
+  limited: {
+    bg: 'bg-accent-50',
+    bgMedium: 'bg-accent-100',
+    text: 'text-accent-600',
+    textStrong: 'text-accent-700',
+    border: 'border-accent-200',
+    icon: 'text-accent-500',
+    gradient: 'from-accent-400 to-accent-500',
+    badge: 'bg-accent-100 text-accent-700 border-accent-200',
+  },
+
+  // Special/Highlighted states: special days, featured items
+  special: {
+    bg: 'bg-spiritual-50',
+    bgMedium: 'bg-spiritual-100',
+    text: 'text-spiritual-700',
+    textStrong: 'text-spiritual-800',
+    border: 'border-spiritual-200',
+    icon: 'text-spiritual-600',
+    gradient: 'from-spiritual-500 to-spiritual-600',
+    badge: 'bg-spiritual-50 text-spiritual-900 border-spiritual-300',
+  },
+} as const
+
+/**
+ * Booking Status Color Mapping
+ */
+export const bookingStatusColors = {
+  pending: statusColors.pending,
+  monastery_approved: statusColors.pending,
+  confirmed: statusColors.info,
+  delivered: statusColors.success,
+  not_delivered: statusColors.error,
+  cancelled: statusColors.error,
+} as const
+
+/**
+ * Monastery Approval Status Colors
+ */
+export const monasteryStatusColors = {
+  approved: statusColors.success,
+  pending: statusColors.pending,
+  rejected: statusColors.error,
+} as const
+
+/**
+ * User Role Colors
+ */
+export const userRoleColors = {
+  super_admin: statusColors.special,
+  monastery_admin: statusColors.info,
+  donor: statusColors.success,
+} as const
+
+/**
+ * Slot Availability Colors
+ */
+export const slotAvailabilityColors = {
+  available: statusColors.success,
+  limited: statusColors.limited,
+  full: {
+    bg: 'bg-neutral-100',
+    bgMedium: 'bg-neutral-200',
+    text: 'text-neutral-600',
+    textStrong: 'text-neutral-700',
+    border: 'border-neutral-300',
+    icon: 'text-neutral-500',
+    badge: 'bg-neutral-100 text-neutral-700 border-neutral-300',
+  },
+} as const
+
+/**
+ * Brand Gradients
+ */
+export const brandGradients = {
+  primary: 'from-[#D4A574] to-[#EA8B6F]',
+  primaryLight: 'from-primary-500 to-accent-500',
+  backgroundWarm: 'from-primary-50/30 via-accent-50/20 to-neutral-50',
+  backgroundSubtle: 'from-primary-50/50 to-accent-50/30',
+  success: 'from-compassion-500 to-compassion-600',
+  successLight: 'from-compassion-50 to-compassion-100',
+  info: 'from-trust-500 to-trust-600',
+  infoLight: 'from-trust-50 to-trust-100',
+  spiritual: 'from-spiritual-500 to-spiritual-600',
+  spiritualLight: 'from-spiritual-50 to-spiritual-100',
+} as const
+
+/**
+ * Statistics Card Colors
+ */
+export const statsCardColors = {
+  donations: {
+    bg: brandGradients.successLight,
+    icon: statusColors.success.gradient,
+    text: statusColors.success.textStrong,
+    textMuted: statusColors.success.text,
+  },
+  monasteries: {
+    bg: brandGradients.infoLight,
+    icon: statusColors.info.gradient,
+    text: statusColors.info.textStrong,
+    textMuted: statusColors.info.text,
+  },
+  donors: {
+    bg: brandGradients.spiritualLight,
+    icon: statusColors.special.gradient,
+    text: statusColors.special.textStrong,
+    textMuted: statusColors.special.text,
+  },
+  meals: {
+    bg: brandGradients.successLight,
+    icon: statusColors.success.gradient,
+    text: statusColors.success.textStrong,
+    textMuted: statusColors.success.text,
+  },
+} as const
+
+/**
+ * Helper Functions
+ */
+export function getBookingStatusColor(status: keyof typeof bookingStatusColors) {
+  return bookingStatusColors[status] || statusColors.pending
+}
+
+export function getMonasteryStatusColor(status: keyof typeof monasteryStatusColors) {
+  return monasteryStatusColors[status] || statusColors.pending
+}
+
+export function getUserRoleColor(role: keyof typeof userRoleColors) {
+  return userRoleColors[role] || statusColors.info
+}
+
+export function getSlotAvailabilityColor(availability: keyof typeof slotAvailabilityColors) {
+  return slotAvailabilityColors[availability] || slotAvailabilityColors.full
+}
+
+export type BookingStatus = keyof typeof bookingStatusColors
+export type MonasteryStatus = keyof typeof monasteryStatusColors
+export type UserRole = keyof typeof userRoleColors
+export type SlotAvailability = keyof typeof slotAvailabilityColors

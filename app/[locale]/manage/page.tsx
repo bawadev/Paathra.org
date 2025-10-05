@@ -5,7 +5,7 @@ import { useAuthStore } from '@/lib/stores/useAuthStore'
 import { AuthForm } from '@/components/auth-form'
 import { CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
+import { StatusBadge } from '@/components/ui/status-badge'
 import { supabase, DonationBooking, Monastery } from '@/lib/supabase'
 import { format, parseISO, isToday, isFuture } from 'date-fns'
 import { hasRole } from '@/types/auth'
@@ -125,7 +125,7 @@ export default function MonasteryDashboard() {
   const updateBookingStatus = async (bookingId: string, status: string) => {
     const { error } = await supabase
       .from('donation_bookings')
-      .update({ 
+      .update({
         status,
         confirmed_at: status === 'confirmed' ? new Date().toISOString() : null
       })
@@ -133,21 +133,6 @@ export default function MonasteryDashboard() {
 
     if (!error) {
       fetchMonasteryData() // Refresh data
-    }
-  }
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'confirmed':
-        return 'bg-green-100 text-green-800'
-      case 'pending':
-        return 'bg-yellow-100 text-yellow-800'
-      case 'cancelled':
-        return 'bg-red-100 text-red-800'
-      case 'completed':
-        return 'bg-blue-100 text-blue-800'
-      default:
-        return 'bg-gray-100 text-gray-800'
     }
   }
 
@@ -240,7 +225,7 @@ export default function MonasteryDashboard() {
               <div className="dana-card p-6">
                 <div className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <h3 className="text-sm font-medium text-[var(--text-light)]">Pending</h3>
-                  <AlertCircle className="h-4 w-4 text-yellow-500" />
+                  <AlertCircle className="h-4 w-4 text-primary-600" />
                 </div>
                 <div>
                   <div className="text-2xl font-bold text-[var(--text-dark)]">{stats.pendingBookings}</div>
@@ -346,9 +331,7 @@ export default function MonasteryDashboard() {
                           <div className="space-y-3">
                             <div className="flex items-center space-x-3">
                               <h4 className="font-semibold text-[var(--text-dark)]">{booking.food_type}</h4>
-                              <Badge className={getStatusColor(booking.status)}>
-                                {booking.status}
-                              </Badge>
+                              <StatusBadge type="booking" status={booking.status as any} />
                             </div>
 
                             <div className="text-sm text-[var(--text-light)] space-y-2">

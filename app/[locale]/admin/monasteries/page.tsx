@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import { CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
+import { StatusBadge } from '@/components/ui/status-badge'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import {
@@ -205,19 +206,6 @@ export default function MonasteryManagement() {
     }
   }
 
-  const getStatusBadgeVariant = (status: string) => {
-    switch (status) {
-      case 'approved':
-        return 'default'
-      case 'pending':
-        return 'secondary'
-      case 'rejected':
-        return 'destructive'
-      default:
-        return 'outline'
-    }
-  }
-
   // Define table columns
   const columns: ResponsiveTableColumn[] = [
     {
@@ -260,9 +248,10 @@ export default function MonasteryManagement() {
       label: t('status'),
       priority: 'high',
       render: (status) => (
-        <Badge variant={getStatusBadgeVariant(status || 'pending')}>
-          {status || 'pending'}
-        </Badge>
+        <StatusBadge
+          type="monastery"
+          status={(status || 'pending') as 'approved' | 'pending' | 'rejected'}
+        />
       ),
     },
     {
@@ -346,10 +335,11 @@ export default function MonasteryManagement() {
                     <h4 className="font-semibold mb-2">{t('additionalDetails')}</h4>
                     <div className="grid gap-2 md:grid-cols-2">
                       <p><strong>{t('capacity')}:</strong> {selectedMonastery.capacity} {t('people')}</p>
-                      <p><strong>{t('status')}:</strong>
-                        <Badge className="ml-2" variant={getStatusBadgeVariant(selectedMonastery.status || 'pending')}>
-                          {selectedMonastery.status || 'pending'}
-                        </Badge>
+                      <p className="flex items-center gap-2"><strong>{t('status')}:</strong>
+                        <StatusBadge
+                          type="monastery"
+                          status={(selectedMonastery.status || 'pending') as 'approved' | 'pending' | 'rejected'}
+                        />
                       </p>
                     </div>
                     {selectedMonastery.dietary_requirements && selectedMonastery.dietary_requirements.length > 0 && (
@@ -532,7 +522,7 @@ export default function MonasteryManagement() {
             <CardTitle className="text-sm font-medium">{t('approved')}</CardTitle>
           </CardHeader>
           <CardContent className="p-0 pt-2">
-            <div className="text-2xl font-bold text-green-600">
+            <div className="text-2xl font-bold text-compassion-700">
               {monasteries.filter(m => m.status === 'approved').length}
             </div>
           </CardContent>
@@ -542,7 +532,7 @@ export default function MonasteryManagement() {
             <CardTitle className="text-sm font-medium">{t('pendingReview')}</CardTitle>
           </CardHeader>
           <CardContent className="p-0 pt-2">
-            <div className="text-2xl font-bold text-yellow-600">
+            <div className="text-2xl font-bold text-primary-700">
               {monasteries.filter(m => m.status === 'pending').length}
             </div>
           </CardContent>
@@ -552,7 +542,7 @@ export default function MonasteryManagement() {
             <CardTitle className="text-sm font-medium">{t('rejected')}</CardTitle>
           </CardHeader>
           <CardContent className="p-0 pt-2">
-            <div className="text-2xl font-bold text-red-600">
+            <div className="text-2xl font-bold text-accent-700">
               {monasteries.filter(m => m.status === 'rejected').length}
             </div>
           </CardContent>
