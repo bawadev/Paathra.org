@@ -71,7 +71,7 @@ interface ThemeProviderProps {
 
 export function ThemeProvider({
   children,
-  defaultMode = 'auto',
+  defaultMode = 'light', // Force light mode - dark mode disabled
   defaultCultural,
   defaultContext = 'general',
   locale,
@@ -80,7 +80,8 @@ export function ThemeProvider({
   // Initialize theme configuration
   const [config, setConfig] = useState<ThemeConfig>(() => {
     const initialCultural = defaultCultural || detectPreferredCulturalTheme(locale)
-    const initialMode = defaultMode === 'auto' ? detectSystemTheme() : defaultMode
+    // Always use light mode - ignore browser dark mode preference
+    const initialMode = 'light'
 
     return validateThemeConfig({
       mode: initialMode,
@@ -95,14 +96,14 @@ export function ThemeProvider({
     if (disableStorage || typeof window === 'undefined') return
 
     try {
-      const savedMode = localStorage.getItem(STORAGE_KEYS.mode) as ThemeMode | null
+      // Force light mode - ignore any saved dark mode preference
       const savedCultural = localStorage.getItem(STORAGE_KEYS.cultural) as CulturalTheme | null
       const savedContext = localStorage.getItem(STORAGE_KEYS.context) as ThemeContextType | null
 
-      if (savedMode || savedCultural || savedContext) {
+      if (savedCultural || savedContext) {
         setConfig(prev => validateThemeConfig({
           ...prev,
-          mode: savedMode || prev.mode,
+          mode: 'light', // Always force light mode
           cultural: savedCultural || prev.cultural,
           context: savedContext || prev.context,
         }))
@@ -125,21 +126,21 @@ export function ThemeProvider({
     }
   }, [config.mode, config.cultural, config.context, disableStorage])
 
-  // Listen for system theme changes
-  useEffect(() => {
-    if (config.mode !== 'auto') return
+  // Listen for system theme changes - DISABLED to force light mode only
+  // useEffect(() => {
+  //   if (config.mode !== 'auto') return
 
-    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
-    const handleChange = () => {
-      setConfig(prev => ({
-        ...prev,
-        mode: mediaQuery.matches ? 'dark' : 'light',
-      }))
-    }
+  //   const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
+  //   const handleChange = () => {
+  //     setConfig(prev => ({
+  //       ...prev,
+  //       mode: mediaQuery.matches ? 'dark' : 'light',
+  //     }))
+  //   }
 
-    mediaQuery.addEventListener('change', handleChange)
-    return () => mediaQuery.removeEventListener('change', handleChange)
-  }, [config.mode])
+  //   mediaQuery.addEventListener('change', handleChange)
+  //   return () => mediaQuery.removeEventListener('change', handleChange)
+  // }, [config.mode])
 
   // Listen for accessibility preference changes
   useEffect(() => {
@@ -175,9 +176,9 @@ export function ThemeProvider({
       root.style.setProperty(property, value)
     })
 
-    // Apply theme mode class
+    // Apply theme mode class - always use light mode
     root.classList.remove('light', 'dark')
-    root.classList.add(config.mode === 'auto' ? detectSystemTheme() : config.mode)
+    root.classList.add('light')
 
     // Apply cultural theme class
     root.classList.remove('theme-sinhala', 'theme-english', 'theme-universal')
@@ -207,7 +208,8 @@ export function ThemeProvider({
 
   // Theme setters
   const setMode = useCallback((mode: ThemeMode) => {
-    setConfig(prev => ({ ...prev, mode }))
+    // Force light mode - ignore any attempts to set dark mode
+    setConfig(prev => ({ ...prev, mode: 'light' }))
   }, [])
 
   const setCulturalTheme = useCallback((cultural: CulturalTheme) => {
