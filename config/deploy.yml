@@ -1,0 +1,38 @@
+# Paathra - Kamal Deployment Config
+# Reference: server-credentials.md
+
+service: paathra
+image: ghcr.io/bawadev/paathra
+
+servers:
+  web:
+    hosts:
+      - 185.211.6.206
+
+registry:
+  server: ghcr.io
+  username: bawadev
+  password:
+    - KAMAL_REGISTRY_PASSWORD
+
+ssh:
+  user: root
+
+proxy:
+  ssl: true
+  host: dev.paathra.org
+  app_port: 3000
+
+env:
+  clear:
+    NODE_ENV: production
+    NEXT_PUBLIC_SUPABASE_URL: https://nosxuzuvckyqbbzpgnsl.supabase.co
+  secret:
+    - KAMAL_REGISTRY_PASSWORD
+    - NEXT_PUBLIC_SUPABASE_ANON_KEY
+    - SUPABASE_SERVICE_ROLE_KEY
+    - SUPABASE_SECRET_KEY
+    - SUPABASE_JWT_SECRET
+
+builder:
+  arch: amd64
